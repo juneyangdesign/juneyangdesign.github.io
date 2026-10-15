@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>June Yang Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400&display=swap">
+<style>
+  /* Layout: quiet white page, hero statement in the upper-left third, 2-column project grid below */
+  :root {
+    --bg: #fdfdfd;
+    --fg: #111111;
+    --muted: #6f6f6f;
+    --placeholder: #d9d9d9;
+    --focus: #111111;
+    --serif: "Newsreader", "Tiempos Text", Georgia, "Times New Roman", serif;
+    --sans: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+    --gutter: clamp(16px, 3.6vw, 70px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121212; --fg: #ededed; --muted: #9a9a9a; --placeholder: #2a2a2a; --focus: #ededed;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121212; --fg: #ededed; --muted: #9a9a9a; --placeholder: #2a2a2a; --focus: #ededed;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  .page {
+    max-width: 1920px;
+    margin: 0 auto;
+    padding-left: max(var(--gutter), env(safe-area-inset-left, 0px));
+    padding-right: max(var(--gutter), env(safe-area-inset-right, 0px));
+    padding-block: 0 clamp(64px, 8vw, 140px);
+  }
+  a { color: inherit; text-decoration: none; }
+  a:focus-visible { outline: 2px solid var(--focus); outline-offset: 4px; }
+
+  /* Nav */
+  .nav {
+    display: flex;
+    justify-content: flex-end;
+    gap: clamp(24px, 2.4vw, 46px);
+    padding-block: clamp(24px, 2.6vw, 44px);
+    font-size: 18px;
+  }
+  .nav a:hover { color: var(--muted); }
+
+  /* Hero */
+  .hero {
+    padding-block: clamp(96px, 13vw, 240px) clamp(120px, 13vw, 250px);
+    display: grid;
+    gap: 22px;
+  }
+  .hero h1 {
+    margin: 0;
+    max-width: 21em;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(30px, 2.6vw, 44px);
+    line-height: 1.18;
+    letter-spacing: -0.012em;
+    text-wrap: balance;
+  }
+  .hero .meta { margin: 0; font-size: 18px; line-height: 1.45; }
+  .hero .meta span { display: block; }
+  .hero .meta .past { color: var(--muted); }
+
+  /* Projects */
+  .work {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(32px, 3.5vw, 64px);
+    row-gap: clamp(48px, 3.6vw, 64px);
+  }
+  .card { display: grid; gap: 0; min-width: 0; }
+  .card .thumb {
+    aspect-ratio: 16 / 9;
+    max-width: 100%;
+    background: var(--placeholder);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .card .thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+    transition: transform .5s ease;
+  }
+  .card:hover .thumb img { transform: scale(1.02); }
+  .card h2 {
+    margin: 0 0 6px;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(22px, 1.6vw, 28px);
+    line-height: 1.2;
+  }
+  .card p { margin: 0; color: var(--muted); font-size: 16px; line-height: 1.45; }
+
+  @media (max-width: 720px) {
+    .nav { font-size: 16px; }
+    .hero .meta { font-size: 16px; }
+    .work { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card .thumb img { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <nav class="nav" aria-label="Main">
+    <a href="#work">Work</a>
+    <a href="#about">About</a>
+    <a href="#connect">Connect</a>
+  </nav>
+
+  <header class="hero" id="about">
+    <h1>June Yang is a designer with a love of building intuitive interactions and impactful experiences.</h1>
+    <p class="meta">
+      <span>Currently studying Design &amp; HCI @ Carnegie Mellon</span>
+      <span class="past">Previously designing @ <em>Arencia</em> and <em>AMOREPACIFIC</em></span>
+    </p>
+  </header>
+
+  <main class="work" id="work">
+    <!-- To use a real image, put it in images/ and add <img src="images/your-file.jpg" alt="..."> inside .thumb -->
+    <a class="card" href="#">
+      <div class="thumb"></div>
+      <h2>Design Hero: Na Kim</h2>
+      <p>A series of works highlighting graphic designer Na Kim’s life and design practice.</p>
+    </a>
+    <a class="card" href="#">
+      <div class="thumb"></div>
+      <h2>Design Hero: Na Kim</h2>
+      <p>A series of works highlighting graphic designer Na Kim’s life and design practice.</p>
+    </a>
+    <a class="card" href="#">
+      <div class="thumb"></div>
+      <h2>Design Hero: Na Kim</h2>
+      <p>A series of works highlighting graphic designer Na Kim’s life and design practice.</p>
+    </a>
+    <a class="card" href="#">
+      <div class="thumb"></div>
+      <h2>Design Hero: Na Kim</h2>
+      <p>A series of works highlighting graphic designer Na Kim’s life and design practice.</p>
+    </a>
+  </main>
+
+  <span id="connect"></span>
+</div>
+</body>
+</html>
