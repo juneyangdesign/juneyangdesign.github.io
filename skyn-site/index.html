@@ -527,8 +527,14 @@
                   </div>
                 </div>
               </div>
-              <img class="figure" src="images/feature-04-discovery.png" width="1160" height="886" loading="lazy"
-                alt="Three skyn screens: browse with top-rated products and matching influencers, a creator profile with an 87% match, and routine details">
+              <div class="phones">
+                <figure class="phone">
+                  <div class="phone__frame">
+                    <video class="phone__screen" src="images/discovery.mp4?v=1" poster="images/discovery-still.jpg?v=1" width="590" height="1278" muted playsinline preload="auto" aria-label="Finding a routine: the user scrolls Browse to creators matching their skin, opens @mikiskin's profile, taps her Hydration routine and adds it to their routines"></video>
+                  </div>
+                  <figcaption class="number">Finding a routine</figcaption>
+                </figure>
+              </div>
             </article>
 
             <article class="feature">
@@ -586,28 +592,28 @@
     // Play the routine demos only when motion is allowed; otherwise the poster still stays.
     (function () {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      // The two demos take turns so only one moves at a time.
-      var vids = Array.prototype.slice.call(document.querySelectorAll('.phone__screen'));
-      if (!vids.length) return;
-      var cur = 0;
-      function play(i) {
-        cur = i;
+      // Each feature's demos take turns within their own group, so only one per group moves at a time.
+      Array.prototype.forEach.call(document.querySelectorAll('.phones'), function (group) {
+        var vids = Array.prototype.slice.call(group.querySelectorAll('.phone__screen'));
+        if (!vids.length) return;
+        function play(i) {
+          vids.forEach(function (v, j) {
+            var fig = v.closest('.phone');
+            if (j === i) {
+              fig.classList.remove('is-waiting');
+              v.currentTime = 0;
+              var p = v.play(); if (p && p.catch) p.catch(function () {});
+            } else {
+              v.pause(); v.currentTime = 0;
+              fig.classList.add('is-waiting');
+            }
+          });
+        }
         vids.forEach(function (v, j) {
-          var fig = v.closest('.phone');
-          if (j === i) {
-            fig.classList.remove('is-waiting');
-            v.currentTime = 0;
-            var p = v.play(); if (p && p.catch) p.catch(function () {});
-          } else {
-            v.pause(); v.currentTime = 0;
-            fig.classList.add('is-waiting');
-          }
+          v.addEventListener('ended', function () { play((j + 1) % vids.length); });
         });
-      }
-      vids.forEach(function (v, j) {
-        v.addEventListener('ended', function () { play((j + 1) % vids.length); });
+        play(0);
       });
-      play(0);
     })();
   </script>
 </body>
