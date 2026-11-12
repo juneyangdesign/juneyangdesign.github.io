@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Design Hero — Na Kim</title>
+  <meta name="description" content="Design Hero: a booklet, poster and motion piece on graphic designer Na Kim, whose work extends graphic design into objects, spaces and archives.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    // Scale the 1920px design to the window width, same as the other case studies.
+    (function () {
+      function fit() {
+        var w = window.innerWidth;
+        document.documentElement.style.setProperty('--fit', w >= 1024 ? Math.min(w / 1920, 1) : 1);
+      }
+      fit();
+      window.addEventListener('resize', fit);
+    })();
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav" aria-label="Main">
+      <a href="../index.html">Work</a>
+      <a href="#">About</a>
+      <a href="#">Connect</a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <section class="overview" aria-label="Project overview">
+      <div class="overview__details">
+        <p class="overview__label">Details</p>
+        <!-- TODO (June): add course, timeline and tools -->
+        <p>Subject: Na Kim, graphic designer<br>
+          Deliverables: Booklet, poster, motion piece</p>
+      </div>
+      <div class="overview__summary">
+        <p class="overview__label">Summary</p>
+        <p>Design Hero is a study of Na Kim, a graphic designer based in Berlin and active in Seoul whose work moves graphic design off the page and into objects, spaces and archives. I translated her approach of collecting and organizing visual material into three formats: an editorial booklet, a typographic poster and a short motion piece.</p>
+      </div>
+    </section>
+
+    <img class="hero" src="images/hero.jpg" width="1377" height="514"
+      alt="The Design Hero booklet cover, a Products spread and the 'simple form, complex idea' poster">
+
+    <div class="layout">
+      <nav class="sidebar" aria-label="Project sections">
+        <a href="#motion" class="is-active">Motion</a>
+        <a href="#booklet">Booklet</a>
+        <a href="#poster">Poster</a>
+      </nav>
+
+      <div class="content">
+        <section id="motion" class="section">
+          <p class="divider" role="heading" aria-level="2"><span>Motion</span></p>
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <p class="label">Motion piece</p>
+              <h2 class="heading">Collecting things, again and again</h2>
+            </div>
+            <p class="body lede">A one-minute film that follows Na Kim through her studio and archive. Footage of her collecting and sorting material is interrupted by her own visual language: bold primary shapes, scattered labels and grids of collected objects.</p>
+            <video class="motion" src="videos/motion.mp4?v=1" poster="images/motion-poster.jpg?v=1" width="1920" height="1080" controls playsinline preload="metadata"
+              aria-label="Motion piece about Na Kim: studio footage of her collecting and organizing material, overlaid with animated primary-colored shapes and type"></video>
+          </div>
+        </section>
+
+        <section id="booklet" class="section">
+          <p class="divider" role="heading" aria-level="2"><span>Booklet</span></p>
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <p class="label">Editorial booklet</p>
+              <h2 class="heading">Her practice, from print to space to product</h2>
+            </div>
+            <div class="row">
+              <p class="body">The booklet introduces Na Kim and walks through her career in seven parts: an introduction, a timeline, then her print, space, product and exhibition design, with a section on LOOM, the space she founded in Berlin.</p>
+              <p class="body">Each spread borrows from her own system of repeated shapes, grids and primary colors, so the layout itself reflects how she builds books as sequences rather than separate pages.</p>
+            </div>
+            <div class="gallery">
+              <div class="panel panel--covers">
+                <img src="images/booklet-01.jpg" width="1000" height="1272" loading="lazy" alt="Booklet front cover: a grid of red, yellow and blue geometric shapes">
+                <img src="images/booklet-09.jpg" width="1000" height="1272" loading="lazy" alt="Booklet back cover">
+              </div>
+              <img class="spread" src="images/booklet-02.jpg" width="2000" height="1273" loading="lazy" alt="Contents spread on blue, with a collage of Na Kim's books, objects and wearable work">
+              <img class="spread" src="images/booklet-03.jpg" width="2000" height="1273" loading="lazy" alt="Meet Na Kim introduction spread with photos of her and her studio">
+              <img class="spread" src="images/booklet-04.jpg" width="2000" height="1273" loading="lazy" alt="Print spread on yellow showing her posters, books and printed matter">
+              <img class="spread" src="images/booklet-05.jpg" width="2000" height="1273" loading="lazy" alt="Spaces spread on green showing her studio and spatial installations">
+              <img class="spread" src="images/booklet-06.jpg" width="2000" height="1273" loading="lazy" alt="LOOM spread on yellow: 'Not a room, but LOOM', photos of the space she founded in Berlin">
+              <img class="spread" src="images/booklet-07.jpg" width="2000" height="1273" loading="lazy" alt="Products spread showing her tables, stools and wearable pieces">
+              <img class="spread" src="images/booklet-08.jpg" width="2000" height="1273" loading="lazy" alt="Exhibition design spread with photos of her installations">
+            </div>
+          </div>
+        </section>
+
+        <section id="poster" class="section">
+          <p class="divider" role="heading" aria-level="2"><span>Poster</span></p>
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <p class="label">Poster</p>
+              <h2 class="heading">Simple form, complex idea</h2>
+            </div>
+            <p class="body lede">The poster sets “simple form, complex idea” in large, modular letters over a dense grid of colored patterns, echoing how Na Kim builds rich compositions out of a small set of repeated shapes.</p>
+            <div class="panel panel--poster">
+              <img src="images/poster.jpg" width="1300" height="2144" loading="lazy" alt="Poster reading 'simple form, complex idea. na kim' in modular white letters over a grid of red, blue and yellow patterns">
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Highlight the sidebar link for the section currently in view.
+    (function () {
+      var links = document.querySelectorAll('.sidebar a');
+      var sections = Array.prototype.map.call(links, function (a) {
+        return document.querySelector(a.getAttribute('href'));
+      });
+      function update() {
+        var current = 0;
+        sections.forEach(function (s, i) {
+          if (s.getBoundingClientRect().top <= window.innerHeight * 0.35) current = i;
+        });
+        links.forEach(function (a, i) { a.classList.toggle('is-active', i === current); });
+      }
+      window.addEventListener('scroll', update, { passive: true });
+      update();
+    })();
+  </script>
+</body>
+</html>
