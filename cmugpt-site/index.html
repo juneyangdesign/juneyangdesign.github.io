@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bark — Case Study</title>
+  <meta name="description" content="Bark is an AI assistant for the Carnegie Mellon community, built with ScottyLabs, that answers questions about dining, directions, courses and campus life.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    // Scale the 1920px design to the window width, same as the skyn page.
+    (function () {
+      function fit() {
+        var w = window.innerWidth;
+        document.documentElement.style.setProperty('--fit', w >= 1024 ? Math.min(w / 1920, 1) : 1);
+      }
+      fit();
+      window.addEventListener('resize', fit);
+    })();
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav" aria-label="Main">
+      <a href="../index.html">Work</a>
+      <a href="#">About</a>
+      <a href="#">Connect</a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <section class="overview" aria-label="Project overview">
+      <div class="overview__details">
+        <p class="overview__label">Details</p>
+        <!-- DRAFT: timeline needs confirming -->
+        <p>Role: UI/UX Designer<br>
+          Timeline: Fall 2025 – Spring 2026<br>
+          Team: ScottyLabs AI Team<br>
+          Status: Live in beta<br>
+          Tools: Figma</p>
+      </div>
+      <div class="overview__summary">
+        <p class="overview__label">Summary</p>
+        <p>Bark (formerly CMUGPT) is an AI assistant for the Carnegie Mellon community, built with ScottyLabs. It pulls information from other ScottyLabs platforms like CMUEats, CMU Courses and CMU Maps, so students can ask questions about CMU in their own words and get answers specific to their needs.</p>
+      </div>
+    </section>
+
+    <img class="hero" src="images/hero.png" width="1377" height="514"
+      alt="The live Bark answering how to get to Margaret Morrison from Tepper with an interactive CMU Maps route">
+
+    <div class="layout">
+      <nav class="sidebar" aria-label="Case study sections">
+        <a href="#overview" class="is-active">Overview</a>
+        <a href="#research">Research</a>
+        <a href="#process">Process</a>
+        <a href="#final-design">Final design</a>
+        <a href="#future">Next steps</a>
+        <a href="#reflection">Reflection</a>
+      </nav>
+
+      <div class="content">
+        <!-- Overview: problem + solution (user's copy, 2026-11-03) -->
+        <section id="overview" class="section">
+          <p class="divider" role="heading" aria-level="2"><span>Overview</span></p>
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <p class="label">Problem</p>
+              <h2 class="heading">CMU students struggle to find the campus information they need</h2>
+            </div>
+            <p class="body lede">Finding answers to everyday questions about CMU often takes more effort than it should.</p>
+          </div>
+
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <p class="label">Solution</p>
+              <h2 class="heading">An AI assistant built for CMU students</h2>
+            </div>
+            <p class="body lede">Bark lets students ask questions about CMU in their own words and get answers specific to their needs, all in one chat.</p>
+            <div class="pairs">
+              <div class="cards pair">
+                <article class="card">
+                  <p class="number">Problem</p>
+                  <h3 class="subheading">Students don’t know where to look</h3>
+                  <p class="body">Different questions require different websites, and students may not know which one has the answer.</p>
+                </article>
+                <article class="card">
+                  <p class="number">Solution</p>
+                  <h3 class="subheading">One place to ask campus questions</h3>
+                  <p class="body">Students can ask about dining, directions, and course planning without figuring out which website to visit first.</p>
+                </article>
+              </div>
+              <div class="cards pair">
+                <article class="card">
+                  <p class="number">Problem</p>
+                  <h3 class="subheading">General AI may lack current CMU information</h3>
+                  <p class="body">General-purpose chatbots may not have the latest dining hours, course details, or campus directions.</p>
+                </article>
+                <article class="card">
+                  <p class="number">Solution</p>
+                  <h3 class="subheading">Answers use current campus data</h3>
+                  <p class="body">Bark retrieves information from ScottyLabs platforms and links students to the relevant resource.</p>
+                </article>
+              </div>
+              <div class="cards pair">
+                <article class="card">
+                  <p class="number">Problem</p>
+                  <h3 class="subheading">Useful answers are hard to find again</h3>
+                  <p class="body">Once students find an answer, they often have to search for it all over again the next time.</p>
+                </article>
+                <article class="card">
+                  <p class="number">Solution</p>
+                  <h3 class="subheading">Search and star past chats</h3>
+                  <p class="body">Students can search their chats and star the ones they use most to find useful information again.</p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Research (user's copy, 2026-11-03) -->
+        <section id="research" class="section">
+          <p class="divider" role="heading" aria-level="2"><span>Research</span></p>
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <p class="label">Student interviews</p>
+              <h2 class="heading">Understanding how students find campus information</h2>
+            </div>
+            <p class="body lede">I interviewed CMU students to understand how they find campus information, which resources they use, and where they encounter difficulties.</p>
+            <dl class="facts">
+              <div><dt>Sample</dt><dd>8 participants</dd></div>
+              <div><dt>Timeline</dt><dd>1–2 weeks</dd></div>
+              <div><dt>Method</dt><dd>Semi-structured, one-on-one interviews</dd></div>
+            </dl>
+          </div>
+
+          <div class="subsection subsection--continue">
+            <p class="body lede">In students’ own words:</p>
+            <div class="cards">
+              <figure class="card quote">
+                <blockquote class="quote__text">“There are so many CMU websites, and I don’t really know what information is on each one.”</blockquote>
+                <figcaption class="number">CMU sophomore<br>Mechanical Engineering major</figcaption>
+              </figure>
+              <figure class="card quote">
+                <blockquote class="quote__text">“I can Google what’s open on campus, but I still have to check if those hours are right for today.”</blockquote>
+                <figcaption class="number">CMU junior<br>Information Systems major</figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <div class="subsection subsection--continue">
+            <div class="intro intro--flush">
+              <p class="label">Key findings</p>
+            </div>
+            <div class="cards">
+              <article class="card">
+                <p class="number">01</p>
+                <h3 class="subheading">Campus information is scattered and difficult to navigate</h3>
+                <p class="body">Campus information is spread across different websites. Students often aren’t sure which site has what they need, so they have to search several sites for an answer.</p>
+              </article>
+              <article class="card">
+                <p class="number">02</p>
+                <h3 class="subheading">General search tools lack campus-specific context</h3>
+                <p class="body">Students’ questions about CMU often require up-to-date campus information that general search engines and AI assistants may not provide.</p>
+              </article>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="intro intro--flush intro--center">
+              <p class="label">Design opportunity</p>
+              <h2 class="display">How might we help CMU students find campus information without searching across multiple websites?</h2>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <p class="label">Design principles</p>
+            </div>
+            <p class="body lede">I used the research findings and discussions with the ScottyLabs team to define two principles for the design.</p>
+            <div class="cards">
+              <article class="card">
+                <p class="number">01</p>
+                <h3 class="subheading">Keep search quick and easy</h3>
+                <p class="body">Let students start typing right away, without extra clicks or distractions.</p>
+              </article>
+              <article class="card">
+                <p class="number">02</p>
+                <h3 class="subheading">Follow the ScottyLabs design system</h3>
+                <p class="body">Use ScottyLabs’ existing components and visual styles to keep the experience consistent with its other platforms, while giving Bark its own personality.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- Process: first draft → v1 (Figma "initial design" → "Iteration I Final"), CMUCal-style. Issue cards and intro are DRAFT. -->
+        <section id="process" class="section">
+          <p class="divider" role="heading" aria-level="2"><span>Process</span></p>
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <p class="label">Iterations</p>
+              <h2 class="heading">From initial prototype to v1</h2>
+            </div>
+            <p class="body lede">My initial prototype followed the layout of familiar AI chat tools. Through a review with the ScottyLabs team and user testing, I identified three key areas for improvement.</p>
+            <dl class="facts">
+              <div><dt>Sample</dt><dd>5 CMU students</dd></div>
+              <div><dt>Testing period</dt><dd>1 week</dd></div>
+              <div><dt>Method</dt><dd>Guided prototype walkthroughs with feedback</dd></div>
+            </dl>
+            <div class="duo">
+              <figure class="duo__item">
+                <img class="duo__shot" src="images/bare-draft-home.png" width="560" height="362" loading="lazy"
+                  alt="Initial prototype home screen: a plain Hi there! greeting and message box, with recent chats in a grey sidebar">
+                <figcaption class="label">Home</figcaption>
+              </figure>
+              <figure class="duo__item">
+                <img class="duo__shot" src="images/bare-before-directions.png" width="560" height="362" loading="lazy"
+                  alt="Initial prototype directions answer with four vague text steps and a static map card">
+                <figcaption class="label">Directions answer</figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <div class="subsection subsection--continue">
+            <h3 class="subheading">What didn’t work in the initial prototype:</h3>
+            <div class="issues">
+              <article class="card issue">
+                <svg class="issue__icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>
+                <div class="issue__text">
+                  <h3 class="subheading">Looked like any other chatbot</h3>
+                  <p class="body">The interface looked like a generic chatbot and didn’t reflect the ScottyLabs brand system.</p>
+                </div>
+              </article>
+              <article class="card issue">
+                <svg class="issue__icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>
+                <div class="issue__text">
+                  <h3 class="subheading">Directions were hard to follow</h3>
+                  <p class="body">Text steps like “find your way toward the path” were vague, and the map was only a static preview.</p>
+                </div>
+              </article>
+              <article class="card issue">
+                <svg class="issue__icon" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>
+                <div class="issue__text">
+                  <h3 class="subheading">Hard to get back to answers</h3>
+                  <p class="body">There was no way to save useful answers to easily return to them later.</p>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <p class="label">Key design shifts</p>
+              <h2 class="heading">Generic chatbot → CMU-specific assistant</h2>
+            </div>
+            <p class="body lede">For v1, I rebuilt the interface with <strong>ScottyLabs’ components and colors</strong>. Students sign in with their <strong>CMU account</strong>, and Bark greets them by name.</p>
+            <figure class="annot annot--left">
+              <img class="annot__shot" src="images/annot-live-home.png" width="840" height="525" loading="lazy"
+                alt="Live Bark home screen with the Bark logo, a light blue sidebar with Starred and Recents, the greeting Hi June, where are we headed on campus?, and the signed-in CMU account">
+              <span class="annot__pin" style="--x:27.42%;--y:3.52%"><span>Bark logo and ScottyLabs colors</span></span><span class="annot__pin" style="--x:58.60%;--y:40.00%"><span>Greets each student by name</span></span><span class="annot__pin" style="--x:27.53%;--y:96.24%"><span>Signed in with a CMU account</span></span>
+            </figure>
+          </div>
+
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <h2 class="heading">Text answers → live ScottyLabs tools</h2>
+            </div>
+            <p class="body lede">Instead of long text answers, Bark now pulls live information from <strong>ScottyLabs tools</strong> like CMU&nbsp;Maps, CMUEats and CMU&nbsp;Courses. For directions, the vague text steps became an interactive CMU&nbsp;Maps route right in the chat.</p>
+            <div class="duo duo--arrow">
+              <figure class="duo__item">
+                <img class="duo__shot" src="images/bare-before-text-directions.png" width="560" height="362" loading="lazy"
+                  alt="Initial prototype answering how to get to Margaret Morrison from Tepper with four vague text steps and a Get directions on CMU Maps link">
+                <figcaption class="label">Before: initial prototype</figcaption>
+              </figure>
+              <figure class="duo__item">
+                <img class="duo__shot" src="images/bare-after-directions.png" width="560" height="350" loading="lazy"
+                  alt="Live Bark directions answer with an interactive CMU Maps route, arrival time, distance and route options">
+                <figcaption class="label">After: live v1</figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <h2 class="heading">One-off chats → saved chats and memory</h2>
+            </div>
+            <p class="body lede">Students can now <strong>star</strong> a chat to keep it at the top of the sidebar, and Bark <strong>saves useful details to memory</strong> for later chats.</p>
+            <figure class="annot">
+              <img class="annot__shot" src="images/annot-live-answer.png" width="840" height="525" loading="lazy"
+                alt="Live Bark chat showing a Memory saved note and a star button in the header">
+              <span class="annot__pin" style="--x:71.86%;--y:3.68%"><span>Star a chat to keep it</span></span><span class="annot__pin" style="--x:30.28%;--y:13.28%"><span>Memory saved for later chats</span></span>
+            </figure>
+          </div>
+        </section>
+
+        <!-- Final design -->
+        <section id="final-design" class="section section--final">
+          <p class="divider" role="heading" aria-level="2"><span>Final design</span></p>
+          <div class="intro intro--flush">
+            <h2 class="heading">Key features</h2>
+          </div>
+
+          <div class="features">
+            <article class="feature">
+              <div class="feature__intro">
+                <p class="number">01</p>
+                <h3 class="subheading">A simple home screen</h3>
+                <div class="feature__body">
+                  <p class="body body--muted">Start typing right away.</p>
+                  <p class="body lede">After signing in with their CMU account, students can ask a question, choose an AI model, or reopen a recent chat from the sidebar.</p>
+                </div>
+              </div>
+              <div class="figure figure-video">
+                <video src="videos/feature-01-home.mp4" poster="videos/feature-01-home-poster.jpg" width="1440" height="900"
+                  autoplay muted loop playsinline preload="metadata"
+                  aria-label="Screen recording of the live Bark: the home screen greets June, the model menu opens, and a question about dining options gets a list of open CMU dining locations"></video>
+              </div>
+            </article>
+
+            <article class="feature">
+              <div class="feature__intro">
+                <p class="number">02</p>
+                <h3 class="subheading">ScottyLabs tools in the chat</h3>
+                <div class="feature__body">
+                  <p class="body body--muted">Find campus information without leaving Bark.</p>
+                  <div class="row">
+                    <p class="body balance">Bark pulls information from CMU&nbsp;Maps, CMUEats, and CMU&nbsp;Courses to answer questions about directions, dining, and classes.</p>
+                    <p class="body balance">When students ask for directions, Bark shows an interactive map with the route distance, estimated arrival time, and options like Accessible and Inside. Students can also open the full route in CMU&nbsp;Maps.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="figure figure-video">
+                <video src="videos/feature-02-directions.mp4" poster="videos/feature-02-directions-poster.jpg" width="1440" height="900"
+                  autoplay muted loop playsinline preload="metadata"
+                  aria-label="Screen recording of the live Bark: a student asks how to get from Tepper to Margaret Morrison, an interactive CMU Maps route loads in the chat, and the route switches between options"></video>
+              </div>
+            </article>
+
+            <article class="feature">
+              <div class="feature__intro">
+                <p class="number">03</p>
+                <h3 class="subheading">Search and starred chats</h3>
+                <div class="feature__body">
+                  <p class="body body--muted">Find an old answer without scrolling.</p>
+                  <div class="row">
+                    <p class="body">Search shows matching chats as cards, each with its title and when it was last used.</p>
+                    <p class="body">Students can star a chat from its header to keep it in the Starred list at the top of the sidebar.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="figure figure-video">
+                <video src="videos/feature-03-search.mp4" poster="videos/feature-03-search-poster.jpg" width="1440" height="900"
+                  autoplay muted loop playsinline preload="metadata"
+                  aria-label="Screen recording of the live Bark: a student stars the Tepper to Margaret Morrison directions chat so it moves into Starred in the sidebar, then searches Tepper to and finds it as a result card"></video>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- Next steps: Figma "Iteration II" material, kept separate from v1 per user (2026-11-03). DRAFT copy. -->
+        <section id="future" class="section">
+          <p class="divider" role="heading" aria-level="2"><span>Next steps</span></p>
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <p class="label">Future developments</p>
+              <h2 class="heading">What’s next for Bark</h2>
+            </div>
+            <p class="body lede">I’m currently working with the ScottyLabs AI team to bring these updates to Bark, based on usage data and feedback from the first version. These updates focus on making Bark more intuitive and useful in students’ everyday campus lives.</p>
+          </div>
+
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <h2 class="heading">Personalized prompt cards</h2>
+            </div>
+            <p class="body lede">The home screen will suggest questions on <strong>four prompt cards</strong> with topic icons and a <strong>Shuffle</strong> button, picked for each student.</p>
+            <figure class="annot">
+              <img class="annot__shot" src="images/annot-prompts.png" width="840" height="545" loading="lazy"
+                alt="Next-iteration home screen with four prompt cards, a Shuffle button and the message box">
+              <span class="annot__pin" style="--x:56.52%;--y:45.61%"><span>Four prompt cards picked for each student</span></span><span class="annot__pin" style="--x:57.17%;--y:73.19%"><span>Shuffle for a new set</span></span><span class="annot__pin" style="--x:58.97%;--y:88.60%"><span>Or type any question</span></span>
+            </figure>
+            <p class="body lede lede--continue">The cards pull from four signals, in order of priority:</p>
+            <div class="cards">
+              <article class="card">
+                <p class="number">01</p>
+                <h3 class="subheading">Personal history</h3>
+                <p class="body">Follows up on topics a student asked about before, like finishing a schedule.</p>
+              </article>
+              <article class="card">
+                <p class="number">02</p>
+                <h3 class="subheading">Semester stage</h3>
+                <p class="body">Matches the academic calendar, from finding clubs in week one to graduation checks.</p>
+              </article>
+              <article class="card">
+                <p class="number">03</p>
+                <h3 class="subheading">Time and context</h3>
+                <p class="body">Uses time of day and day of week, so lunch questions show up around noon.</p>
+              </article>
+              <article class="card">
+                <p class="number">04</p>
+                <h3 class="subheading">Trending</h3>
+                <p class="body">Fills any remaining gaps with what other students across campus are asking about this week.</p>
+              </article>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <h2 class="heading">Pinned chats and search previews</h2>
+            </div>
+            <p class="body lede">A Pin page will group saved chats by month, and search results will preview each chat.</p>
+            <div class="duo">
+              <figure class="duo__item">
+                <img class="duo__shot" src="images/bare-next-search.png" width="560" height="363" loading="lazy"
+                  alt="Design screen: search results for Plan schedule 2026 spring shown as chat cards with previews">
+                <figcaption class="label">Search with previews</figcaption>
+              </figure>
+              <figure class="duo__item">
+                <img class="duo__shot" src="images/bare-next-pins.png" width="560" height="363" loading="lazy"
+                  alt="Design screen: pinned chats grouped by This month, March and February">
+                <figcaption class="label">Pin page</figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <h2 class="heading">Making the wait feel more engaging</h2>
+            </div>
+            <p class="body lede">I’m exploring two loading animations to show when Bark is gathering information: a running Scotty dog and a blue dot with a ripple effect.</p>
+            <figure class="annot">
+              <img class="annot__shot" src="images/annot-loading.png" width="840" height="545" loading="lazy"
+                alt="Design screen: a chat showing two Fetching loading states while Bark gathers campus data, one with a running Scotty dog and one with a blue dot">
+              <span class="annot__pin" style="--x:28.00%;--y:50.00%"><span>Option 1: a running Scotty dog</span></span><span class="annot__pin" style="--x:27.95%;--y:62.93%"><span>Option 2: a blue dot with a ripple effect</span></span>
+            </figure>
+          </div>
+        </section>
+
+        <!-- Reflection (DRAFT copy) -->
+        <section id="reflection" class="section">
+          <p class="divider" role="heading" aria-level="2"><span>Reflection</span></p>
+          <div class="intro intro--stacked">
+            <h2 class="heading">Learning to design beyond the prototype</h2>
+            <div class="row">
+              <div class="reflect">
+                <h3 class="subheading">Designing alongside developers</h3>
+                <p class="body">Working closely with the ScottyLabs AI team helped me understand how an AI product moves from design to launch and where UX research fits into that process. I learned to explain my design decisions, discuss feasibility with developers, and work with them to refine the interface.</p>
+              </div>
+              <div class="reflect">
+                <h3 class="subheading">Research defines the value</h3>
+                <p class="body">The project showed me the importance of user research in defining the value an AI assistant can provide. Hearing directly from students helped me understand where they struggled with existing campus resources and how Bark could build on those tools to make finding and using information easier.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Highlight the sidebar link for the section currently in view.
+    (function () {
+      var links = document.querySelectorAll('.sidebar a');
+      var sections = Array.prototype.map.call(links, function (a) {
+        return document.querySelector(a.getAttribute('href'));
+      });
+      function update() {
+        var current = 0;
+        sections.forEach(function (s, i) {
+          if (s.getBoundingClientRect().top <= window.innerHeight * 0.35) current = i;
+        });
+        links.forEach(function (a, i) { a.classList.toggle('is-active', i === current); });
+      }
+      window.addEventListener('scroll', update, { passive: true });
+      update();
+    })();
+  </script>
+  <script>
+    // Respect reduced-motion: show the poster frame instead of looping the recordings.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.querySelectorAll('.figure-video video').forEach(function (v) { v.removeAttribute('autoplay'); v.pause(); });
+    }
+  </script>
+</body>
+</html>

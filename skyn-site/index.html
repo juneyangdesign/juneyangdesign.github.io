@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>skyn — Case Study</title>
+  <meta name="description" content="skyn is a personalized skincare app that uses AI-powered skin analysis to help users find the right products, build daily routines, and track changes in their skin over time.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    // Scale the 1920px design to the window width so it matches the Figma frame.
+    (function () {
+      function fit() {
+        var w = window.innerWidth;
+        document.documentElement.style.setProperty('--fit', w >= 1024 ? Math.min(w / 1920, 1) : 1);
+      }
+      fit();
+      window.addEventListener('resize', fit);
+    })();
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav" aria-label="Main">
+      <a href="../index.html">Work</a>
+      <a href="#">About</a>
+      <a href="#">Connect</a>
+    </nav>
+  </header>
+
+  <main class="page">
+    <section class="overview" aria-label="Project overview">
+      <div class="overview__details">
+        <p class="overview__label">Details</p>
+        <p>Role: Sole Product Designer<br>
+          Timeline: Summer 2026 (8 weeks)<br>
+          Skills: UX Research, Interaction Design, Prototyping<br>
+          Tools: Figma</p>
+      </div>
+      <div class="overview__summary">
+        <p class="overview__label">Summary</p>
+        <p>skyn is a personalized skincare app that uses AI-powered skin analysis to help users find the right products, build daily routines, and track changes in their skin over time.</p>
+      </div>
+    </section>
+
+    <img class="hero" src="images/hero.png" width="1377" height="946"
+      alt="Two skyn app screens showing a skin health score of 73% and a daily view with redness, texture and wrinkle changes, under the skyn wordmark">
+
+    <div class="layout">
+      <nav class="sidebar" aria-label="Case study sections">
+        <a href="#overview" class="is-active">Overview</a>
+        <a href="#research">Research</a>
+        <a href="#process">Process</a>
+        <a href="#final-design">Final design</a>
+        <a href="#reflection">Reflection</a>
+      </nav>
+
+      <div class="content">
+        <!-- Overview: problem + solution -->
+        <section id="overview" class="section">
+          <p class="divider" role="heading" aria-level="2"><span>Overview</span></p>
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <p class="label">Problem</p>
+              <h2 class="heading">Users lack personalized support for choosing products and tracking results</h2>
+            </div>
+            <p class="body lede">Over two years working in the beauty industry, I noticed a recurring problem in consumer research and in conversations with people around me.</p>
+          </div>
+
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <p class="label">Solution</p>
+              <h2 class="heading">A skincare experience personalized to your skin and its changing needs</h2>
+            </div>
+            <p class="body lede">skyn connects personalized product recommendations, daily routines and progress tracking, so every decision has context.</p>
+            <div class="pairs">
+              <div class="cards pair">
+                <article class="card">
+                  <p class="number">Problem</p>
+                  <h3 class="subheading">Too many options</h3>
+                  <p class="body">Reviews and advice often come from people with different skin types and concerns.</p>
+                </article>
+                <article class="card">
+                  <p class="number">Solution</p>
+                  <h3 class="subheading">Recommendations based on your skin</h3>
+                  <p class="body">Users discover products based on their skin profile and build morning and night routines.</p>
+                </article>
+              </div>
+              <div class="cards pair">
+                <article class="card">
+                  <p class="number">Problem</p>
+                  <h3 class="subheading">Results are hard to see</h3>
+                  <p class="body">Results are gradual and easy to forget, which makes it hard to judge a routine.</p>
+                </article>
+                <article class="card">
+                  <p class="number">Solution</p>
+                  <h3 class="subheading">Progress you can look back on</h3>
+                  <p class="body">Saved skin scans let users review changes over time and see whether a routine is helping.</p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Research -->
+        <section id="research" class="section">
+          <p class="divider" role="heading" aria-level="2"><span>Research</span></p>
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <p class="label">Desk research</p>
+              <h2 class="heading">Where existing skincare apps fall short</h2>
+            </div>
+            <p class="body lede">Interest in skincare apps is growing…</p>
+            <div class="cards">
+              <article class="card stat">
+                <p class="stat__value">~2,000%</p>
+                <p class="body">Search interest in skincare apps increased by nearly 2,000% over the past five years.</p>
+                <p class="number">Source: Google Trends</p>
+              </article>
+              <article class="card stat">
+                <p class="stat__value">$227.1B</p>
+                <p class="body">The global skincare market is expected to grow from $122.1 billion in 2025 to $227.1 billion by 2034, with an annual growth rate of 7.3%.</p>
+                <p class="number">Source: Fortune Business Insights</p>
+              </article>
+            </div>
+            <p class="body lede lede--continue">…but existing apps lack personalization.</p>
+            <div class="cards cards--3">
+              <article class="card compare">
+                <p class="number">Existing app</p>
+                <h3 class="subheading">Yuka</h3>
+                <div class="note">
+                  <p class="note__label">What it does</p>
+                  <p class="body">Scans a product and scores its ingredients by health risk.</p>
+                </div>
+                <div class="note">
+                  <p class="note__label">Limitation</p>
+                  <p class="body">The score is the same for everyone, so it can’t tell you whether a product suits your skin.</p>
+                </div>
+              </article>
+              <article class="card compare">
+                <p class="number">Existing app</p>
+                <h3 class="subheading">Charm</h3>
+                <div class="note">
+                  <p class="note__label">What it does</p>
+                  <p class="body">Builds routines and recommends products from a skin quiz, with a diary for tracking.</p>
+                </div>
+                <div class="note">
+                  <p class="note__label">Limitation</p>
+                  <p class="body">It knows your skin only through quiz answers, and progress depends on what you log.</p>
+                </div>
+              </article>
+              <article class="card compare compare--ours">
+                <p class="number">Opportunity</p>
+                <h3 class="subheading">skyn</h3>
+                <div class="note">
+                  <p class="note__label">What it does</p>
+                  <p class="body">Scans your actual skin, recommends products for it and builds them into routines.</p>
+                </div>
+                <div class="note">
+                  <p class="note__label">How it’s different</p>
+                  <p class="body">Saved scans show how your skin changes over time, so results don’t rely on memory.</p>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <p class="label">Interviews</p>
+              <h2 class="heading">Understanding how people make skincare decisions</h2>
+            </div>
+            <p class="body lede">I then interviewed eight participants about three areas:</p>
+            <div class="cards cards--3">
+              <article class="card">
+                <p class="number">01</p>
+                <h3 class="subheading">Choosing products</h3>
+                <p class="body">What information do people rely on, and how do they decide whether a product suits their skin?</p>
+              </article>
+              <article class="card">
+                <p class="number">02</p>
+                <h3 class="subheading">Managing routines</h3>
+                <p class="body">How do people build their routines, and what leads them to add or replace a product?</p>
+              </article>
+              <article class="card">
+                <p class="number">03</p>
+                <h3 class="subheading">Tracking results</h3>
+                <p class="body">How do people notice changes in their skin and decide whether their skincare is working?</p>
+              </article>
+            </div>
+          </div>
+
+          <div class="subsection subsection--continue">
+            <p class="body lede">In participants’ own words:</p>
+            <div class="cards cards--3">
+              <figure class="card quote">
+                <blockquote class="quote__text">“I’ll see a product everywhere and want to try it, but I don’t really know if it’ll work for my skin.”</blockquote>
+                <figcaption class="number">19, college student<br>Skincare beginner</figcaption>
+              </figure>
+              <figure class="card quote">
+                <blockquote class="quote__text">“I spend a lot of time reading reviews, but it’s hard to know which ones to trust when everyone’s skin is so different.”</blockquote>
+                <figcaption class="number">26, working professional<br>Intermediate skincare user</figcaption>
+              </figure>
+              <figure class="card quote">
+                <blockquote class="quote__text">“Sometimes I think my skin’s getting better, but I can’t really remember what it looked like a month ago.”</blockquote>
+                <figcaption class="number">20, college student<br>Skincare beginner</figcaption>
+              </figure>
+            </div>
+          </div>
+
+          <div class="subsection subsection--wide-gap">
+            <div class="intro intro--flush">
+              <p class="label">Key insights</p>
+              <h2 class="heading">Users need support both when choosing products and after they start using them</h2>
+            </div>
+            <div class="cards">
+              <article class="card">
+                <p class="number">01</p>
+                <h3 class="subheading">Product information needs to be relevant to the individual.</h3>
+                <p class="body">More options and recommendations didn’t make choosing easier. Participants needed a way to judge how relevant information was to their skin type and concerns.</p>
+              </article>
+              <article class="card">
+                <p class="number">02</p>
+                <h3 class="subheading">Gradual results are difficult to track.</h3>
+                <p class="body">Without a consistent record, it was hard to compare current skin with earlier conditions and tell whether a routine was helping.</p>
+              </article>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <p class="label">Users</p>
+              <h2 class="heading">Different levels of skincare experience need different kinds of guidance</h2>
+            </div>
+            <p class="body lede">I identified two groups based on skincare knowledge, confidence and habits.</p>
+            <div class="cards">
+              <article class="card">
+                <h3 class="subheading">Beginners</h3>
+                <p class="body">Limited skincare knowledge and less confident choosing products. More likely to follow trends and rarely track progress. They need help getting started, understanding their options and building a routine.</p>
+              </article>
+              <article class="card">
+                <h3 class="subheading">Intermediate users</h3>
+                <p class="body">Comfortable researching products and making decisions, and some already track their skin. They still value personalized recommendations and need support comparing options and refining established routines.</p>
+              </article>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="intro intro--flush intro--center">
+              <p class="label">Opportunity</p>
+              <h2 class="display">How might we help users choose skincare for their needs and understand how their routines are working over time?</h2>
+            </div>
+          </div>
+        </section>
+
+        <!-- Process -->
+        <section id="process" class="section">
+          <p class="divider" role="heading" aria-level="2"><span>Process</span></p>
+          <div class="subsection">
+            <div class="intro intro--flush">
+              <p class="label">Information architecture</p>
+              <h2 class="heading">Organizing the app around five tabs</h2>
+            </div>
+            <p class="body lede">Before wireframing, I mapped how the main areas connect. Scanning sits at the center of the nav, and product pages are shared, so users reach the same details anywhere.</p>
+            <figure class="ia" aria-label="Information architecture map of the skyn app">
+              <div class="ia__tabs">
+                <div class="ia__col">
+                  <p class="ia__tab">Home</p>
+                  <ul class="ia__tree">
+                    <li><span>Skin score summary</span></li>
+                    <li><span>Today’s routine</span>
+                      <ul><li><span>Edit routines</span>
+                        <ul><li><span>Create routine</span></li></ul>
+                      </li></ul>
+                    </li>
+                    <li><span>Suggested products</span>
+                      <ul><li><span class="ia__link">Product page</span></li></ul>
+                    </li>
+                  </ul>
+                </div>
+                <div class="ia__col">
+                  <p class="ia__tab">Scan</p>
+                  <ul class="ia__tree">
+                    <li><span>Face scan</span>
+                      <ul><li><span>Scan results</span></li></ul>
+                    </li>
+                    <li><span>Product scan</span>
+                      <ul><li><span>Product match</span>
+                        <ul><li><span class="ia__link">Product page</span></li></ul>
+                      </li></ul>
+                    </li>
+                  </ul>
+                </div>
+                <div class="ia__col">
+                  <p class="ia__tab">Browse</p>
+                  <ul class="ia__tree">
+                    <li><span>Products</span>
+                      <ul><li><span>Product page</span>
+                        <ul>
+                          <li><span>Ingredients</span>
+                            <ul><li><span>Ingredient info</span></li></ul>
+                          </li>
+                          <li><span>Reviews</span></li>
+                        </ul>
+                      </li></ul>
+                    </li>
+                    <li><span>Influencers</span>
+                      <ul><li><span>Creator profile</span></li></ul>
+                    </li>
+                    <li><span>Routines</span>
+                      <ul><li><span>Routine details</span></li></ul>
+                    </li>
+                  </ul>
+                </div>
+                <div class="ia__col">
+                  <p class="ia__tab">Progress</p>
+                  <ul class="ia__tree">
+                    <li><span>Skin health score</span></li>
+                    <li><span>Daily scores</span></li>
+                    <li><span>Concern chart</span>
+                      <ul><li><span>Concern details</span></li></ul>
+                    </li>
+                  </ul>
+                </div>
+                <div class="ia__col">
+                  <p class="ia__tab">Profile</p>
+                  <ul class="ia__tree">
+                    <li><span>Skin profile</span></li>
+                    <li><span>Saved items</span></li>
+                  </ul>
+                </div>
+              </div>
+            </figure>
+          </div>
+
+          <div class="subsection">
+            <div class="intro">
+              <p class="label">Wireframes</p>
+              <div class="row">
+                <h2 class="heading">Mapping the core flows before visual design</h2>
+                <p class="body">I laid out the main flows in mid-fidelity wireframes: scanning, product lookup, discovery, routines and progress. Keeping them grayscale kept the focus on structure, hierarchy and how each screen leads to the next.</p>
+              </div>
+            </div>
+            <img class="figure" src="images/wireframes.png" width="1160" height="973" loading="lazy"
+              alt="Ten grayscale mid-fidelity wireframes: home before first scan, scanner, scan results, home, browse, product scan result, product detail, reviews, my routines and progress">
+          </div>
+
+          <div class="subsection subsection--wide-gap">
+            <div class="intro intro--flush">
+              <p class="label">User testing</p>
+              <h2 class="heading">Testing the first version</h2>
+            </div>
+            <p class="body lede">I tested an earlier version with 5 participants, asking them to scan their skin, look up a product and set up a routine. Three friction points each led to a change.</p>
+
+            <div class="changes">
+              <article class="change">
+                <h3 class="subheading">Home</h3>
+                <div class="change__body">
+                <div class="change__notes">
+                  <div class="note">
+                    <p class="note__label">What wasn’t working</p>
+                    <p class="body">Testers looked for Scan in the nav bar and missed the button inside the score card. A single score didn’t show what changed, and morning and night products shared one routine.</p>
+                  </div>
+                  <div class="note">
+                    <p class="note__label">What changed</p>
+                    <p class="body">Scan moved into the nav bar. The score now shows each concern’s change since yesterday, and the routine is split into Morning and Night tabs.</p>
+                  </div>
+                </div>
+                <div class="ba">
+                <img class="figure" src="images/test-home.png" width="1160" height="676" loading="lazy"
+                  alt="Home wireframe before and after testing: the after version adds a Scan tab to the nav bar, per-concern changes under the skin score, and Morning and Night routine tabs">
+                </div>
+                </div>
+
+              </article>
+
+              <!-- Face scanner change removed to keep three; restore by un-commenting:
+              <article class="change">
+                <h3 class="subheading">Face scanner</h3>
+                <div class="change__body">
+                <div class="change__notes">
+                  <div class="note">
+                    <p class="note__label">What wasn’t working</p>
+                    <p class="body">Testers retook their photo several times because of poor lighting or angle, and didn’t know what a good photo looked like.</p>
+                  </div>
+                  <div class="note">
+                    <p class="note__label">What changed</p>
+                    <p class="body">A live checklist for angle, lighting, size and position, with a hint like “Too dark” when something needs fixing.</p>
+                  </div>
+                </div>
+                <img class="figure" src="images/test-face-scanner.png" width="1160" height="676" loading="lazy"
+                  alt="Scanner wireframe before and after testing: the after version adds a face outline and a checklist for angle, lighting, size and position">
+                </div>
+
+              </article>
+              -->
+
+              <article class="change">
+                <h3 class="subheading">Product scan result</h3>
+                <div class="change__body">
+                <div class="change__notes">
+                  <div class="note">
+                    <p class="note__label">What wasn’t working</p>
+                    <p class="body">When the scan matched the wrong product, there was no way to correct it, so the wrong product could end up in a routine.</p>
+                  </div>
+                  <div class="note">
+                    <p class="note__label">What changed</p>
+                    <p class="body">The result now asks “Is this it?” with No and Yes, and shows other likely matches to pick from.</p>
+                  </div>
+                </div>
+                <div class="ba">
+                <img class="figure" src="images/test-product-scan.png" width="1160" height="676" loading="lazy"
+                  alt="Product scan result wireframe before and after testing: the after version asks Is this it? with No and Yes buttons and lists other matches">
+                </div>
+                </div>
+
+              </article>
+
+              <article class="change">
+                <h3 class="subheading">Product detail</h3>
+                <div class="change__body">
+                <div class="change__notes">
+                  <div class="note">
+                    <p class="note__label">What wasn’t working</p>
+                    <p class="body">The full ingredient list was overwhelming and didn’t answer whether the product suits the user’s skin. Reviews from anyone didn’t feel relevant.</p>
+                  </div>
+                  <div class="note">
+                    <p class="note__label">What changed</p>
+                    <p class="body">Ingredients are summarized by skin concern with a short key-ingredients list, and reviews moved to their own screen with a Similar skin filter.</p>
+                  </div>
+                </div>
+                <div class="ba">
+                <img class="figure" src="images/test-product-detail.png" width="1160" height="864" loading="lazy"
+                  alt="Product detail wireframe before and after testing: the after version replaces the long ingredient list with scores by skin concern and key ingredients">
+                </div>
+                </div>
+
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- Final design -->
+        <section id="final-design" class="section section--final">
+          <p class="divider" role="heading" aria-level="2"><span>Final design</span></p>
+          <div class="intro intro--flush">
+            <h2 class="heading">Key features</h2>
+          </div>
+
+          <div class="features">
+            <article class="feature">
+              <div class="feature__intro">
+                <p class="number">01</p>
+                <h3 class="subheading">Skin and product scanning</h3>
+                <div class="feature__body">
+                  <p class="body body--muted">Understand your starting point and explore the products you use.</p>
+                  <div class="row">
+                    <p class="body">The skin scan summarizes concerns like redness, dryness and texture into a score users can save and compare.</p>
+                    <p class="body">The product scanner looks up a product and shows how it relates to the user’s skin profile before they add it to a routine.</p>
+                  </div>
+                </div>
+              </div>
+              <img class="figure" src="images/feature-01-scanning.png" width="1160" height="786" loading="lazy"
+                alt="Four skyn screens: face scanner with a lighting checklist, skin scan results with a 73% score, product scanner framing a serum bottle, and a product match result">
+            </article>
+
+            <article class="feature">
+              <div class="feature__intro">
+                <p class="number">02</p>
+                <h3 class="subheading">Daily routines</h3>
+                <div class="feature__body">
+                  <p class="body body--muted">Organize recommendations into a routine you can follow.</p>
+                  <div class="row">
+                    <p class="body">Users build separate day and night routines, then add, remove or reorder products as their skin and needs change.</p>
+                    <p class="body">Suggested routines give beginners a starting point, and anyone can edit them to fit the products they already own.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="phones">
+                <figure class="phone">
+                  <div class="phone__frame">
+                    <video class="phone__screen" src="images/routine-create.mp4?v=20" poster="images/routine-create-still.jpg?v=3" width="590" height="1278" muted playsinline preload="auto"
+                      aria-label="Creating a routine: from an empty home screen, the user taps Create routine, adds a cleanser from their products, fills in four steps and saves, and the new routine appears on home"></video>
+                  </div>
+                  <figcaption class="number">Creating a routine</figcaption>
+                </figure>
+                <figure class="phone">
+                  <div class="phone__frame">
+                    <video class="phone__screen" src="images/routine-edit.mp4?v=18" poster="images/routine-edit-still.jpg?v=3" width="590" height="1278" muted playsinline preload="auto"
+                      aria-label="Editing a routine: the user drags Serum above Toner Pads, deletes Moisturizer, adds a suggested eye cream and taps Done"></video>
+                  </div>
+                  <figcaption class="number">Editing a routine</figcaption>
+                </figure>
+              </div>
+            </article>
+
+            <article class="feature">
+              <div class="feature__intro">
+                <p class="number">03</p>
+                <h3 class="subheading">Progress tracking</h3>
+                <div class="feature__body">
+                  <p class="body body--muted">Review changes without relying on memory alone.</p>
+                  <div class="row">
+                    <p class="body">The progress view brings saved scans and each concern’s history together, showing what improved or needs attention.</p>
+                    <p class="body">It’s meant to help users notice patterns over time, not to claim that any one product caused a specific change.</p>
+                  </div>
+                </div>
+              </div>
+              <div class="figure-anim">
+                <img class="figure" src="images/feature-03-progress.png" width="1160" height="832" loading="lazy"
+                  alt="skyn progress screen in a phone frame showing a 78% skin health score, a weekly score row and a radar chart of six skin concerns">
+                <!-- looping GIF over the phone in the still; hidden for reduced motion -->
+                <img class="figure-anim__gif" src="images/feature-03-progress.gif" width="364" height="720" loading="lazy" alt="" aria-hidden="true">
+              </div>
+            </article>
+
+            <article class="feature">
+              <div class="feature__intro">
+                <p class="number">04</p>
+                <h3 class="subheading">Personalized discovery</h3>
+                <div class="feature__body">
+                  <p class="body body--muted">Find recommendations from people with similar skin.</p>
+                  <div class="row">
+                    <p class="body">Users browse products, creators and routines by skin type, and creator profiles show why a recommendation fits.</p>
+                    <p class="body">From there, users can try recommended products, compare alternatives or adapt a shared routine to fit their own skin.</p>
+                  </div>
+                </div>
+              </div>
+              <img class="figure" src="images/feature-04-discovery.png" width="1160" height="886" loading="lazy"
+                alt="Three skyn screens: browse with top-rated products and matching influencers, a creator profile with an 87% match, and routine details">
+            </article>
+
+            <article class="feature">
+              <div class="feature__intro">
+                <p class="number">05</p>
+                <h3 class="subheading">Product and ingredient information</h3>
+                <div class="feature__body">
+                  <p class="body body--muted">Understand the details behind a recommendation.</p>
+                  <div class="row">
+                    <p class="body">Product pages combine ingredient information with reviews from users with similar skin. Reviews are split into positive, negative and concern-specific feedback, so they’re easier to compare.</p>
+                    <p class="body">Ingredient pages explain what each ingredient does and how it relates to different skin concerns, like acne or dryness. They also list popular products that include that ingredient.</p>
+                  </div>
+                </div>
+              </div>
+              <img class="figure" src="images/feature-05-product-info.png" width="1160" height="1201" loading="lazy"
+                alt="Three skyn screens: a product page with ingredients by skin concern, the same product’s reviews split into positive and negative, and an ingredient page for hyaluronic acid">
+            </article>
+          </div>
+        </section>
+
+        <!-- Reflection -->
+        <section id="reflection" class="section">
+          <p class="divider" role="heading" aria-level="2"><span>Reflection</span></p>
+          <div class="intro intro--stacked">
+            <h2 class="heading">Personalization should support ongoing decisions</h2>
+            <div class="row">
+              <p class="body">This project changed how I think about personalization. Recommending a product is only the start, so connecting discovery, routines and progress became the core of skyn.</p>
+              <p class="body">Next, I’d test whether users understand how these features work together, and how clearly the interface explains scan results, uncertainty and the limits of what those results can show.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Highlight the sidebar link for the section currently in view.
+    (function () {
+      var links = document.querySelectorAll('.sidebar a');
+      var sections = Array.prototype.map.call(links, function (a) {
+        return document.querySelector(a.getAttribute('href'));
+      });
+      function update() {
+        var current = 0;
+        sections.forEach(function (s, i) {
+          if (s.getBoundingClientRect().top <= window.innerHeight * 0.35) current = i;
+        });
+        links.forEach(function (a, i) { a.classList.toggle('is-active', i === current); });
+      }
+      window.addEventListener('scroll', update, { passive: true });
+      update();
+    })();
+  </script>
+  <script>
+    // Play the routine demos only when motion is allowed; otherwise the poster still stays.
+    (function () {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      // The two demos take turns so only one moves at a time.
+      var vids = Array.prototype.slice.call(document.querySelectorAll('.phone__screen'));
+      if (!vids.length) return;
+      var cur = 0;
+      function play(i) {
+        cur = i;
+        vids.forEach(function (v, j) {
+          var fig = v.closest('.phone');
+          if (j === i) {
+            fig.classList.remove('is-waiting');
+            v.currentTime = 0;
+            var p = v.play(); if (p && p.catch) p.catch(function () {});
+          } else {
+            v.pause(); v.currentTime = 0;
+            fig.classList.add('is-waiting');
+          }
+        });
+      }
+      vids.forEach(function (v, j) {
+        v.addEventListener('ended', function () { play((j + 1) % vids.length); });
+      });
+      play(0);
+    })();
+  </script>
+</body>
+</html>
