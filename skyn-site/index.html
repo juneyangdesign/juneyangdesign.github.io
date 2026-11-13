@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=ds3">
+  <link rel="stylesheet" href="styles.css?v=ds4">
   <script>
     // Scale the 1920px design to the window width so it matches the Figma frame.
     (function () {
@@ -494,14 +494,14 @@
               <div class="phones">
                 <figure class="phone">
                   <div class="phone__frame">
-                    <video class="phone__screen" src="images/routine-create.mp4?v=21" poster="images/routine-create-still.jpg?v=3" width="590" height="1278" muted playsinline preload="auto"
+                    <video class="phone__screen" src="images/routine-create.mp4?v=22" poster="images/routine-create-still.jpg?v=3" width="590" height="1278" muted playsinline preload="auto"
                       aria-label="Creating a routine: from an empty home screen, the user taps Create routine, adds a cleanser from their products, fills in four steps and saves, and the new routine appears on home"></video>
                   </div>
                   <figcaption class="number">Creating a routine</figcaption>
                 </figure>
                 <figure class="phone">
                   <div class="phone__frame">
-                    <video class="phone__screen" src="images/routine-edit.mp4?v=18" poster="images/routine-edit-still.jpg?v=3" width="590" height="1278" muted playsinline preload="auto"
+                    <video class="phone__screen" src="images/routine-edit.mp4?v=19" poster="images/routine-edit-still.jpg?v=3" width="590" height="1278" muted playsinline preload="auto"
                       aria-label="Editing a routine: the user drags Serum above Toner Pads, deletes Moisturizer, adds a suggested eye cream and taps Done"></video>
                   </div>
                   <figcaption class="number">Editing a routine</figcaption>
@@ -524,7 +524,7 @@
               <div class="phones">
                 <figure class="phone">
                   <div class="phone__frame">
-                    <video class="phone__screen" src="images/progress.mp4?v=1" poster="images/progress-still.jpg?v=1" width="590" height="1278" muted playsinline preload="auto" aria-label="Reviewing progress: the user switches from Thursday's 78% skin score to Tuesday's 73% and back, then scrolls to concern ratings and the weekly improvement charts"></video>
+                    <video class="phone__screen" src="images/progress.mp4?v=2" poster="images/progress-still.jpg?v=1" width="590" height="1278" muted playsinline preload="auto" aria-label="Reviewing progress: the user switches from Thursday's 78% skin score to Tuesday's 73% and back, then scrolls to concern ratings and the weekly improvement charts"></video>
                   </div>
                   <figcaption class="number">Reviewing progress</figcaption>
                 </figure>
@@ -546,7 +546,7 @@
               <div class="phones">
                 <figure class="phone">
                   <div class="phone__frame">
-                    <video class="phone__screen" src="images/discovery.mp4?v=3" poster="images/discovery-still.jpg?v=2" width="590" height="1278" muted playsinline preload="auto" aria-label="Finding a routine: the user scrolls Browse to creators matching their skin, opens @mikiskin's profile, taps her Hydration routine and adds it to their routines"></video>
+                    <video class="phone__screen" src="images/discovery.mp4?v=4" poster="images/discovery-still.jpg?v=2" width="590" height="1278" muted playsinline preload="auto" aria-label="Finding a routine: the user scrolls Browse to creators matching their skin, opens @mikiskin's profile, taps her Hydration routine and adds it to their routines"></video>
                   </div>
                   <figcaption class="number">Finding a routine</figcaption>
                 </figure>
@@ -568,13 +568,13 @@
               <div class="phones">
                 <figure class="phone">
                   <div class="phone__frame">
-                    <video class="phone__screen" src="images/product-ingredients.mp4?v=3" poster="images/product-ingredients-still.jpg?v=1" width="590" height="1278" muted playsinline preload="auto" aria-label="Checking ingredients: the user scrolls a product page through its skin concerns chart and ingredient list, then opens Hyaluronic Acid to see what it does and which products include it"></video>
+                    <video class="phone__screen" src="images/product-ingredients.mp4?v=4" poster="images/product-ingredients-still.jpg?v=1" width="590" height="1278" muted playsinline preload="auto" aria-label="Checking ingredients: the user scrolls a product page through its skin concerns chart and ingredient list, then opens Hyaluronic Acid to see what it does and which products include it"></video>
                   </div>
                   <figcaption class="number">Checking ingredients</figcaption>
                 </figure>
                 <figure class="phone is-waiting">
                   <div class="phone__frame">
-                    <video class="phone__screen" src="images/product-reviews.mp4?v=4" poster="images/product-reviews-still.jpg?v=1" width="590" height="1278" muted playsinline preload="auto" aria-label="Reading reviews: the user switches the product page to Reviews, scrolls to the review list and filters to reviewers with similar skin, then scrolls through their reviews"></video>
+                    <video class="phone__screen" src="images/product-reviews.mp4?v=5" poster="images/product-reviews-still.jpg?v=1" width="590" height="1278" muted playsinline preload="auto" aria-label="Reading reviews: the user switches the product page to Reviews, filters to reviewers with similar skin, then scrolls through two of their reviews"></video>
                   </div>
                   <figcaption class="number">Reading reviews</figcaption>
                 </figure>
@@ -621,16 +621,19 @@
     (function () {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
       // Each feature's demos take turns within their own group, so only one per group moves at a time.
+      // A group starts when it scrolls into view; tapping a phone plays that one from the start.
       Array.prototype.forEach.call(document.querySelectorAll('.phones'), function (group) {
         var vids = Array.prototype.slice.call(group.querySelectorAll('.phone__screen'));
         if (!vids.length) return;
+        var current = 0, visible = false;
         function play(i) {
+          current = i;
           vids.forEach(function (v, j) {
             var fig = v.closest('.phone');
             if (j === i) {
               fig.classList.remove('is-waiting');
               v.currentTime = 0;
-              var p = v.play(); if (p && p.catch) p.catch(function () {});
+              if (visible) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
             } else {
               v.pause(); v.currentTime = 0;
               fig.classList.add('is-waiting');
@@ -639,8 +642,29 @@
         }
         vids.forEach(function (v, j) {
           v.addEventListener('ended', function () { play((j + 1) % vids.length); });
+          if (vids.length > 1) {
+            var frame = v.closest('.phone__frame');
+            var label = v.closest('.phone').querySelector('figcaption');
+            frame.setAttribute('role', 'button');
+            frame.setAttribute('tabindex', '0');
+            frame.setAttribute('aria-label', 'Play ' + (label ? label.textContent.trim() : 'demo'));
+            frame.classList.add('is-clickable');
+            frame.addEventListener('click', function () { play(j); });
+            frame.addEventListener('keydown', function (e) {
+              if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); play(j); }
+            });
+          }
         });
         play(0);
+        if ('IntersectionObserver' in window) {
+          new IntersectionObserver(function (entries) {
+            entries.forEach(function (en) {
+              var was = visible; visible = en.isIntersecting;
+              if (visible && !was) play(current);
+              else if (!visible) vids[current].pause();
+            });
+          }, { threshold: 0.35 }).observe(group);
+        } else { visible = true; play(0); }
       });
     })();
   </script>
