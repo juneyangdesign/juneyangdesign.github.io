@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=ds4">
+  <link rel="stylesheet" href="styles.css?v=hm1">
   <script>
     // Scale the 1920px design to the window width so it matches the Figma frame.
     (function () {
@@ -45,8 +45,11 @@
       </div>
     </section>
 
-    <img class="hero" src="images/hero.png" width="1377" height="946"
-      alt="Two skyn app screens showing a skin health score of 73% and a daily view with redness, texture and wrinkle changes, under the skyn wordmark">
+    <div class="hero-media">
+      <img class="hero" src="images/hero.png" width="1377" height="946"
+        alt="Two skyn app screens showing a skin health score of 73% and a daily view with redness, texture and wrinkle changes, under the skyn wordmark">
+      <video class="hero-media__video" data-src="images/hover.mp4?v=3" muted playsinline loop preload="none" aria-hidden="true"></video>
+    </div>
 
     <div class="layout">
       <nav class="sidebar" aria-label="Case study sections">
@@ -620,6 +623,34 @@
     // Play the routine demos only when motion is allowed; otherwise the poster still stays.
     (function () {
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      // The cover comes alive: its walkthrough plays on hover, or once someone has stayed on it for a moment.
+      (function () {
+        var box = document.querySelector('.hero-media');
+        if (!box || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        var v = box.querySelector('video'), timer = null, visible = false, started = false;
+        v.src = v.getAttribute('data-src'); v.preload = 'auto';
+        v.addEventListener('playing', function () { box.classList.add('is-playing'); });
+        function start() {
+          clearTimeout(timer);
+          if (started) { var q = v.play(); if (q && q.catch) q.catch(function () {}); return; }
+          started = true; v.currentTime = 0;
+          var p = v.play(); if (p && p.catch) p.catch(function () { started = false; });
+        }
+        function stop() {
+          clearTimeout(timer); started = false;
+          box.classList.remove('is-playing'); v.pause();
+        }
+        box.addEventListener('mouseenter', start);
+        new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            visible = en.intersectionRatio >= 0.6;
+            if (visible && !started) { clearTimeout(timer); timer = setTimeout(start, 2500); }
+            if (en.intersectionRatio < 0.2) stop();
+            else if (!visible) clearTimeout(timer);
+          });
+        }, { threshold: [0, 0.2, 0.6, 1] }).observe(box);
+      })();
+
       // Each feature's demos take turns within their own group, so only one per group moves at a time.
       // A group starts when it scrolls into view; tapping a phone plays that one from the start.
       Array.prototype.forEach.call(document.querySelectorAll('.phones'), function (group) {
