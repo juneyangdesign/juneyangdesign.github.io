@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&family=Inter:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="home.css">
+  <link rel="stylesheet" href="home.css?v=h1">
   <script>
     // Scale the 1920px design to the window width so it matches the Figma frame.
     (function () {
@@ -42,6 +42,7 @@
         <div class="project__media project__media--skyn">
           <img src="skyn-site/images/hero.png" width="857" height="589"
             alt="Two skyn app screens showing a skin health score and daily skin changes">
+          <video class="project__hover" data-src="skyn-site/images/hover.mp4?v=1" muted playsinline loop preload="none" aria-hidden="true"></video>
         </div>
         <h2 class="project__title">skyn</h2>
         <p class="project__desc">A personalized skincare app with AI skin analysis, daily routines and progress tracking</p>
@@ -66,5 +67,28 @@
       </a>
     </section>
   </main>
+  <script>
+    // On hover, a project's cover comes alive: its screens play the app's demos. Only where hovering
+    // exists and motion is welcome; everywhere else the still cover stays.
+    (function () {
+      if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      Array.prototype.forEach.call(document.querySelectorAll('.project__hover'), function (v) {
+        var card = v.closest('.project');
+        v.src = v.getAttribute('data-src');
+        v.preload = 'auto';
+        function start() {
+          v.currentTime = 0;
+          var p = v.play(); if (p && p.catch) p.catch(function () {});
+        }
+        v.addEventListener('playing', function () { card.classList.add('is-playing'); });
+        function stop() { card.classList.remove('is-playing'); v.pause(); }
+        card.addEventListener('mouseenter', start);
+        card.addEventListener('mouseleave', stop);
+        card.addEventListener('focus', start);
+        card.addEventListener('blur', stop);
+      });
+    })();
+  </script>
 </body>
 </html>
