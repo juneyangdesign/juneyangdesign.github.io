@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=6">
+  <link rel="stylesheet" href="styles.css?v=7">
   <script>
     // Scale the 1920px design to the window width, same as the other case studies.
     (function () {
@@ -110,12 +110,12 @@
               <p class="body">Fine patterns of dots, lines and dashes fill the grid like texture, with bolder ones kept behind the letters so they never compete with legibility. For the “K” in her name, a classmate pointed out that the straightened leg resembled a Korean character, a nod to her background that made me keep it.</p>
             </div>
             <div class="gallery">
-              <img class="spread" src="images/poster-mockup-front.jpg?v=1" width="2400" height="2500" loading="lazy"
+              <img class="spread spread--framed" src="images/poster-mockup-front.jpg?v=1" width="2400" height="2500" loading="lazy"
                 alt="The full poster, 'simple form, complex idea. na kim', shown straight on with a soft shadow">
             </div>
             <div class="cards">
-              <img class="spread" src="images/poster-detail-3.jpg" width="1200" height="900" loading="lazy" alt="Detail of the 's' and 'm' in 'simple', built from circles and rectangles over striped and dotted cells">
-              <img class="spread" src="images/poster-detail-4.jpg" width="1200" height="900" loading="lazy" alt="Detail of the body text about Na Kim set in white on a blue grid cell, among dotted and striped cells">
+              <img class="spread spread--framed" src="images/poster-detail-3.jpg" width="1200" height="900" loading="lazy" alt="Detail of the 's' and 'm' in 'simple', built from circles and rectangles over striped and dotted cells">
+              <img class="spread spread--framed" src="images/poster-detail-4.jpg" width="1200" height="900" loading="lazy" alt="Detail of the body text about Na Kim set in white on a blue grid cell, among dotted and striped cells">
             </div>
           </div>
         </section>
@@ -132,9 +132,19 @@
               <p class="body">My early spreads read more like posters than a book, so I reset with a consistent three-column grid, Futura paired with Instrument Serif, one main color per spread and numbered captions. Her work stays unaltered and in focus. The covers carry over the poster’s square and quarter-circle modules, with her objects in black and white.</p>
             </div>
             <div class="gallery">
-              <video class="mockup" src="videos/booklet-flip.mp4?v=1" poster="images/booklet-flip-poster.jpg?v=1" width="1920" height="1080" autoplay muted loop playsinline preload="auto"
-                aria-label="Flip-through of the booklet: the cover opens and each spread turns in order, from the contents to the exhibition spread, then it closes on the back cover"></video>
-              <img class="spread" src="images/booklet-overview.jpg?v=2" width="3096" height="2075" loading="lazy"
+              <div class="flipbook" data-turns="8" data-turn="0.7" role="group" aria-roledescription="flip book" aria-label="The booklet: turn its pages">
+                <video class="flipbook__v is-shown" src="videos/booklet-turns.mp4?v=1" poster="images/booklet-flip-poster.jpg?v=1" width="1920" height="1080" muted playsinline preload="auto" aria-hidden="true"></video>
+                <video class="flipbook__v" src="videos/booklet-turns-back.mp4?v=1" width="1920" height="1080" muted playsinline preload="auto" aria-hidden="true"></video>
+                <button type="button" class="flipbook__hit flipbook__hit--prev" aria-label="Previous page" disabled>
+                  <span class="flipbook__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                </button>
+                <button type="button" class="flipbook__hit flipbook__hit--next" aria-label="Next page">
+                  <span class="flipbook__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                </button>
+                <p class="flipbook__hint" aria-hidden="true">Tap right to turn the page · left to go back</p>
+                <p class="flipbook__count" aria-live="polite"><span class="flipbook__now">Cover</span></p>
+              </div>
+              <img class="spread spread--framed" src="images/booklet-overview.jpg?v=2" width="3096" height="2075" loading="lazy"
                 alt="All 16 pages of the booklet laid out in order on a table: front cover, seven spreads and back cover">
             </div>
           </div>
@@ -191,10 +201,96 @@
   </main>
 
   <script>
-    // Respect reduced motion: keep the flip-through on its poster frame.
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      Array.prototype.forEach.call(document.querySelectorAll('video.mockup, video.clip'), function (v) { v.removeAttribute('autoplay'); v.pause(); });
+    // Respect reduced motion: keep the clips on their poster frames.
+    var REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (REDUCED) {
+      Array.prototype.forEach.call(document.querySelectorAll('video.clip'), function (v) { v.removeAttribute('autoplay'); v.pause(); });
     }
+    // Booklet flip book: two pages turn on their own the first time it comes into view, then a hint
+    // invites people to keep going. Tap the right half to turn forward, the left half to go back.
+    (function () {
+      var book = document.querySelector('.flipbook');
+      if (!book) return;
+      var vids = book.querySelectorAll('.flipbook__v'), fwd = vids[0], back = vids[1];
+      var N = +book.getAttribute('data-turns'), T = +book.getAttribute('data-turn');
+      var prev = book.querySelector('.flipbook__hit--prev'), next = book.querySelector('.flipbook__hit--next');
+      var now = book.querySelector('.flipbook__now');
+      var NAMES = ['Cover'].concat([1, 2, 3, 4, 5, 6, 7].map(function (i) { return 'Spread ' + i + ' of 7'; }), ['Back cover']);
+      var state = 0, busy = false, touched = false;
+      function show(v) { fwd.classList.toggle('is-shown', v === fwd); back.classList.toggle('is-shown', v === back); }
+      function seek(v, t, cb) {
+        if (Math.abs(v.currentTime - t) < 0.01 && v.readyState >= 2) { cb(); return; }
+        v.addEventListener('seeked', function h() { v.removeEventListener('seeked', h); cb(); });
+        v.currentTime = t;
+      }
+      function playTo(v, end, cb) {
+        var p = v.play(); if (p && p.catch) p.catch(function () {});
+        (function tick() {
+          if (v.currentTime >= end - 0.02 || v.ended) { v.pause(); seek(v, end, cb); return; }
+          requestAnimationFrame(tick);
+        })();
+      }
+      function update() {
+        prev.disabled = state === 0; next.disabled = state === N;
+        now.textContent = NAMES[state];
+        book.classList.toggle('is-end', state === N);
+      }
+      function turn(dir, cb) {
+        if (busy) return;
+        var to = state + dir;
+        if (to < 0 || to > N) return;
+        busy = true;
+        if (REDUCED) {                       // no animation: jump straight to the next resting page
+          seek(fwd, to * T, function () { show(fwd); state = to; busy = false; update(); cb && cb(); });
+          return;
+        }
+        if (dir > 0) {
+          seek(fwd, state * T, function () {
+            show(fwd);
+            playTo(fwd, to * T, function () { state = to; busy = false; update(); cb && cb(); });
+          });
+        } else {
+          var s0 = (N - state) * T;           // the reversed video runs the same turn backwards
+          seek(back, s0, function () {
+            show(back);
+            playTo(back, s0 + T, function () {
+              seek(fwd, to * T, function () { show(fwd); state = to; busy = false; update(); cb && cb(); });
+            });
+          });
+        }
+      }
+      function user(dir) {
+        if (!touched) { touched = true; book.classList.add('is-touched'); }
+        turn(dir);
+      }
+      next.addEventListener('click', function () { user(1); });
+      prev.addEventListener('click', function () { user(-1); });
+      book.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight') { e.preventDefault(); user(1); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); user(-1); }
+      });
+      if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        book.querySelector('.flipbook__hint').textContent = 'Click right to turn the page · left to go back';
+      }
+      update();
+      var intro = false;
+      function startIntro() {
+        if (intro) return; intro = true;
+        if (REDUCED) { book.classList.add('is-ready'); return; }
+        setTimeout(function () {
+          turn(1, function () {
+            setTimeout(function () {
+              turn(1, function () { book.classList.add('is-ready'); });
+            }, 900);
+          });
+        }, 700);
+      }
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (es) {
+          es.forEach(function (e) { if (e.isIntersecting) startIntro(); });
+        }, { threshold: 0.6 }).observe(book);
+      } else { startIntro(); }
+    })();
   </script>
   <script>
     // Highlight the sidebar link for the section currently in view.

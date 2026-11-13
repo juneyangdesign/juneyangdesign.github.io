@@ -493,3 +493,38 @@ a { color: inherit; text-decoration: none; }
   .clips { gap: 12px; }
   .panel--poster img { width: 80%; }
 }
+
+/* Mockups and presented shots sit on their own backgrounds, so they get the same rounded corners as the cover;
+   flat work (motion, clips) keeps square corners. */
+.spread--framed { border-radius: 16px; }
+.mockup { border-radius: 16px; }
+
+/* Booklet flip book */
+.flipbook { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 16px; overflow: hidden; background: #f1f0ee; }
+.flipbook__v { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; }
+.flipbook__v.is-shown { opacity: 1; }
+.flipbook__hit { position: absolute; top: 0; bottom: 0; width: 50%; margin: 0; padding: 0 20px; border: 0; background: none; cursor: pointer; display: flex; align-items: center; color: #222; -webkit-tap-highlight-color: transparent; }
+.flipbook__hit--prev { left: 0; justify-content: flex-start; }
+.flipbook__hit--next { right: 0; justify-content: flex-end; }
+.flipbook__hit:disabled { cursor: default; }
+.flipbook__arrow { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.88); box-shadow: 0 2px 10px rgba(0,0,0,.08); opacity: 0; transform: scale(.9); transition: opacity .3s ease, transform .3s ease; }
+.flipbook.is-ready .flipbook__arrow { opacity: .9; transform: none; }
+.flipbook.is-ready .flipbook__hit:hover .flipbook__arrow, .flipbook__hit:focus-visible .flipbook__arrow { opacity: 1; transform: scale(1.06); }
+.flipbook__hit:disabled .flipbook__arrow { opacity: 0 !important; }
+.flipbook__hit:focus-visible { outline: none; }
+.flipbook__hit:focus-visible .flipbook__arrow { outline: 2px solid #222; outline-offset: 2px; }
+.flipbook.is-ready .flipbook__hit--next:not(:disabled) .flipbook__arrow { animation: flipbook-nudge 1.6s ease-in-out 3; }
+.flipbook.is-touched .flipbook__hit--next .flipbook__arrow { animation: none; }
+@keyframes flipbook-nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
+.flipbook__hint { position: absolute; left: 50%; bottom: 18px; margin: 0; transform: translate(-50%, 6px); padding: 8px 14px; border-radius: 999px; background: rgba(255,255,255,.9); box-shadow: 0 2px 10px rgba(0,0,0,.08); font-size: 13px; line-height: 1.2; color: #333; white-space: nowrap; opacity: 0; transition: opacity .4s ease, transform .4s ease; pointer-events: none; }
+.flipbook.is-ready .flipbook__hint { opacity: 1; transform: translate(-50%, 0); }
+.flipbook.is-touched .flipbook__hint { opacity: 0; transform: translate(-50%, 6px); }
+.flipbook__count { position: absolute; right: 18px; bottom: 18px; margin: 0; font-size: 12px; color: #777; opacity: 0; transition: opacity .4s ease; pointer-events: none; }
+.flipbook.is-touched .flipbook__count { opacity: 1; }
+@media (max-width: 760px) {
+  .flipbook, .mockup, .spread--framed { border-radius: 12px; }
+  .flipbook__arrow { width: 36px; height: 36px; }
+  .flipbook__hit { padding: 0 10px; }
+  .flipbook__hint { bottom: 10px; font-size: 12px; padding: 6px 12px; }
+}
+@media (hover: none) { .flipbook__hint::before { content: ""; } }
