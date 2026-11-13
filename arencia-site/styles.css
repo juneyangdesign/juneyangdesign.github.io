@@ -541,7 +541,7 @@ a { color: inherit; text-decoration: none; }
 .duo-panel > figure { margin: 0; display: flex; flex-direction: column; gap: 12px; }
 .duo-panel img { width: 100%; height: auto; border-radius: 16px; background: #fffaf0; }
 .caption { color: var(--black-60); font-size: 15px; line-height: 1.4; }
-.grid-panel { display: grid; justify-items: center; padding: 64px; border-radius: 16px; background: #fffaf0; }
+.grid-panel { display: grid; justify-items: center; padding: 64px; border-radius: 16px; background: var(--surface); }
 .grid-panel img { width: 100%; height: auto; }
 .grid-panel .grid-panel__grid { width: 50%; border-radius: 12px; }
 .list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
