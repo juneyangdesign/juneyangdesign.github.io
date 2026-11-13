@@ -423,3 +423,9 @@ a { color: inherit; text-decoration: none; }
 }
 .next a { display: inline-flex; gap: 12px; align-items: baseline; }
 .next a:hover .heading { color: var(--black-60); }
+
+/* Design system sheet */
+.design-system { display: flex; flex-direction: column; gap: 40px; margin-top: 56px; }
+.sheet-panel { padding: 48px; background: var(--surface); border-radius: 16px; }
+.sheet-panel__img { display: block; width: 100%; height: auto; border-radius: 12px; }
+@media (max-width: 720px) { .sheet-panel { padding: 16px; } .design-system { margin-top: 24px; } }
