@@ -83,7 +83,6 @@ a { color: inherit; text-decoration: none; }
   transition: transform .4s ease;
 }
 .project__media--skyn { background: #fefefe; }
-.project__media--cmugpt img { object-fit: contain; }
 .project:hover .project__media img { transform: scale(1.02); }
 .project__title {
   margin-top: 25px;
