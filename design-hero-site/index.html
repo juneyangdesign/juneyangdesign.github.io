@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=3">
+  <link rel="stylesheet" href="styles.css?v=5">
   <script>
     // Scale the 1920px design to the window width, same as the other case studies.
     (function () {
@@ -34,7 +34,8 @@
     <section class="overview" aria-label="Project overview">
       <div class="overview__details">
         <p class="overview__label">Details</p>
-        <p>Timeline: Spring 2026<br>
+        <p>Course: Sophomore C Studio, Carnegie Mellon School of Design<br>
+          Timeline: Spring 2026<br>
           Role: Designer (individual project)<br>
           Deliverables: Poster, booklet, motion piece<br>
           Tools: Illustrator, InDesign, After Effects</p>
@@ -152,6 +153,32 @@
             </div>
             <video class="motion" src="videos/motion.mp4?v=1" poster="images/motion-poster.jpg?v=2" width="1920" height="1080" controls playsinline preload="metadata"
               aria-label="Motion piece about Na Kim: footage of her collecting and organizing material, with animated type and primary-colored shapes, ending in her exhibition"></video>
+            <div class="stills">
+              <figure class="still">
+                <img src="images/motion-still-1.jpg" width="1280" height="720" loading="lazy" alt="Na Kim in her studio with the words "collect things." beside her">
+                <figcaption><span class="still__time">0:05</span> Her own words open the film, set in Instrument Serif from the booklet.</figcaption>
+              </figure>
+              <figure class="still">
+                <img src="images/motion-still-2.jpg" width="1280" height="720" loading="lazy" alt="The word "again" in focus inside a camera frame, surrounded by blurred text">
+                <figcaption><span class="still__time">0:15</span> A camera frame scans a wall of text and flashes on “again and again.”</figcaption>
+              </figure>
+              <figure class="still">
+                <img src="images/motion-still-3.jpg" width="1280" height="720" loading="lazy" alt="A pile of red, blue, yellow and black cards with words like "collect" and "things"">
+                <figcaption><span class="still__time">0:24</span> The photos pile up into a collection of colored cards.</figcaption>
+              </figure>
+              <figure class="still">
+                <img src="images/motion-still-4.jpg" width="1280" height="720" loading="lazy" alt="Na Kim at her desk with red, yellow, orange and blue shapes floating around her">
+                <figcaption><span class="still__time">0:38</span> Her shapes and colors gather around her as she works.</figcaption>
+              </figure>
+              <figure class="still">
+                <img src="images/motion-still-5.jpg" width="1280" height="720" loading="lazy" alt="A room with windows, shelves and plants rebuilt entirely from flat blue, red and yellow shapes">
+                <figcaption><span class="still__time">0:51</span> Her home at LOOM is rebuilt from the simple shapes she uses.</figcaption>
+              </figure>
+              <figure class="still">
+                <img src="images/motion-still-6.jpg" width="1280" height="720" loading="lazy" alt="Na Kim walking past a wall of framed prints in her exhibition">
+                <figcaption><span class="still__time">1:06</span> The shapes settle into frames and fade to reveal her exhibition.</figcaption>
+              </figure>
+            </div>
           </div>
         </section>
 
@@ -185,6 +212,21 @@
     </div>
   </main>
 
+  <script>
+    // Click a key-moment still to jump the motion piece to that moment.
+    (function () {
+      var v = document.querySelector('video.motion');
+      if (!v) return;
+      Array.prototype.forEach.call(document.querySelectorAll('.still'), function (fig) {
+        var t = fig.querySelector('.still__time').textContent.split(':');
+        var secs = (+t[0]) * 60 + (+t[1]);
+        fig.setAttribute('role', 'button'); fig.setAttribute('tabindex', '0');
+        function go() { v.currentTime = Math.max(secs - 1, 0); v.scrollIntoView({ behavior: 'smooth', block: 'center' }); var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+        fig.addEventListener('click', go);
+        fig.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+      });
+    })();
+  </script>
   <script>
     // Respect reduced motion: keep the flip-through on its poster frame.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
