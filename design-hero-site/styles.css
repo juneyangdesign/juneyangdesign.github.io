@@ -487,13 +487,9 @@ a { color: inherit; text-decoration: none; }
 .spread { display: block; width: 100%; height: auto; }
 .mockup { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #f1f0ee; }
 .motion { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #000; }
-.stills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px var(--gutter); margin-top: 8px; }
-.still { margin: 0; display: flex; flex-direction: column; gap: 12px; cursor: pointer; }
-.still:hover img, .still:focus-visible img { opacity: .85; }
-.still img { display: block; width: 100%; height: auto; }
-.still figcaption { font-size: var(--label-size); line-height: 1.5; color: var(--black-60); }
-.still__time { color: #999999; margin-right: 6px; font-variant-numeric: tabular-nums; }
+.clips { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gutter); margin-top: 8px; }
+.clip { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #000; }
 @media (max-width: 760px) {
-  .stills { grid-template-columns: 1fr 1fr; gap: 20px 12px; }
+  .clips { gap: 12px; }
   .panel--poster img { width: 80%; }
 }
