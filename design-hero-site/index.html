@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=7">
+  <link rel="stylesheet" href="styles.css?v=8">
   <script>
     // Scale the 1920px design to the window width, same as the other case studies.
     (function () {
@@ -136,12 +136,11 @@
                 <video class="flipbook__v is-shown" src="videos/booklet-turns.mp4?v=1" poster="images/booklet-flip-poster.jpg?v=1" width="1920" height="1080" muted playsinline preload="auto" aria-hidden="true"></video>
                 <video class="flipbook__v" src="videos/booklet-turns-back.mp4?v=1" width="1920" height="1080" muted playsinline preload="auto" aria-hidden="true"></video>
                 <button type="button" class="flipbook__hit flipbook__hit--prev" aria-label="Previous page" disabled>
-                  <span class="flipbook__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  <span class="flipbook__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
                 </button>
                 <button type="button" class="flipbook__hit flipbook__hit--next" aria-label="Next page">
-                  <span class="flipbook__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  <span class="flipbook__arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
                 </button>
-                <p class="flipbook__hint" aria-hidden="true">Tap right to turn the page · left to go back</p>
                 <p class="flipbook__count" aria-live="polite"><span class="flipbook__now">Cover</span></p>
               </div>
               <img class="spread spread--framed" src="images/booklet-overview.jpg?v=2" width="3096" height="2075" loading="lazy"
@@ -269,9 +268,6 @@
         if (e.key === 'ArrowRight') { e.preventDefault(); user(1); }
         if (e.key === 'ArrowLeft') { e.preventDefault(); user(-1); }
       });
-      if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-        book.querySelector('.flipbook__hint').textContent = 'Click right to turn the page · left to go back';
-      }
       update();
       var intro = false;
       function startIntro() {
