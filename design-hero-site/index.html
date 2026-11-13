@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=2">
+  <link rel="stylesheet" href="styles.css?v=3">
   <script>
     // Scale the 1920px design to the window width, same as the other case studies.
     (function () {
@@ -130,6 +130,8 @@
               <p class="body">My early spreads read more like posters than a book, so I reset with a consistent three-column grid, Futura paired with Instrument Serif, one main color per spread and numbered captions. Her work stays unaltered and in focus. The covers carry over the poster’s square and quarter-circle modules, with her objects in black and white.</p>
             </div>
             <div class="gallery">
+              <video class="mockup" src="videos/booklet-flip.mp4?v=1" poster="images/booklet-flip-poster.jpg?v=1" width="1920" height="1080" autoplay muted loop playsinline preload="auto"
+                aria-label="Flip-through of the booklet: the cover opens and each spread turns in order, from the contents to the exhibition spread, then it closes on the back cover"></video>
               <div class="panel panel--covers">
                 <img src="images/booklet-01.jpg" width="1000" height="1272" loading="lazy" alt="Booklet front cover: a pattern of squares and quarter circles with Na Kim's objects in black and white and her name in the corner">
                 <img src="images/booklet-09.jpg" width="1000" height="1272" loading="lazy" alt="Booklet back cover continuing the module pattern and objects">
@@ -191,6 +193,12 @@
     </div>
   </main>
 
+  <script>
+    // Respect reduced motion: keep the flip-through on its poster frame.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      Array.prototype.forEach.call(document.querySelectorAll('video.mockup'), function (v) { v.removeAttribute('autoplay'); v.pause(); });
+    }
+  </script>
   <script>
     // Highlight the sidebar link for the section currently in view.
     (function () {
