@@ -531,7 +531,12 @@ a { color: inherit; text-decoration: none; }
 .feeds__after { grid-column: 5; }
 .feeds figure { margin: 0; display: flex; flex-direction: column; gap: 12px; }
 .feeds__pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gutter); }
-.feeds img { width: 100%; height: auto; border-radius: 16px; }
+.feeds { padding: 56px 64px; border-radius: 16px; background: var(--surface); }
+.feeds .caption { text-align: center; }
+/* Simple phone frame around a full-screen screenshot */
+.phone { position: relative; padding: 3.2%; border-radius: 14% / 6.5%; background: #1a1a1a; box-shadow: 0 0 0 1.5px #3a3a3a inset, 0 18px 40px rgba(0,0,0,.14); }
+.phone img { display: block; width: 100%; height: auto; border-radius: 11% / 5.1%; }
+.phone::after { content: ""; position: absolute; top: 4.6%; left: 50%; width: 29%; height: 3.3%; transform: translateX(-50%); background: #000; border-radius: 999px; }
 .duo-panel { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gutter); }
 .duo-panel > figure { margin: 0; display: flex; flex-direction: column; gap: 12px; }
 .duo-panel img { width: 100%; height: auto; border-radius: 16px; background: #fffaf0; }
@@ -558,7 +563,8 @@ a.link { text-decoration: underline; text-underline-offset: 3px; }
   .duo-panel, .video-row { grid-template-columns: 1fr; }
   .feeds { grid-template-columns: 1fr; gap: 32px; }
   .feeds__before, .feeds__after { grid-column: 1; }
-  .feeds__after img { width: calc((100% - 12px) / 2); }
+  .feeds { padding: 24px; }
+  .feeds__after .phone { width: calc((100% - 12px) / 2); }
   .feeds__pair { gap: 12px; }
   .grid-panel .grid-panel__grid { width: 90%; }
   .grid-panel { padding: 24px; }
