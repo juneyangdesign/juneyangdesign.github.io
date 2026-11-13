@@ -541,9 +541,6 @@ a { color: inherit; text-decoration: none; }
 .duo-panel > figure { margin: 0; display: flex; flex-direction: column; gap: 12px; }
 .duo-panel img { width: 100%; height: auto; border-radius: 16px; background: #fffaf0; }
 .caption { color: var(--black-60); font-size: 15px; line-height: 1.4; }
-.grid-panel { display: grid; justify-items: center; padding: 64px; border-radius: 16px; background: var(--surface); }
-.grid-panel img { width: 100%; height: auto; }
-.grid-panel .grid-panel__grid { width: 50%; border-radius: 12px; }
 .list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
 .list li { font-size: 16px; line-height: 1.45; color: var(--black-60); }
 .card .label + .list { margin-top: -4px; }
@@ -588,4 +585,22 @@ a.link { text-decoration: underline; text-underline-offset: 3px; }
   .competitor__photos { grid-template-columns: repeat(3, 1fr); gap: 12px; }
   .competitor__photos img:nth-child(n+4) { display: none; }
   .competitor__card { grid-template-columns: 1fr; gap: 16px; }
+}
+
+/* Post grid, split by brand value: photos sit above the direction they followed */
+.directions { display: flex; flex-direction: column; gap: 56px; }
+.direction { display: flex; flex-direction: column; gap: 20px; padding-top: 32px; border-top: 1px solid var(--black-10, #e6e6e6); }
+.direction__head { display: grid; grid-template-columns: 40px auto 1fr; align-items: baseline; gap: 12px; }
+.direction__head .body { color: var(--black-60); }
+.direction__grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 32px 16px; }
+.direction__group { margin: 0; grid-column: span var(--n); display: flex; flex-direction: column; gap: 14px; }
+.direction__photos { display: grid; grid-template-columns: repeat(var(--n), 1fr); gap: 16px; }
+.direction__photos img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 12px; display: block; }
+.direction__title { margin: 0 0 6px; font-size: 17px; font-weight: 500; }
+@media (max-width: 760px) {
+  .direction__head { grid-template-columns: auto 1fr; }
+  .direction__head .body { grid-column: 1 / -1; }
+  .direction__grid { grid-template-columns: 1fr; }
+  .direction__group { grid-column: auto; }
+  .direction__photos { grid-template-columns: repeat(2, 1fr); }
 }
