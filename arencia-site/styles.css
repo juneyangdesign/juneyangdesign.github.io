@@ -538,7 +538,7 @@ a { color: inherit; text-decoration: none; }
 .caption { color: var(--black-60); font-size: 15px; line-height: 1.4; }
 .grid-panel { display: grid; justify-items: center; padding: 64px; border-radius: 16px; background: #fffaf0; }
 .grid-panel img { width: 100%; height: auto; }
-.grid-panel .grid-panel__grid { width: 46%; }
+.grid-panel .grid-panel__grid { width: 50%; border-radius: 12px; }
 .list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
 .list li { font-size: 16px; line-height: 1.45; color: var(--black-60); }
 .card .label + .list { margin-top: -4px; }
