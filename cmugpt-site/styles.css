@@ -477,3 +477,6 @@ a { color: inherit; text-decoration: none; }
 #reflection .row { margin-top: 24px; }
 .row--3 { grid-template-columns: repeat(3, 1fr); }
 @media (max-width: 760px) { .row--3 { grid-template-columns: 1fr; } }
+
+/* Testing results: quotes sit under the stat cards */
+.testing-quotes { margin-top: 40px; }
