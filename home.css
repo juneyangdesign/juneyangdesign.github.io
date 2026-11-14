@@ -112,12 +112,12 @@ a { color: inherit; text-decoration: none; }
   list-style: none;
 }
 .project__tags li {
-  padding: 5px 14px;
-  border: 1px solid #e2e2e2;
+  padding: 4px 12px;
+  border: 1px solid #ebe8e2;
   border-radius: 999px;
-  color: var(--black-60);
-  font-size: 15px;
-  line-height: 20px;
+  color: #9b9b9b;
+  font-size: 14px;
+  line-height: 18px;
 }
 .project:hover .project__title { color: var(--black-60); }
 .project:focus-visible { outline: 2px solid var(--black); outline-offset: 8px; border-radius: 20px; }
@@ -150,7 +150,7 @@ a { color: inherit; text-decoration: none; }
   .project__title { margin-top: 16px; font-size: 22px; line-height: 28px; }
   .project__desc { font-size: 15px; }
   .project__tags { margin-top: 12px; gap: 6px; }
-  .project__tags li { padding: 4px 12px; font-size: 13px; line-height: 18px; }
+  .project__tags li { padding: 3px 10px; font-size: 12px; line-height: 17px; }
   .intro__title, .intro__now, .intro__past, .project__desc { text-wrap: balance; }
 }
 
