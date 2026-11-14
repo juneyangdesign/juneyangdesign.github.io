@@ -592,15 +592,20 @@ a.link { text-decoration: underline; text-underline-offset: 3px; }
 .direction { display: flex; flex-direction: column; gap: 20px; padding-top: 32px; border-top: 1px solid var(--black-10, #e6e6e6); }
 .direction__head { display: grid; grid-template-columns: 40px auto 1fr; align-items: baseline; gap: 12px; }
 .direction__head .body { color: var(--black-60); }
-.direction__grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 32px 16px; }
-.direction__group { margin: 0; grid-column: span var(--n); display: flex; flex-direction: column; gap: 14px; }
-.direction__photos { display: grid; grid-template-columns: repeat(var(--n), 1fr); gap: 16px; }
-.direction__photos img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 12px; display: block; }
+.direction__grid { display: flex; flex-direction: column; gap: 20px; }
+/* One row per direction: photos on the left, a callout line (like the Bark annotations) to the note on the right */
+.direction__group { margin: 0; display: flex; align-items: center; }
+.direction__photos { display: grid; grid-template-columns: repeat(var(--n), 164px); gap: 12px; flex: none; }
+.direction__photos img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 10px; display: block; }
+.direction__line { flex: 1; min-width: 48px; height: 1px; margin: 0 16px; background: #999; position: relative; }
+.direction__line::before { content: ""; position: absolute; left: -2.5px; top: -2px; width: 5px; height: 5px; border-radius: 50%; background: #999; }
+.direction__group figcaption { width: 280px; flex: none; }
 .direction__title { margin: 0 0 6px; font-size: 17px; font-weight: 500; }
 @media (max-width: 760px) {
   .direction__head { grid-template-columns: auto 1fr; }
   .direction__head .body { grid-column: 1 / -1; }
-  .direction__grid { grid-template-columns: 1fr; }
-  .direction__group { grid-column: auto; }
+  .direction__group { flex-direction: column; align-items: stretch; gap: 14px; }
+  .direction__line { display: none; }
+  .direction__group figcaption { width: auto; }
   .direction__photos { grid-template-columns: repeat(2, 1fr); }
 }
