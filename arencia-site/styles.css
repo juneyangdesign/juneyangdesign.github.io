@@ -546,12 +546,10 @@ a { color: inherit; text-decoration: none; }
 .list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
 .list li { font-size: 16px; line-height: 1.45; color: var(--black-60); }
 .card .label + .list { margin-top: -4px; }
-.steps { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 28px; counter-reset: s; }
-.steps li { display: grid; grid-template-columns: 32px 1fr; gap: 4px 12px; counter-increment: s; }
-.steps li::before { content: counter(s); color: var(--black-60); font-size: 14px; line-height: 1.9; }
-.steps .body + .body { grid-column: 2; }
-.steps li > * { grid-column: 2; }
-.steps li > :first-child { grid-row: 1; }
+/* Video steps: numbered like the cards across the site ("01" above the text, in the .number style) */
+.steps { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 32px; counter-reset: s; }
+.steps li { display: flex; flex-direction: column; gap: 8px; counter-increment: s; }
+.steps li::before { content: counter(s, decimal-leading-zero); color: var(--black-60); font-size: 14px; line-height: normal; }
 .video-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--text-gap); align-items: center; }
 /* Phone mockup matches skyn-site's .phone__frame exactly */
 .video-frame { display: flex; justify-content: center; padding: 64px 24px 48px; border-radius: 16px; background: var(--surface); }
