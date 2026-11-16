@@ -591,18 +591,17 @@ a.link { text-decoration: underline; text-underline-offset: 3px; }
 }
 
 /* Post grid, split by brand value: photos sit above the direction they followed */
-.directions { display: flex; flex-direction: column; gap: 56px; }
-.direction { display: flex; flex-direction: column; gap: 20px; padding-top: 32px; border-top: 1px solid var(--black-10, #e6e6e6); }
-.direction__head { display: grid; grid-template-columns: 40px auto 1fr; align-items: baseline; gap: 12px; }
+.directions { display: flex; flex-direction: column; gap: 80px; margin-top: 16px; }
+.direction { display: flex; flex-direction: column; gap: 32px; padding-top: 40px; border-top: 1px solid var(--black-10, #e6e6e6); }
+.direction__head { display: flex; flex-direction: column; gap: 8px; }
+.direction__head .number { margin-bottom: 4px; }
 .direction__head .body { color: var(--black-60); }
-.direction__grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 32px 16px; }
-.direction__group { margin: 0; grid-column: span var(--n); display: flex; flex-direction: column; gap: 14px; }
-.direction__photos { display: grid; grid-template-columns: repeat(var(--n), 1fr); gap: 16px; }
+.direction__grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 48px var(--gutter); }
+.direction__group { margin: 0; grid-column: span var(--n); display: flex; flex-direction: column; gap: 20px; }
+.direction__photos { display: grid; grid-template-columns: repeat(var(--n), 1fr); gap: var(--gutter); }
 .direction__photos img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 12px; display: block; }
-.direction__title { margin: 0 0 6px; font-size: 17px; font-weight: 500; }
+.direction__title { margin: 0 0 10px; font-size: 17px; font-weight: 500; }
 @media (max-width: 760px) {
-  .direction__head { grid-template-columns: auto 1fr; }
-  .direction__head .body { grid-column: 1 / -1; }
   .direction__grid { grid-template-columns: 1fr; }
   .direction__group { grid-column: auto; }
   .direction__photos { grid-template-columns: repeat(2, 1fr); }
