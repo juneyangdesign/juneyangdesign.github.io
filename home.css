@@ -159,3 +159,9 @@ a { color: inherit; text-decoration: none; }
 .project__hover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .35s ease, transform .4s ease; pointer-events: none; }
 .project.is-playing .project__hover { opacity: 1; }
 .project:hover .project__hover { transform: scale(1.02); }
+
+.site-header { justify-content: space-between; align-items: center; }
+.site-logo { display: block; line-height: 0; }
+.site-logo img { height: 40px; width: auto; }
+.site-logo:hover { opacity: 0.6; }
+@media (max-width: 640px) { .site-logo img { height: 30px; } }
