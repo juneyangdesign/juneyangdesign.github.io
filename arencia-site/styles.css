@@ -531,7 +531,8 @@ a { color: inherit; text-decoration: none; }
 .feeds { display: grid; grid-template-columns: 1fr var(--gutter) 1fr var(--text-gap) 1fr; }
 .feeds__before { grid-column: 1 / 4; }
 .feeds__after { grid-column: 5; }
-.feeds figure { margin: 0; display: flex; flex-direction: column; gap: 12px; }
+.feeds figure { margin: 0; display: flex; flex-direction: column; gap: 16px; }
+.feeds figcaption { order: 2; }   /* label sits under the phones */
 .feeds__pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gutter); }
 .feeds { padding: 56px 64px; border-radius: 16px; background: var(--surface); }
 .feeds .caption { text-align: center; }
