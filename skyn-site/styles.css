@@ -233,7 +233,7 @@ a { color: inherit; text-decoration: none; }
 .phone { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 24px; }
 .phone__frame { position: relative; width: 300px; padding: 10px; border-radius: 52px; background: #1a1a1c; box-shadow: 0 0 0 2px #c9c6cc, 0 24px 48px rgba(40, 30, 60, 0.12); }
 .phone__frame::after { content: ""; position: absolute; top: 20px; left: 50%; width: 88px; height: 26px; margin-left: -44px; border-radius: 13px; background: #000; } /* dynamic island */
-.phone__screen { display: block; width: 100%; height: auto; border-radius: 42px; background: #fff; }
+.phone__screen { display: block; width: 100%; height: auto; aspect-ratio: 590 / 1278; object-fit: cover; border-radius: 42px; background: #1a1a1c; }  /* dark behind the video so no light edge shows at the rounded corners */
 .phone { transition: opacity .4s ease; }
 .phone.is-waiting { opacity: .45; } /* the two demos take turns; the one not playing waits faded on its first frame */
 
