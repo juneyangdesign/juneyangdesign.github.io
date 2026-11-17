@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About — June Yang</title>
+  <meta name="description" content="June Yang is a junior at Carnegie Mellon studying Communication Design and Human-Computer Interaction, working across UX design, product design and brand marketing.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hedvig+Letters+Serif:opsz@12..24&family=Inter:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="home.css?v=h9">
+  <style>
+    /* About page: same header, type and spacing tokens as the home page (home.css) */
+    .about { margin-top: 200px; padding-left: 3px; max-width: 760px; }
+    .about__lede { margin-top: 13px; font-size: 18px; line-height: 28px; color: var(--black-60); }
+    .about__body { margin-top: 56px; display: flex; flex-direction: column; gap: 24px; }
+    .about__body p { font-size: 18px; line-height: 30px; }
+    @media (max-width: 1023px) { .about { margin-top: 120px; padding-left: 0; } }
+    @media (max-width: 640px) {
+      .about { margin-top: 72px; }
+      .about__lede { margin-top: 16px; font-size: 15px; line-height: 24px; }
+      .about__body { margin-top: 40px; gap: 20px; }
+      .about__body p { font-size: 16px; line-height: 26px; }
+    }
+  </style>
+  <script>
+    // Scale the 1920px design to the window width, same as the home page.
+    (function () {
+      function fit() {
+        var w = window.innerWidth;
+        document.documentElement.style.setProperty('--fit', w >= 1024 ? Math.min(w / 1920, 1) : 1);
+      }
+      fit();
+      window.addEventListener('resize', fit);
+    })();
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav" aria-label="Main">
+      <a href="index.html">Work</a>
+      <a href="about.html" aria-current="page">About</a>
+      <a href="#">Connect</a>
+    </nav>
+  </header>
+
+  <main class="home">
+    <section class="about" aria-label="About June">
+      <h1 class="intro__title">Hi, I’m June!</h1>
+      <p class="about__lede">I love creating things that bring joy to people :)</p>
+      <div class="about__body">
+        <p>I’m interested in how design can solve real problems and make everyday experiences better. I especially enjoy putting myself in other people’s shoes, understanding what they need, and coming up with creative ways to make things easier and more enjoyable.</p>
+        <p>I’m currently a junior at Carnegie Mellon University studying Communication Design and Human-Computer Interaction. I’ve had the chance to explore my interests through projects in UX design, product design, and brand marketing. I love that each gives me a different way to think about problems and create something that people can connect with.</p>
+        <p>Outside of school and design projects, I still love creating things just for fun, whether that’s a carefully curated Spotify playlist or Pinterest board. I also love exploring new cafés and bakeries for a sweet treat and spending time with my amazing friends!</p>
+      </div>
+    </section>
+  </main>
+  <script src="scroll-fade.js?v=1"></script>
+</body>
+</html>
