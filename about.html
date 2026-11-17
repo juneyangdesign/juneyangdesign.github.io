@@ -19,8 +19,9 @@
     .exp { margin-top: 160px; }
     .exp__title { font-family: var(--font-serif); font-size: 32px; line-height: 1.3; }
     .exp__list { margin: 32px 0 0; padding: 0; list-style: none; border-top: 1px solid #e6e6e6; }
-    .exp__item { display: grid; grid-template-columns: 56px 300px 1fr auto; align-items: center; gap: 24px; padding: 20px 0; border-bottom: 1px solid #e6e6e6; }
-    .exp__logo { width: 56px; height: 56px; border-radius: 14px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-size: 20px; }
+    .exp__item { display: grid; grid-template-columns: 120px 300px 1fr auto; align-items: center; gap: 24px; padding: 20px 0; border-bottom: 1px solid #e6e6e6; }
+    .exp__logo { width: 120px; height: 64px; border-radius: 14px; background: #fff; border: 1px solid #ececec; display: flex; align-items: center; justify-content: center; padding: 10px 14px; }
+    .exp__logo img { max-width: 100%; max-height: 100%; width: auto; height: auto; display: block; }
     .exp__org { font-size: 20px; line-height: 1.3; }
     .exp__org span { display: block; font-size: 15px; color: var(--black-60); }
     .exp__role { font-size: 18px; color: var(--black-60); }
@@ -28,8 +29,8 @@
     @media (max-width: 760px) {
       .exp { margin-top: 96px; }
       .exp__title { font-size: 26px; }
-      .exp__item { grid-template-columns: 48px 1fr; gap: 6px 16px; }
-      .exp__logo { width: 48px; height: 48px; grid-row: span 3; align-self: start; }
+      .exp__item { grid-template-columns: 96px 1fr; gap: 6px 16px; }
+      .exp__logo { width: 96px; height: 52px; padding: 8px 10px; grid-row: span 3; align-self: start; }
       .exp__org { font-size: 18px; }
       .exp__role { font-size: 16px; }
       .exp__date { justify-self: start; font-size: 14px; margin-top: 4px; }
@@ -92,31 +93,31 @@
       <h2 class="exp__title" id="exp-title">Experience</h2>
       <ul class="exp__list">
         <li class="exp__item">
-          <span class="exp__logo" aria-hidden="true">A</span>
+          <span class="exp__logo"><img src="images/logos/arencia.png?v=1" alt="Arencia logo"></span>
           <p class="exp__org">Arencia</p>
           <p class="exp__role">Creative Marketing Intern</p>
           <p class="exp__date">Summer 2026</p>
         </li>
         <li class="exp__item">
-          <span class="exp__logo" aria-hidden="true">AP</span>
+          <span class="exp__logo"><img src="images/logos/amorepacific.png?v=1" alt="AMOREPACIFIC logo"></span>
           <p class="exp__org">AMOREPACIFIC</p>
           <p class="exp__role">Global Marketing Intern</p>
           <p class="exp__date">Summer 2025</p>
         </li>
         <li class="exp__item">
-          <span class="exp__logo" aria-hidden="true">C</span>
+          <span class="exp__logo"><img src="images/logos/cmu.png?v=1" alt="Carnegie Mellon University logo"></span>
           <p class="exp__org">Carnegie Mellon University<span>Human-Computer Interaction Institute</span></p>
           <p class="exp__role">Research Assistant</p>
           <p class="exp__date">Aug 2026 – Present</p>
         </li>
         <li class="exp__item">
-          <span class="exp__logo" aria-hidden="true">C</span>
+          <span class="exp__logo"><img src="images/logos/cmu.png?v=1" alt="Carnegie Mellon University logo"></span>
           <p class="exp__org">Carnegie Mellon University<span>School of Design</span></p>
           <p class="exp__role">Teaching Assistant</p>
           <p class="exp__date">Aug 2026 – Present</p>
         </li>
         <li class="exp__item">
-          <span class="exp__logo" aria-hidden="true">S</span>
+          <span class="exp__logo"><img src="images/logos/scottylabs.png?v=1" alt="ScottyLabs logo"></span>
           <p class="exp__org">ScottyLabs</p>
           <p class="exp__role">UI/UX Designer, Lead Designer for Bark</p>
           <p class="exp__date">Aug 2024 – Present</p>
