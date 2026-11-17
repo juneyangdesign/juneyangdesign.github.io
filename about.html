@@ -16,6 +16,24 @@
     .about__lede { margin-top: 13px; font-size: 18px; line-height: 28px; color: var(--black-60); }
     .about__body { margin-top: 56px; display: flex; flex-direction: column; gap: 24px; }
     .about__body p { font-size: 18px; line-height: 30px; }
+    .exp { margin-top: 160px; }
+    .exp__title { font-family: var(--font-serif); font-size: 32px; line-height: 1.3; }
+    .exp__list { margin: 32px 0 0; padding: 0; list-style: none; border-top: 1px solid #e6e6e6; }
+    .exp__item { display: grid; grid-template-columns: 56px 300px 1fr auto; align-items: center; gap: 24px; padding: 20px 0; border-bottom: 1px solid #e6e6e6; }
+    .exp__logo { width: 56px; height: 56px; border-radius: 14px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-family: var(--font-serif); font-size: 20px; }
+    .exp__org { font-size: 20px; line-height: 1.3; }
+    .exp__org span { display: block; font-size: 15px; color: var(--black-60); }
+    .exp__role { font-size: 18px; color: var(--black-60); }
+    .exp__date { font-size: 15px; padding: 6px 14px; border-radius: 999px; background: var(--surface); white-space: nowrap; }
+    @media (max-width: 760px) {
+      .exp { margin-top: 96px; }
+      .exp__title { font-size: 26px; }
+      .exp__item { grid-template-columns: 48px 1fr; gap: 6px 16px; }
+      .exp__logo { width: 48px; height: 48px; grid-row: span 3; align-self: start; }
+      .exp__org { font-size: 18px; }
+      .exp__role { font-size: 16px; }
+      .exp__date { justify-self: start; font-size: 14px; margin-top: 4px; }
+    }
     @media (max-width: 1023px) { .about { margin-top: 120px; padding-left: 0; grid-template-columns: 1fr; } .about__photo { max-width: 420px; } }
     @media (max-width: 640px) {
       .about { margin-top: 72px; }
@@ -57,6 +75,41 @@
       </div>
       </div>
       <img class="about__photo" src="about-june.jpg?v=1" width="1080" height="1440" alt="June smiling and holding her internship certificate at the end of her AMOREPACIFIC internship">
+    </section>
+    <section class="exp" aria-labelledby="exp-title">
+      <h2 class="exp__title" id="exp-title">Experience</h2>
+      <ul class="exp__list">
+        <li class="exp__item">
+          <span class="exp__logo" aria-hidden="true">A</span>
+          <p class="exp__org">Arencia</p>
+          <p class="exp__role">Creative Marketing Intern</p>
+          <p class="exp__date">Summer 2026</p>
+        </li>
+        <li class="exp__item">
+          <span class="exp__logo" aria-hidden="true">AP</span>
+          <p class="exp__org">AMOREPACIFIC</p>
+          <p class="exp__role">Global Marketing Intern</p>
+          <p class="exp__date">Summer 2025</p>
+        </li>
+        <li class="exp__item">
+          <span class="exp__logo" aria-hidden="true">C</span>
+          <p class="exp__org">Carnegie Mellon University<span>Human-Computer Interaction Institute</span></p>
+          <p class="exp__role">Research Assistant</p>
+          <p class="exp__date">Aug 2026 – Present</p>
+        </li>
+        <li class="exp__item">
+          <span class="exp__logo" aria-hidden="true">C</span>
+          <p class="exp__org">Carnegie Mellon University<span>School of Design</span></p>
+          <p class="exp__role">Teaching Assistant</p>
+          <p class="exp__date">Aug 2026 – Present</p>
+        </li>
+        <li class="exp__item">
+          <span class="exp__logo" aria-hidden="true">S</span>
+          <p class="exp__org">ScottyLabs</p>
+          <p class="exp__role">Head of Branding</p>
+          <p class="exp__date">Aug 2024 – Present</p>
+        </li>
+      </ul>
     </section>
   </main>
   <script src="scroll-fade.js?v=1"></script>
