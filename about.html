@@ -11,11 +11,12 @@
   <link rel="stylesheet" href="home.css?v=h9">
   <style>
     /* About page: same header, type and spacing tokens as the home page (home.css) */
-    .about { margin-top: 200px; padding-left: 3px; max-width: 760px; }
+    .about { margin-top: 200px; padding-left: 3px; display: grid; grid-template-columns: minmax(0, 760px) 480px; justify-content: space-between; gap: 64px; align-items: start; }
+    .about__photo { width: 100%; height: auto; border-radius: 16px; display: block; }
     .about__lede { margin-top: 13px; font-size: 18px; line-height: 28px; color: var(--black-60); }
     .about__body { margin-top: 56px; display: flex; flex-direction: column; gap: 24px; }
     .about__body p { font-size: 18px; line-height: 30px; }
-    @media (max-width: 1023px) { .about { margin-top: 120px; padding-left: 0; } }
+    @media (max-width: 1023px) { .about { margin-top: 120px; padding-left: 0; grid-template-columns: 1fr; } .about__photo { max-width: 420px; } }
     @media (max-width: 640px) {
       .about { margin-top: 72px; }
       .about__lede { margin-top: 16px; font-size: 15px; line-height: 24px; }
@@ -46,6 +47,7 @@
 
   <main class="home">
     <section class="about" aria-label="About June">
+      <div>
       <h1 class="intro__title">Hi, I’m June!</h1>
       <p class="about__lede">I love creating things that bring joy to people :)</p>
       <div class="about__body">
@@ -53,6 +55,8 @@
         <p>I’m currently a junior at Carnegie Mellon University studying Communication Design and Human-Computer Interaction. I’ve had the chance to explore my interests through projects in UX design, product design, and brand marketing. I love that each gives me a different way to think about problems and create something that people can connect with.</p>
         <p>Outside of school and design projects, I still love creating things just for fun, whether that’s a carefully curated Spotify playlist or Pinterest board. I also love exploring new cafés and bakeries for a sweet treat and spending time with my amazing friends!</p>
       </div>
+      </div>
+      <img class="about__photo" src="about-june.jpg?v=1" width="1080" height="1440" alt="June smiling and holding her internship certificate at the end of her AMOREPACIFIC internship">
     </section>
   </main>
   <script src="scroll-fade.js?v=1"></script>
