@@ -1,4 +1,4 @@
-/* Shared case-study styles (copied from skyn-site; keep the two in sync) */
+/* Shared case-study styles (copied from skyn; keep the two in sync) */
 
 :root {
   --black: #000;
@@ -525,88 +525,6 @@ a { color: inherit; text-decoration: none; }
   .flipbook__arrow { width: 36px; height: 36px; }
   .flipbook__hit { padding: 0 10px; }
   }
-
-/* ---- Arencia additions ---- */
-/* Feed before (two screenshots) and after (one), at the same post size */
-.feeds { display: grid; grid-template-columns: 2fr 96px 1fr; }   /* panel widths keep all three phones the same size */
-.feeds__before { grid-column: 1; }
-.feeds__after { grid-column: 3; padding-left: 28px !important; padding-right: 28px !important; }
-.feeds__arrow { grid-column: 2; grid-row: 1; display: flex; align-items: center; justify-content: center; color: var(--black-60); }  /* centred on the phones, not their labels */
-.feeds figure { margin: 0; display: flex; flex-direction: column; gap: 16px; }
-.feeds figcaption { order: 2; }   /* label sits under the phones */
-.feeds__pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gutter); }
-/* before and after each sit on their own grey panel, with the arrow between them on the page */
-.feeds__before, .feeds__after { padding: 48px 40px 32px; border-radius: 16px; background: var(--surface); }
-.feeds figcaption { text-align: center; }
-/* Simple phone frame around a full-screen screenshot */
-.phone { position: relative; padding: 3.2%; border-radius: 14% / 6.5%; background: #1a1a1a; box-shadow: 0 0 0 1.5px #3a3a3a inset, 0 18px 40px rgba(0,0,0,.14); }
-.phone img { display: block; width: 100%; height: auto; border-radius: 11% / 5.1%; }
-.phone::after { content: ""; position: absolute; top: 4.6%; left: 50%; width: 29%; height: 3.3%; transform: translateX(-50%); background: #000; border-radius: 999px; }
-.duo-panel { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gutter); }
-.duo-panel > figure { margin: 0; display: flex; flex-direction: column; gap: 12px; }
-.duo-panel img { width: 100%; height: auto; border-radius: 16px; background: #fffaf0; }
-.list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
-.list li { font-size: 16px; line-height: 1.45; color: var(--black-60); }
-.card .label + .list { margin-top: -4px; }
-/* Video steps: numbered like the cards across the site ("01" above the text, in the .number style) */
-.steps { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 32px; counter-reset: s; }
-.steps li { display: flex; flex-direction: column; gap: 8px; counter-increment: s; }
-.steps li::before { content: counter(s, decimal-leading-zero); color: var(--black-60); font-size: 14px; line-height: normal; }
-.video-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--text-gap); align-items: center; }
-/* Phone mockup matches skyn-site's .phone__frame exactly */
-.video-frame { display: flex; justify-content: center; padding: 64px 24px 48px; border-radius: 16px; background: var(--surface); }
-.phone__frame { position: relative; width: 300px; padding: 10px; border-radius: 52px; background: #1a1a1c; box-shadow: 0 0 0 2px #c9c6cc, 0 24px 48px rgba(40, 30, 60, 0.12); }
-.phone__frame::after { content: ""; position: absolute; top: 20px; left: 50%; width: 88px; height: 26px; margin-left: -44px; border-radius: 13px; background: #000; } /* dynamic island */
-.phone__screen { display: block; width: 100%; height: auto; aspect-ratio: 590 / 1278; object-fit: cover; border-radius: 42px; background: #fff; }
-.cards--5 { grid-template-columns: repeat(5, 1fr); }
-.cards--4 { grid-template-columns: repeat(4, 1fr); }
-.stat { gap: 4px; }
-.stat .number { margin-top: 0; padding-top: 0; }
-a.link { text-decoration: underline; text-underline-offset: 3px; }
-/* Competitor campaigns: one row of same-size photos per brand, notes in a grey card below */
-.competitors { display: flex; flex-direction: column; gap: 64px; margin-top: 16px; }
-.competitor { display: flex; flex-direction: column; gap: var(--gutter); }
-.competitor__photos { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--gutter); }
-.competitor__photos img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 12px; background: var(--surface); }
-.competitor__card { display: grid; grid-template-columns: 1fr 1fr; gap: var(--text-gap); align-items: start; }
-.competitor__name { display: flex; flex-direction: column; gap: 12px; }
-@media (max-width: 760px) {
-  .duo-panel, .video-row { grid-template-columns: 1fr; }
-  .feeds { grid-template-columns: 1fr; gap: 32px; }
-  .feeds__before, .feeds__after { grid-column: 1; }
-  .feeds__arrow { grid-column: 1; grid-row: auto; padding: 0; transform: rotate(90deg); }
-  .feeds__before, .feeds__after { padding: 24px 16px 16px !important; }
-  .feeds__after .phone { width: calc((100% - 12px) / 2); }
-  .feeds__pair { gap: 12px; }
-  .grid-panel .grid-panel__grid { width: 90%; }
-  .grid-panel { padding: 24px; }
-  .video-frame { padding: 32px 12px 24px; border-radius: 12px; }
-  .phone__frame { width: 100%; max-width: 220px; padding: 7px; border-radius: 38px; }
-  .phone__frame::after { display: none; }
-  .phone__screen { border-radius: 31px; }
-  .cards--5, .cards--4 { grid-template-columns: 1fr 1fr; }
-  .competitors { gap: 48px; }
-  .competitor__photos { grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .competitor__photos img:nth-child(n+4) { display: none; }
-  .competitor__card { grid-template-columns: 1fr; gap: 16px; }
-}
-
-/* Post grid, split by brand value: photos sit above the direction they followed */
-.directions { display: flex; flex-direction: column; gap: 80px; margin-top: 16px; }
-.direction { display: flex; flex-direction: column; gap: 32px; padding-top: 40px; border-top: 1px solid var(--black-10, #e6e6e6); }
-.direction__head { display: flex; flex-direction: column; gap: 8px; }
-.direction__head .number { margin-bottom: 4px; }
-.direction__head .body { color: var(--black-60); }
-/* Each direction is a row: its notes on the left, its photos on the right, so the text never squeezes under a single photo */
-.direction__grid { display: flex; flex-direction: column; gap: 32px; }
-.direction__group { margin: 0; display: grid; grid-template-columns: 300px 1fr; gap: var(--text-gap); align-items: start; }
-.direction__photos { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gutter); }
-.direction__photos img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 12px; display: block; }
-.direction__title { margin: 0 0 10px; font-size: 17px; font-weight: 500; }
-@media (max-width: 760px) {
-  .direction__group { grid-template-columns: 1fr; gap: 16px; }
-  .direction__photos { grid-template-columns: repeat(2, 1fr); }
-}
 
 .site-header { justify-content: space-between; align-items: center; }
 .site-logo { display: block; line-height: 0; }
