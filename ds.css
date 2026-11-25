@@ -1,0 +1,55 @@
+/* June Yang design system — shared tokens.
+   Same system as the resume: Figtree for text, DM Mono for small labels,
+   and the indigo → violet → orchid gradient (rose as a secondary accent).
+   Pages link this file before their own stylesheet and read only these variables. */
+
+:root {
+  /* Brand colors (500 = the swatch from Figma) */
+  --indigo-50:  #efeef9;
+  --indigo-100: #dddaf3;
+  --indigo-500: #6254c3;
+  --indigo-600: #5548a8;
+  --indigo-700: #483d8e;
+  --violet-500: #9b5cf6;
+  --orchid-500: #d17ae6;
+  --rose-500:   #e796bb;
+  --rose-50:    #fcf1f6;
+
+  /* Neutrals */
+  --ink:        #161616;  /* headings, body */
+  --ink-2:      #3d3d3d;  /* long-form body */
+  --muted:      #7a7a7a;  /* supporting text, labels */
+  --line:       #e6e6e6;  /* hairlines */
+  --surface:    #f5f5f7;  /* image wells, chips */
+  --bg:         #ffffff;
+
+  /* Roles */
+  --link:       var(--indigo-600);
+  --link-hover: var(--indigo-700);
+  --tag-bg:     var(--indigo-50);
+  --tag-fg:     var(--indigo-600);
+  --focus:      var(--indigo-500);
+  --gradient:   linear-gradient(90deg, var(--indigo-500), var(--violet-500) 55%, var(--orchid-500));
+
+  /* Type */
+  --font-sans: "Figtree", system-ui, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, monospace;
+}
+
+/* Gradient text, e.g. the title under a name */
+.ds-gradient {
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Small monospace section label, e.g. EXPERIENCE / SELECTED WORK */
+.ds-label {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
