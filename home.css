@@ -63,20 +63,24 @@ body { position: relative; }
   pointer-events: none;
   z-index: -1;
 }
-.intro { position: relative; }
-.intro::before {
+.intro__text { position: relative; align-self: flex-start; }
+/* Haze sized from the text block itself: an even margin all round, solid white right behind
+   the words, then a long, gentle fade out to the tiles */
+.intro__text::before {
   content: "";
   position: absolute;
-  left: -440px; top: -14%; bottom: 14%;
-  width: min(1780px, 112%);
-  background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255, 255, 255, .97) 42%, rgba(255, 255, 255, .7) 68%, rgba(255, 255, 255, 0) 100%);
-  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
-  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 50%, transparent 100%);
-  mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 50%, transparent 100%);
+  inset: -200px -300px -200px -280px;
+  background: radial-gradient(ellipse 50% 50% at 50% 50%,
+    rgba(255, 255, 255, .96) 0%, rgba(255, 255, 255, .94) 48%,
+    rgba(255, 255, 255, .78) 64%, rgba(255, 255, 255, .45) 80%,
+    rgba(255, 255, 255, .15) 92%, rgba(255, 255, 255, 0) 100%);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 55%, rgba(0, 0, 0, .6) 78%, transparent 100%);
+  mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 55%, rgba(0, 0, 0, .6) 78%, transparent 100%);
   pointer-events: none;
   z-index: -1;
 }
-.intro > * { position: relative; }
+.intro__text > * { position: relative; }
 .intro {
   min-height: calc(100vh / var(--fit, 1) - 140px);
   display: flex;
@@ -183,7 +187,7 @@ body { position: relative; }
 @media (max-width: 1023px) {
   :root { --side: 40px; }
   .intro { padding-left: 0; min-height: calc(100svh - 130px); }
-  .intro::before { left: -60px; width: calc(100% + 120px); top: 0; bottom: -4%; }
+  .intro__text::before { inset: -90px -70px -90px -70px; }
   .intro__title { font-size: 40px; }
   .work-head { margin-top: 0; }
   .work { margin-top: 40px; column-gap: 32px; }
