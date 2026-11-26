@@ -64,21 +64,20 @@ body { position: relative; }
   z-index: -1;
 }
 .intro__text { position: relative; align-self: flex-start; }
-/* Haze sized from the text block itself: a soft-edged rectangle that hugs the text — solid
-   white behind the words, feathering out gently on every side (no oval) */
+/* Haze sized from the text block itself. --ox/--oy: how far it reaches past the text;
+   --fx/--fy: how long the fade is. The fade is longer than the reach, so it starts a little
+   inside the text and eases out well beyond it. Whiter in the middle, lighter at the edges,
+   so it reads as the tiles softening around the words rather than a box. */
+.intro__text { --ox: 300px; --oy: 210px; --fx: 380px; --fy: 280px; }
 .intro__text::before {
   content: "";
   position: absolute;
-  inset: -150px -220px -150px -200px;
-  background: rgba(255, 255, 255, .95);
-  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-  -webkit-mask-image:
-    linear-gradient(to right, transparent, rgba(0,0,0,.35) 60px, rgba(0,0,0,.8) 130px, #000 200px, #000 calc(100% - 200px), rgba(0,0,0,.8) calc(100% - 130px), rgba(0,0,0,.35) calc(100% - 60px), transparent),
-    linear-gradient(to bottom, transparent, rgba(0,0,0,.35) 45px, rgba(0,0,0,.8) 95px, #000 140px, #000 calc(100% - 140px), rgba(0,0,0,.8) calc(100% - 95px), rgba(0,0,0,.35) calc(100% - 45px), transparent);
+  inset: calc(var(--oy) * -1) calc(var(--ox) * -1);
+  background: radial-gradient(ellipse 55% 60% at 45% 50%, rgba(255, 255, 255, .95), rgba(255, 255, 255, .82));
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0) calc(var(--fx) * 0), rgba(0,0,0,0.03) calc(var(--fx) * 0.12), rgba(0,0,0,0.1) calc(var(--fx) * 0.25), rgba(0,0,0,0.26) calc(var(--fx) * 0.4), rgba(0,0,0,0.48) calc(var(--fx) * 0.55), rgba(0,0,0,0.7) calc(var(--fx) * 0.7), rgba(0,0,0,0.88) calc(var(--fx) * 0.85), rgba(0,0,0,1) calc(var(--fx) * 1), rgba(0,0,0,1) calc(100% - var(--fx) * 1), rgba(0,0,0,0.88) calc(100% - var(--fx) * 0.85), rgba(0,0,0,0.7) calc(100% - var(--fx) * 0.7), rgba(0,0,0,0.48) calc(100% - var(--fx) * 0.55), rgba(0,0,0,0.26) calc(100% - var(--fx) * 0.4), rgba(0,0,0,0.1) calc(100% - var(--fx) * 0.25), rgba(0,0,0,0.03) calc(100% - var(--fx) * 0.12), rgba(0,0,0,0) calc(100% - var(--fx) * 0)), linear-gradient(to bottom, rgba(0,0,0,0) calc(var(--fy) * 0), rgba(0,0,0,0.03) calc(var(--fy) * 0.12), rgba(0,0,0,0.1) calc(var(--fy) * 0.25), rgba(0,0,0,0.26) calc(var(--fy) * 0.4), rgba(0,0,0,0.48) calc(var(--fy) * 0.55), rgba(0,0,0,0.7) calc(var(--fy) * 0.7), rgba(0,0,0,0.88) calc(var(--fy) * 0.85), rgba(0,0,0,1) calc(var(--fy) * 1), rgba(0,0,0,1) calc(100% - var(--fy) * 1), rgba(0,0,0,0.88) calc(100% - var(--fy) * 0.85), rgba(0,0,0,0.7) calc(100% - var(--fy) * 0.7), rgba(0,0,0,0.48) calc(100% - var(--fy) * 0.55), rgba(0,0,0,0.26) calc(100% - var(--fy) * 0.4), rgba(0,0,0,0.1) calc(100% - var(--fy) * 0.25), rgba(0,0,0,0.03) calc(100% - var(--fy) * 0.12), rgba(0,0,0,0) calc(100% - var(--fy) * 0));
   -webkit-mask-composite: source-in;
-  mask-image:
-    linear-gradient(to right, transparent, rgba(0,0,0,.35) 60px, rgba(0,0,0,.8) 130px, #000 200px, #000 calc(100% - 200px), rgba(0,0,0,.8) calc(100% - 130px), rgba(0,0,0,.35) calc(100% - 60px), transparent),
-    linear-gradient(to bottom, transparent, rgba(0,0,0,.35) 45px, rgba(0,0,0,.8) 95px, #000 140px, #000 calc(100% - 140px), rgba(0,0,0,.8) calc(100% - 95px), rgba(0,0,0,.35) calc(100% - 45px), transparent);
+  mask-image: linear-gradient(to right, rgba(0,0,0,0) calc(var(--fx) * 0), rgba(0,0,0,0.03) calc(var(--fx) * 0.12), rgba(0,0,0,0.1) calc(var(--fx) * 0.25), rgba(0,0,0,0.26) calc(var(--fx) * 0.4), rgba(0,0,0,0.48) calc(var(--fx) * 0.55), rgba(0,0,0,0.7) calc(var(--fx) * 0.7), rgba(0,0,0,0.88) calc(var(--fx) * 0.85), rgba(0,0,0,1) calc(var(--fx) * 1), rgba(0,0,0,1) calc(100% - var(--fx) * 1), rgba(0,0,0,0.88) calc(100% - var(--fx) * 0.85), rgba(0,0,0,0.7) calc(100% - var(--fx) * 0.7), rgba(0,0,0,0.48) calc(100% - var(--fx) * 0.55), rgba(0,0,0,0.26) calc(100% - var(--fx) * 0.4), rgba(0,0,0,0.1) calc(100% - var(--fx) * 0.25), rgba(0,0,0,0.03) calc(100% - var(--fx) * 0.12), rgba(0,0,0,0) calc(100% - var(--fx) * 0)), linear-gradient(to bottom, rgba(0,0,0,0) calc(var(--fy) * 0), rgba(0,0,0,0.03) calc(var(--fy) * 0.12), rgba(0,0,0,0.1) calc(var(--fy) * 0.25), rgba(0,0,0,0.26) calc(var(--fy) * 0.4), rgba(0,0,0,0.48) calc(var(--fy) * 0.55), rgba(0,0,0,0.7) calc(var(--fy) * 0.7), rgba(0,0,0,0.88) calc(var(--fy) * 0.85), rgba(0,0,0,1) calc(var(--fy) * 1), rgba(0,0,0,1) calc(100% - var(--fy) * 1), rgba(0,0,0,0.88) calc(100% - var(--fy) * 0.85), rgba(0,0,0,0.7) calc(100% - var(--fy) * 0.7), rgba(0,0,0,0.48) calc(100% - var(--fy) * 0.55), rgba(0,0,0,0.26) calc(100% - var(--fy) * 0.4), rgba(0,0,0,0.1) calc(100% - var(--fy) * 0.25), rgba(0,0,0,0.03) calc(100% - var(--fy) * 0.12), rgba(0,0,0,0) calc(100% - var(--fy) * 0));
   mask-composite: intersect;
   pointer-events: none;
   z-index: -1;
@@ -190,7 +189,7 @@ body { position: relative; }
 @media (max-width: 1023px) {
   :root { --side: 40px; }
   .intro { padding-left: 0; min-height: calc(100svh - 130px); }
-  .intro__text::before { inset: -100px -60px -100px -60px; }
+  .intro__text { --ox: 70px; --oy: 120px; --fx: 110px; --fy: 170px; }
   .intro__title { font-size: 40px; }
   .work-head { margin-top: 0; }
   .work { margin-top: 40px; column-gap: 32px; }
