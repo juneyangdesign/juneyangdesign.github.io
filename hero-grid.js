@@ -1,6 +1,6 @@
 /* Hero grid. Two looks, set by data-mode on the canvas: "squares" or the default glyphs.
    Squares: pink tiles with thin gaps. Moving the cursor sends smooth rings outward that tip the
-   tiles near it and fade within a few tiles; tiles under the cursor warm to a deep pink. Mostly
+   tiles near it and fade within a few tiles; tiles under the cursor shade from rose to indigo. Mostly
    white by default; after a moment without hovering the pinks come up and soft color drifts and
    rings move across the grid (color only, no tile motion).
    Glyphs: a quiet field of tiny gray marks that bloom into the brand palette
@@ -16,7 +16,8 @@
   // Anything else: the glyph field.
   var SQUARES = canvas.getAttribute('data-mode') === 'squares';
   // Tile tints lean rose/orchid with a little violet and indigo
-  var TINTS = ['#f08cc4', '#ee8fc3', '#e796bb', '#f39bcd', '#ea7fbd', '#f5a3cf'].map(function (h) {
+  // Resting tile tints from the design system: rose, orchid, violet and indigo (ds.css)
+  var TINTS = ['#e796bb', '#e796bb', '#d17ae6', '#d17ae6', '#9b5cf6', '#8178d6', '#6254c3'].map(function (h) {
     return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
   });
 
@@ -76,7 +77,8 @@
   }
 
   // Tile colors: about a quarter white, the rest pink at varied strengths
-  function pinkAlpha(r) { return r < 0.24 ? 0 : 0.14 + Math.pow((r - 0.24) / 0.76, 1.3) * 0.66; }
+  // more tiles stay white, and tinted ones stay light
+  function pinkAlpha(r) { return r < 0.42 ? 0 : 0.1 + Math.pow((r - 0.42) / 0.58, 1.4) * 0.42; }
   function reroll(c) { c.tt = TINTS[Math.floor(Math.random() * TINTS.length)]; c.at = pinkAlpha(Math.random()); }
   function easeColor(c, k) { // drift toward a new pink over about a second and a half
     var f = 1 - Math.pow(0.97, k);
@@ -87,7 +89,16 @@
   // Spread: the cursor tints the tiles under it a deeper pink, and that color soaks outward
   // to neighboring tiles (a simple diffusion), fading as it travels. No movement, no bounce.
   var cols = 0, rows = 0, next = [], lastT = 0, STEP = 1000 / 60;
-  var DEEP = [196, 44, 128]; // deep pink under the cursor
+  // Ripple / cursor color ramp, light to dark: rose → orchid → violet → indigo. Each stop is
+  // lifted a little toward white so even the darkest point stays soft.
+  var RAMP = [[231, 150, 187], [209, 122, 230], [155, 92, 246], [98, 84, 195]].map(function (c) {
+    return c.map(function (v) { return v + (255 - v) * 0.18; });
+  });
+  function rampColor(x) { // x: 0..1
+    x = Math.max(0, Math.min(1, x)) * (RAMP.length - 1);
+    var i = Math.min(RAMP.length - 2, Math.floor(x)), f = x - i, a = RAMP[i], b = RAMP[i + 1];
+    return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
+  }
   // Ripples: each cursor movement sends out one smooth ring that travels outward and fades
   // steadily (no sloshing back). A tile tips toward the ring as it arrives and away as it
   // passes, so a soft crest rolls across the grid. Timed in milliseconds, so it looks the same
@@ -190,8 +201,16 @@
     var a = c.a * (0.16 + 0.84 * idleMix), tc = c.tc || c.tint;
     var r = 255 + (tc[0] - 255) * a, g = 255 + (tc[1] - 255) * a, b = 255 + (tc[2] - 255) * a;
     var e = Math.min(1, c.e * 1.3);
-    var deep = Math.max(e * 0.92, (c.re || 0) * 0.45);
-    r += (DEEP[0] - r) * deep; g += (DEEP[1] - g) * deep; b += (DEEP[2] - b) * deep;
+    // under the cursor the tile walks down the ramp (rose at the edge, indigo at the center);
+    // idle color rings use the lighter half of the ramp
+    var ring = c.re || 0, mixA = Math.min(1, e * 1.5), mixB = ring * 0.5;
+    if (mixA >= mixB && mixA > 0) {
+      var col = rampColor(e);
+      r += (col[0] - r) * mixA; g += (col[1] - g) * mixA; b += (col[2] - b) * mixA;
+    } else if (mixB > 0) {
+      var col2 = rampColor(ring * 0.55);
+      r += (col2[0] - r) * mixB; g += (col2[1] - g) * mixB; b += (col2[2] - b) * mixB;
+    }
     var h = gap / 2 - 1.25; // a thin, even gap between tiles
     var gx = c.gx || 0, gy = c.gy || 0, mag = Math.sqrt(gx * gx + gy * gy);
     // the ripple only shows around the cursor and its short trail (where the pink has spread)
