@@ -48,6 +48,7 @@ a { color: inherit; text-decoration: none; }
 /* Hero fills the first screen: header + intro + "Selected work" label = 100vh */
 body { position: relative; }
 .hero-grid { position: absolute; top: 0; left: 0; width: 100%; height: 100vh; pointer-events: none; z-index: 0; }
+.hero-grid[data-mode="squares"] { -webkit-mask-image: linear-gradient(#000 82%, transparent); mask-image: linear-gradient(#000 82%, transparent); }
 .site-header, .home { position: relative; z-index: 1; }
 /* Soft haze + blur behind the nav and the intro text, so the tiles melt away near the words
    (same idea as the fade at the bottom of the window) */

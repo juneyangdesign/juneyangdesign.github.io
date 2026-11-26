@@ -61,36 +61,9 @@
         });
       }
     }
-    // Where the text sits (headline, meta items), and where the header strip ends
-    var cr = canvas.getBoundingClientRect(), boxes = [];
-    var hdr = document.querySelector('.site-header'), top = 0;
-    if (hdr) { var hr0 = hdr.getBoundingClientRect(); top = (hr0.bottom - cr.top) / (cr.height / H); }
-    Array.prototype.forEach.call(document.querySelectorAll('.intro__title, .intro__meta > div'), function (el) {
-      var r = el.getBoundingClientRect();
-      boxes.push([(r.left - cr.left) / (cr.width / W), (r.top - cr.top) / (cr.height / H), (r.right - cr.left) / (cr.width / W), (r.bottom - cr.top) / (cr.height / H)]);
-    });
     for (var m0 = 0; m0 < cells.length; m0++) { var cm = cells[m0]; cm.at = cm.a; cm.tt = cm.tint; cm.tc = cm.tint.slice(); }
-    // Tiles fade out smoothly as they approach the text (fully clear right behind it)
-    for (var n = 0; n < cells.length; n++) {
-      var c0 = cells[n], dmin = 1e9;
-      for (var bI = 0; bI < boxes.length; bI++) {
-        var bx = boxes[bI];
-        var ex = Math.max(bx[0] - c0.x, 0, c0.x - bx[2]), ey = Math.max(bx[1] - c0.y, 0, c0.y - bx[3]);
-        dmin = Math.min(dmin, Math.sqrt(ex * ex + ey * ey));
-      }
-      // Organic edge: each tile fades at its own point (random + a slow wobble), so the clear
-      // area around the text dissolves unevenly instead of forming a box
-      var wob = Math.sin(c0.x * 0.011 + c0.y * 0.004) * 0.5 + Math.sin(c0.y * 0.017 - c0.x * 0.006) * 0.5;
-      var jit = (c0.nz - 0.5) * gap * 2.4 + wob * gap * 0.9;
-      var f0 = Math.max(0, Math.min(1, (dmin + jit - gap * 0.4) / (gap * 2.6)));
-      // the same dissolve along the bottom edge
-      var fb = Math.max(0, Math.min(1, ((H - c0.y) + (c0.nz - 0.5) * gap * 2 - gap * 0.6) / (gap * 2.4)));
-      // the header strip stays white; tiles come in unevenly just below it
-      var ft = Math.max(0, Math.min(1, ((c0.y - top) + (c0.nz - 0.5) * gap * 2 - gap * 0.2) / (gap * 2.4)));
-      // near the text tiles stay faintly visible: the CSS haze above them blurs and softens them
-      var tf = 0.3 + 0.7 * f0 * f0 * (3 - 2 * f0);
-      c0.dim = tf * fb * fb * (3 - 2 * fb) * ft * ft * (3 - 2 * ft);
-    }
+    // Full grid everywhere: the CSS haze softens the tiles behind the nav and the text
+    for (var n = 0; n < cells.length; n++) cells[n].dim = 1;
     if (old.length === cells.length) for (var k = 0; k < cells.length; k++) { var ok = old[k], nk = cells[k]; nk.e = ok.e; nk.a = ok.a; nk.at = ok.at; nk.tt = ok.tt; nk.tc = ok.tc; }
 
     var rect = canvas.getBoundingClientRect();
