@@ -36,10 +36,15 @@ body { background: var(--bg); color: var(--ink); }
 .sidebar a.is-active { color: var(--pink-600); }
 .divider::before, .divider::after { border-top-color: var(--line); }
 
-/* Text cards */
+/* Text cards: a neutral hairline by default. The gradient outline is kept for the
+   story's answers: solutions, key insights and the highlighted "ours" card. */
 .card {
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+.pair > .card:last-child, .card--key {
   background: var(--card-line);
-  border: 1px solid transparent;
+  border-color: transparent;
 }
 /* the highlighted card in a comparison (e.g. "skyn" vs other apps): stronger ring + faint wash */
 .compare--ours {
