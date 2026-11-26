@@ -97,8 +97,9 @@
   var WAVE_SPEED = 0.16, WAVE_DAMP = 0.03;
   function wave(spd, idleDrop) {
     var n = cells.length, i, c;
-    if (spd > 0.2) {
-      var RR = gap * 1.15, push = Math.min(spd, 26) * 0.05;
+    // ignore the tiny jitter of a hovering hand; only real movement pushes the water
+    if (spd > 2) {
+      var RR = gap * 1.15, push = (Math.min(spd, 26) - 2) * 0.055;
       for (i = 0; i < n; i++) {
         c = cells[i];
         var dx = c.x - ptr.x, dy = c.y - ptr.y, d = Math.sqrt(dx * dx + dy * dy);
@@ -118,7 +119,10 @@
       var xi = i % cols, yi = (i / cols) | 0, hc = cells[i].h;
       var hl = xi > 0 ? cells[i - 1].h : hc, hr = xi < cols - 1 ? cells[i + 1].h : hc;
       var hu = yi > 0 ? cells[i - cols].h : hc, hd = yi < rows - 1 ? cells[i + cols].h : hc;
-      cells[i].gx = (hr - hl) / 2; cells[i].gy = (hd - hu) / 2;
+      // each tile eases toward the slope under it rather than snapping to it (no shimmer)
+      var cc = cells[i];
+      cc.gx += ((hr - hl) / 2 - cc.gx) * 0.1;
+      cc.gy += ((hd - hu) / 2 - cc.gy) * 0.1;
     }
   }
 
@@ -169,7 +173,7 @@
     ctx.fillStyle = 'rgb(' + (r | 0) + ',' + (g | 0) + ',' + (b | 0) + ')';
     if (th < 0.015) { ctx.fillRect(c.x - h, c.y - h, h * 2, h * 2); return; }
     var dx = gx / mag, dy = gy / mag, cs = Math.cos(th), sn = Math.sin(th);
-    var twist = th * 0.18 * (c.spin > 0 ? 1 : -1), rc = Math.cos(twist), rs = Math.sin(twist);
+    var twist = th * 0.12 * (c.spin > 0 ? 1 : -1), rc = Math.cos(twist), rs = Math.sin(twist);
     var k = 1 - 0.06 * th; // tipped tiles shrink a touch, opening a soft gap
     ctx.beginPath();
     var corners = [[-h, -h], [h, -h], [h, h], [-h, h]];
