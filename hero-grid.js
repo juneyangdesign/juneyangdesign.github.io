@@ -62,7 +62,7 @@
     }
     // Tiles behind the intro text stay faint so the headline reads cleanly
     var cr = canvas.getBoundingClientRect(), boxes = [];
-    Array.prototype.forEach.call(document.querySelectorAll('.intro__title, .intro__meta, .site-header'), function (el) {
+    Array.prototype.forEach.call(document.querySelectorAll('.intro__title, .intro__meta > div, .site-logo, .site-nav'), function (el) {
       var r = el.getBoundingClientRect();
       boxes.push([(r.left - cr.left) / (cr.width / W), (r.top - cr.top) / (cr.height / H), (r.right - cr.left) / (cr.width / W), (r.bottom - cr.top) / (cr.height / H)]);
     });
