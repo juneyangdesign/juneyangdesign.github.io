@@ -109,3 +109,7 @@ body { background: var(--bg); color: var(--ink); }
 @media (max-width: 720px) {
   .card--split { display: flex; padding: 28px; }
 }
+
+/* Framed sheets (style guide): just the sheet with a thin hairline, like the cards */
+.sheet-panel { padding: 0; background: none; border-radius: 16px; }
+.sheet-panel__img { border: 1px solid var(--line); border-radius: 16px; }
