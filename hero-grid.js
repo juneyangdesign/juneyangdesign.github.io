@@ -15,32 +15,71 @@
   // data-mode="squares": soft tinted tiles that tilt and go white around the cursor.
   // Anything else: the glyph field.
   var SQUARES = canvas.getAttribute('data-mode') === 'squares';
-  // Tile color schemes. Pick with data-palette on the canvas, or add #blue / #pink to the URL
-  // to compare. Each: resting tints (main color ~3/4, the other as an accent) and the ripple
-  // ramp from its pale edge to its deepest point.
+  // Tile color schemes. data-palette on the canvas: "shift" (cycle pink → purple → blue), or a
+  // single scheme. #pink / #purple / #blue / #shift in the URL overrides it, for comparing.
+  // Each: resting tints (main color ~3/4, the others as accents) and the ripple ramp from its
+  // pale edge to its deepest point.
   function rgb(h) { return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]; }
   var SCHEMES = {
-    blue: { // blue main, pink accents
-      tints: ['#6b8cf5', '#6b8cf5', '#6b8cf5', '#6b8cf5', '#6b8cf5', '#6b8cf5', '#6b8cf5', '#6b8cf5', '#6b8cf5', '#f472d0', '#f472d0', '#f472d0'],
-      ramp: [[244, 214, 246], [170, 188, 250], [120, 150, 245], [95, 125, 236]]
-    },
-    pink: { // pink main, blue accents
-      tints: ['#f472d0', '#f472d0', '#f472d0', '#f472d0', '#f472d0', '#f472d0', '#f472d0', '#f472d0', '#f472d0', '#6b8cf5', '#6b8cf5', '#6b8cf5'],
+    pink: { // pink main, blue and purple accents
+      tints: ['#f472d0', '#f472d0', '#f472d0', '#f472d0', '#f472d0', '#f472d0', '#f472d0', '#f472d0', '#f472d0', '#6b8cf5', '#6b8cf5', '#a78bfa'],
       ramp: [[251, 212, 240], [246, 160, 222], [238, 120, 205], [170, 140, 240]]
+    },
+    purple: { // purple main, pink and blue accents
+      tints: ['#a78bfa', '#a78bfa', '#a78bfa', '#a78bfa', '#a78bfa', '#a78bfa', '#a78bfa', '#a78bfa', '#a78bfa', '#f472d0', '#f472d0', '#6b8cf5'],
+      ramp: [[240, 220, 250], [200, 180, 250], [167, 139, 250], [130, 120, 240]]
+    },
+    blue: { // blue main, pink and purple accents
+      tints: ['#6b8cf5', '#6b8cf5', '#6b8cf5', '#6b8cf5', '#6b8cf5', '#6b8cf5', '#6b8cf5', '#6b8cf5', '#6b8cf5', '#f472d0', '#f472d0', '#a78bfa'],
+      ramp: [[244, 214, 246], [170, 188, 250], [120, 150, 245], [95, 125, 236]]
     }
   };
+  var CYCLE = ['pink', 'purple', 'blue'], HOLD = 14000, SWEEP = 5000; // ms per color, ms per change
+  var shifting = false, cyc = 0, nextShift = 0, sweepStart = -1e9, rampFrom = null, rampTo = null;
   var TINTS, RAMP;
   function schemeName() {
-    var h = (location.hash || '').slice(1);
-    return SCHEMES[h] ? h : (SCHEMES[canvas.getAttribute('data-palette')] ? canvas.getAttribute('data-palette') : 'blue');
+    var h = (location.hash || '').slice(1), d = canvas.getAttribute('data-palette');
+    if (h === 'shift' || SCHEMES[h]) return h;
+    return d === 'shift' || SCHEMES[d] ? d : 'blue';
+  }
+  function liftRamp(r) { // lift each stop well toward white so the hover never gets too dark
+    return r.map(function (c) { return c.map(function (v) { return v + (255 - v) * 0.3; }); });
   }
   function useScheme(name) {
+    shifting = name === 'shift' && !reduce;
+    if (name === 'shift') {
+      cyc = Math.floor(Math.random() * CYCLE.length); // each visit starts somewhere different
+      name = CYCLE[cyc];
+      nextShift = performance.now() + HOLD;
+    }
     var sc = SCHEMES[name];
     TINTS = sc.tints.map(rgb);
-    // each ramp stop is lifted well toward white, so the hover never gets too dark
-    RAMP = sc.ramp.map(function (c) { return c.map(function (v) { return v + (255 - v) * 0.3; }); });
+    RAMP = liftRamp(sc.ramp); rampFrom = rampTo = RAMP;
     // existing tiles drift to the new colors (same tile keeps the same slot in the list)
-    for (var i = 0; i < cells.length; i++) cells[i].tt = TINTS[Math.floor(cells[i].pick * TINTS.length)];
+    for (var i = 0; i < cells.length; i++) { cells[i].tt = TINTS[Math.floor(cells[i].pick * TINTS.length)]; cells[i].sw = 0; }
+  }
+  // Move to the next main color: tiles pick up the new tint in a soft sweep from left to
+  // right (with a little randomness), and the ripple colors blend across over the same time.
+  function shiftStep(t) {
+    if (!shifting) return;
+    if (t >= nextShift) {
+      cyc = (cyc + 1) % CYCLE.length;
+      var sc = SCHEMES[CYCLE[cyc]];
+      TINTS = sc.tints.map(rgb);
+      rampFrom = RAMP; rampTo = liftRamp(sc.ramp);
+      sweepStart = t; nextShift = t + HOLD;
+      for (var i = 0; i < cells.length; i++) {
+        var c = cells[i];
+        c.sw = t + (c.x / (W || 1)) * SWEEP * 0.75 + c.nz * SWEEP * 0.25;
+      }
+    }
+    for (var j = 0; j < cells.length; j++) {
+      var cj = cells[j];
+      if (cj.sw && t >= cj.sw) { cj.tt = TINTS[Math.floor(cj.pick * TINTS.length)]; cj.sw = 0; }
+    }
+    var f = Math.max(0, Math.min(1, (t - sweepStart) / SWEEP));
+    if (f < 1) RAMP = rampFrom.map(function (a, k) { return a.map(function (v, m) { return v + (rampTo[k][m] - v) * f; }); });
+    else RAMP = rampTo;
   }
 
   var PALETTE = ['#f472d0', '#ee6bd2', '#a78bfa', '#6b8cf5', '#a5b4fc'].map(function (h) {
@@ -79,7 +118,7 @@
           rot: rand(i, j, 3) * Math.PI,
           spin: rand(i, j, 4) - 0.5,
           pick: rand(i, j, 5), tint: TINTS[Math.floor(rand(i, j, 5) * TINTS.length)],
-          a: pinkAlpha(rand(i, j, 6)), dim: 1, nz: rand(i, j, 7), gx: 0, gy: 0, re: 0,
+          a: pinkAlpha(rand(i, j, 6)), dim: 1, nz: rand(i, j, 7), sw: 0, gx: 0, gy: 0, re: 0,
           e: 0
         });
       }
@@ -305,6 +344,7 @@
       pvx = (ptr.tx - ptr.x) * f; pvy = (ptr.ty - ptr.y) * f;
       ptr.x += pvx; ptr.y += pvy;
       if (!reduce) {
+        shiftStep(t);
         colorRings(t, idle, k);
         spread(t, idle, Math.sqrt(pvx * pvx + pvy * pvy) / k, k);
         for (var q = 0; q < cells.length; q++) { if (Math.random() < 0.0004 * k) reroll(cells[q]); easeColor(cells[q], k); }
