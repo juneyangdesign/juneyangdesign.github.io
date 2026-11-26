@@ -1,7 +1,7 @@
 /* Hero grid. Two looks, set by data-mode on the canvas: "squares" or the default glyphs.
    Squares: flush pink tiles floating on a water surface. Around the cursor (and its short trail)
-   tiles ripple, tilting with the slope under them, and warm to a deeper pink. When idle, slow rings
-   of color spread across the grid and fade.
+   tiles ripple, tilting with the slope under them, and warm to a deep pink. Mostly white by default;
+   after a moment without hovering the pinks come up, a ghost ripple wanders and color rings spread.
    Glyphs: a quiet field of tiny gray marks that bloom into the brand palette
    around the cursor and fade out behind it, leaving a short trail. When the pointer is
    idle (or on touch screens) a soft bloom drifts slowly on its own. Static for people who
@@ -60,20 +60,23 @@
         });
       }
     }
-    // Tiles behind the intro text stay faint so the headline reads cleanly
+    // Where the text sits (logo, nav, headline, meta items)
     var cr = canvas.getBoundingClientRect(), boxes = [];
     Array.prototype.forEach.call(document.querySelectorAll('.intro__title, .intro__meta > div, .site-logo, .site-nav'), function (el) {
       var r = el.getBoundingClientRect();
       boxes.push([(r.left - cr.left) / (cr.width / W), (r.top - cr.top) / (cr.height / H), (r.right - cr.left) / (cr.width / W), (r.bottom - cr.top) / (cr.height / H)]);
     });
     for (var m0 = 0; m0 < cells.length; m0++) { var cm = cells[m0]; cm.at = cm.a; cm.tt = cm.tint; cm.tc = cm.tint.slice(); }
+    // Tiles fade out smoothly as they approach the text (fully clear right behind it)
     for (var n = 0; n < cells.length; n++) {
-      var c0 = cells[n], h0 = gap / 2, dim = 1;
+      var c0 = cells[n], dmin = 1e9;
       for (var bI = 0; bI < boxes.length; bI++) {
         var bx = boxes[bI];
-        if (c0.x + h0 > bx[0] - 12 && c0.x - h0 < bx[2] + 12 && c0.y + h0 > bx[1] - 8 && c0.y - h0 < bx[3] + 8) dim = 0.3;
+        var ex = Math.max(bx[0] - c0.x, 0, c0.x - bx[2]), ey = Math.max(bx[1] - c0.y, 0, c0.y - bx[3]);
+        dmin = Math.min(dmin, Math.sqrt(ex * ex + ey * ey));
       }
-      c0.dim = dim;
+      var f0 = Math.max(0, Math.min(1, (dmin - gap * 0.15) / (gap * 2.2)));
+      c0.dim = f0 * f0 * (3 - 2 * f0);
     }
     if (old.length === cells.length) for (var k = 0; k < cells.length; k++) { var ok = old[k], nk = cells[k]; nk.e = ok.e; nk.a = ok.a; nk.at = ok.at; nk.tt = ok.tt; nk.tc = ok.tc; }
 
@@ -97,7 +100,7 @@
   // Spread: the cursor tints the tiles under it a deeper pink, and that color soaks outward
   // to neighboring tiles (a simple diffusion), fading as it travels. No movement, no bounce.
   var cols = 0, rows = 0, next = [], lastDrop = 0, lastT = 0, acc = 0, STEP = 1000 / 60;
-  var DEEP = [212, 66, 146];
+  var DEEP = [196, 44, 128]; // deep pink under the cursor
   // Water surface: a damped 2D wave on the tile grid. Moving the cursor presses the surface
   // down under it; the dip travels outward as smooth rings and dies away.
   var WAVE_SPEED = 0.16, WAVE_DAMP = 0.03;
@@ -137,9 +140,12 @@
   }
 
   // When nobody is hovering, slow rings of deeper pink spread out from random spots and fade.
-  var rings = [], lastRing = 0, idleMix = 0, RING_SPEED = 0.09, RING_LIFE = 7000;
+  var rings = [], lastRing = 0, idleMix = 0, idleStart = 0, RING_SPEED = 0.09, RING_LIFE = 7000;
   function colorRings(t, idle) {
-    idleMix += ((idle ? 1 : 0) - idleMix) * 0.02;
+    // effects begin after ~1.5s without hovering, ease in over ~2s, and ease out on hover
+    if (!idle) idleStart = t;
+    var on = idle && t - idleStart > 1500;
+    idleMix += ((on ? 1 : 0) - idleMix) * (on ? 0.008 : 0.04);
     if (idleMix > 0.3 && t - lastRing > 2200 + Math.random() * 1800) {
       lastRing = t;
       rings.push({ x: W * (0.15 + Math.random() * 0.8), y: H * (0.1 + Math.random() * 0.8), t: t });
@@ -163,13 +169,14 @@
   function spread(t, idle, spd) {
     var n = cells.length, i, c, idleDrop = null;
     if (next.length !== n) next = new Array(n);
-    // inject under the cursor
-    if (!idle) {
+    // inject under the cursor, or under the wandering "ghost" while idle
+    var amt = idle ? idleMix * 0.85 : 1;
+    if (amt > 0.02) {
       var RR = gap * 1.6;
       for (i = 0; i < n; i++) {
         c = cells[i];
         var dx = c.x - ptr.x, dy = c.y - ptr.y, d = Math.sqrt(dx * dx + dy * dy);
-        if (d < RR) { var want = Math.pow(1 - d / RR, 1.2); if (want > c.e) c.e += (want - c.e) * 0.25; }
+        if (d < RR) { var want = Math.min(1, Math.pow(1 - d / RR, 1.1) * 1.4) * amt; if (want > c.e) c.e += (want - c.e) * 0.5; }
       }
     }
     // diffuse to the four neighbors, then fade
@@ -179,10 +186,10 @@
       if (x < cols - 1) { sum += cells[i + 1].e; cnt++; }
       if (y > 0) { sum += cells[i - cols].e; cnt++; }
       if (y < rows - 1) { sum += cells[i + cols].e; cnt++; }
-      next[i] = (e + 0.16 * (sum - cnt * e)) * 0.982;
+      next[i] = (e + 0.11 * (sum - cnt * e)) * 0.986;
     }
     for (i = 0; i < n; i++) cells[i].e = next[i] < 0.002 ? 0 : next[i];
-    wave(idle ? 0 : spd, idleDrop);
+    wave(idle ? 2 + 5 * idleMix : spd, idleDrop);
   }
 
   // Tiles sit close with a thin gap. Each one tilts with the slope of the water under it, so the motion rolls
@@ -190,22 +197,25 @@
   // upper left, so slopes facing it brighten a little and slopes facing away dim.
   var P = 560, MAX_TILT = 0.55, TILT_GAIN = 3.2;
   function tile(c) {
-    var a = c.a * c.dim, tc = c.tc || c.tint;
+    if (c.dim < 0.01) return;
+    ctx.globalAlpha = c.dim;
+    // mostly white by default; the pinks come up when the grid is playing on its own
+    var a = c.a * (0.16 + 0.84 * idleMix), tc = c.tc || c.tint;
     var r = 255 + (tc[0] - 255) * a, g = 255 + (tc[1] - 255) * a, b = 255 + (tc[2] - 255) * a;
-    var e = Math.min(1, c.e * 1.25) * (c.dim < 1 ? 0.5 : 1);
-    var deep = Math.max(e * 0.8, (c.re || 0) * 0.42 * (c.dim < 1 ? 0.45 : 1));
+    var e = Math.min(1, c.e * 1.3);
+    var deep = Math.max(e * 0.92, (c.re || 0) * 0.45);
     r += (DEEP[0] - r) * deep; g += (DEEP[1] - g) * deep; b += (DEEP[2] - b) * deep;
     var h = gap / 2 - 1.25; // a thin, even gap between tiles
     var gx = c.gx || 0, gy = c.gy || 0, mag = Math.sqrt(gx * gx + gy * gy);
     // the ripple only shows around the cursor and its short trail (where the pink has spread)
     var near = Math.min(1, c.e * 2.2); near = near * near * (3 - 2 * near);
-    var th = Math.min(MAX_TILT, mag * TILT_GAIN) * near * (c.dim < 1 ? 0.6 : 1);
-    var shade = (-(gx + gy) * 1.7) * near * (c.dim < 1 ? 0.5 : 1);
+    var th = Math.min(MAX_TILT, mag * TILT_GAIN) * near;
+    var shade = (-(gx + gy) * 1.7) * near;
     shade = Math.max(-0.14, Math.min(0.3, shade));
     if (shade > 0) { r += (255 - r) * shade; g += (255 - g) * shade; b += (255 - b) * shade; }
     else { r *= 1 + shade * 0.6; g *= 1 + shade; b *= 1 + shade * 0.7; }
     ctx.fillStyle = 'rgb(' + (r | 0) + ',' + (g | 0) + ',' + (b | 0) + ')';
-    if (th < 0.015) { ctx.fillRect(c.x - h, c.y - h, h * 2, h * 2); return; }
+    if (th < 0.015) { ctx.fillRect(c.x - h, c.y - h, h * 2, h * 2); ctx.globalAlpha = 1; return; }
     var dx = gx / mag, dy = gy / mag, cs = Math.cos(th), sn = Math.sin(th);
     var twist = th * 0.12 * (c.spin > 0 ? 1 : -1), rc = Math.cos(twist), rs = Math.sin(twist);
     var k = 1 - 0.06 * th; // tipped tiles shrink a touch, opening a soft gap
@@ -220,6 +230,7 @@
     ctx.closePath();
     ctx.fill();
     if (sn > 0.12) { ctx.strokeStyle = 'rgba(120,40,90,' + (0.1 * sn).toFixed(3) + ')'; ctx.lineWidth = 1; ctx.stroke(); }
+    ctx.globalAlpha = 1;
   }
 
   function glyph(c, s, t) {
@@ -255,8 +266,8 @@
     ctx.clearRect(0, 0, W, H);
     var idle = !ptr.inside || t - ptr.last > 3500;
     if (idle) {
-      ptr.tx = W * (0.66 + 0.22 * Math.sin(t * 0.00021));
-      ptr.ty = H * (0.48 + 0.3 * Math.sin(t * 0.00029 + 1.3));
+      ptr.tx = W * (0.55 + 0.38 * Math.sin(t * 0.00023) * Math.cos(t * 0.00009));
+      ptr.ty = H * (0.5 + 0.36 * Math.sin(t * 0.00031 + 1.3));
     }
     if (!ptr.seen) { ptr.x = ptr.tx; ptr.y = ptr.ty; ptr.seen = true; }
     var follow = idle ? 0.04 : 0.2, pvx = 0, pvy = 0;
@@ -311,8 +322,12 @@
   window.addEventListener('pointermove', function (e) {
     var rect = canvas.getBoundingClientRect();
     var x = (e.clientX - rect.left) / scale, y = (e.clientY - rect.top) / scale;
+    var was = ptr.inside && performance.now() - ptr.last < 3500;
     ptr.inside = x >= 0 && y >= 0 && x <= W && y <= H;
-    if (ptr.inside) { ptr.tx = x; ptr.ty = y; ptr.last = performance.now(); }
+    if (ptr.inside) {
+      if (!was) { ptr.x = x; ptr.y = y; } // jump straight to the real cursor
+      ptr.tx = x; ptr.ty = y; ptr.last = performance.now();
+    }
   }, { passive: true });
   document.addEventListener('pointerleave', function () { ptr.inside = false; });
 
