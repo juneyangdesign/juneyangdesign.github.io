@@ -139,7 +139,7 @@
 
   // Tile colors: about a quarter white, the rest pink at varied strengths
   // more tiles stay white, and tinted ones stay light
-  function pinkAlpha(r) { return r < 0.42 ? 0 : 0.1 + Math.pow((r - 0.42) / 0.58, 1.4) * 0.42; }
+  function pinkAlpha(r) { return r < 0.55 ? 0 : 0.08 + Math.pow((r - 0.55) / 0.45, 1.5) * 0.3; }
   function reroll(c) { c.tt = TINTS[Math.floor(Math.random() * TINTS.length)]; c.at = pinkAlpha(Math.random()); }
   function easeColor(c, k) { // drift toward a new pink over about a second and a half
     var f = 1 - Math.pow(0.97, k);
@@ -212,9 +212,9 @@
     } else if (kind === 'ring') {
       fx.push({ k: 'ring', t: t, life: 6500, x: R(0.15, 0.95) * W, y: R(0.1, 0.9) * H, v: 0.22, w: gap * 1.8, amp: 1 });
     } else if (kind === 'sparkle') {
-      for (var i = 0; i < 11; i++) fx.push({ k: 'bloom', t: t + i * R(140, 260), life: R(1600, 2400), x: R(0.05, 0.98) * W, y: R(0.05, 0.95) * H, r: gap * R(1.1, 2.2), amp: R(0.75, 1) });
+      for (var i = 0; i < 7; i++) fx.push({ k: 'bloom', t: t + i * R(140, 260), life: R(1600, 2400), x: R(0.05, 0.98) * W, y: R(0.05, 0.95) * H, r: gap * R(1.1, 2.2), amp: R(0.75, 1) });
     } else { // rain
-      for (var j = 0; j < 26; j++) fx.push({ k: 'bloom', t: t + R(0, 3200), life: R(700, 1100), x: R(0, 1) * W, y: R(0, 1) * H, r: gap * R(0.55, 0.9), amp: R(0.6, 0.9) });
+      for (var j = 0; j < 16; j++) fx.push({ k: 'bloom', t: t + R(0, 3200), life: R(700, 1100), x: R(0, 1) * W, y: R(0, 1) * H, r: gap * R(0.55, 0.9), amp: R(0.6, 0.9) });
     }
     nextFx = t + R(3600, 5200);
   }
@@ -293,7 +293,7 @@
     else if (mx === g) h = ((b - r) / d + 2) / 6;
     else h = ((r - g) / d + 4) / 6;
     if (l > 0.985) return [r * 255, g * 255, b * 255];            // essentially white
-    sat = Math.max(sat, 0.82);
+    sat = Math.max(sat, 0.7);
     l = Math.max(l, 0.62);
     function hue(p, q, t) { if (t < 0) t += 1; if (t > 1) t -= 1;
       if (t < 1 / 6) return p + (q - p) * 6 * t; if (t < 1 / 2) return q;
@@ -306,17 +306,18 @@
     if (c.dim < 0.01) return;
     ctx.globalAlpha = c.dim;
     // mostly white by default; the pinks come up when the grid is playing on its own
-    var a = c.a * (0.16 + 0.84 * idleMix), tc = c.tc || c.tint;
+    var acc = Math.floor(c.pick * TINTS.length) >= 9 ? 0.6 : 1;   // accent tiles stay lighter
+    var a = c.a * acc * (0.16 + 0.6 * idleMix), tc = c.tc || c.tint;
     var r = 255 + (tc[0] - 255) * a, g = 255 + (tc[1] - 255) * a, b = 255 + (tc[2] - 255) * a;
     var e = Math.min(1, c.e * 1.3);
     // under the cursor the tile walks down the ramp (pale lavender at the edge, blue-violet at the center);
     // idle effects walk part way down the ramp
-    var ring = c.re || 0, mixA = Math.min(0.85, e * 1.3), mixB = ring * 0.62;
+    var ring = c.re || 0, mixA = Math.min(0.85, e * 1.3), mixB = ring * 0.42;
     if (mixA >= mixB && mixA > 0) {
       var col = rampColor(e);
       r += (col[0] - r) * mixA; g += (col[1] - g) * mixA; b += (col[2] - b) * mixA;
     } else if (mixB > 0) {
-      var col2 = rampColor(0.25 + ring * 0.6);
+      var col2 = rampColor(0.15 + ring * 0.45);
       r += (col2[0] - r) * mixB; g += (col2[1] - g) * mixB; b += (col2[2] - b) * mixB;
     }
     var h = gap / 2 - 1.25; // a thin, even gap between tiles
