@@ -89,3 +89,23 @@ body { background: var(--bg); color: var(--ink); }
 }
 
 .phone__frame.is-clickable:focus-visible { outline-color: var(--pink-500); }
+
+/* Long-form cards (e.g. reflections): one per row, full width */
+.cards--rows { grid-template-columns: 1fr; }
+.cards--rows .body { max-width: 68ch; }
+/* split: number + title on the left, text on the right (same rhythm as the overview columns) */
+.card--split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  grid-template-areas: "num body" "title body";
+  grid-template-rows: auto 1fr;
+  column-gap: var(--text-gap);
+  row-gap: 12px;
+  padding: 40px;
+}
+.card--split > .number { grid-area: num; }
+.card--split > .subheading { grid-area: title; }
+.card--split > .body { grid-area: body; max-width: none; }
+@media (max-width: 720px) {
+  .card--split { display: flex; padding: 28px; }
+}
