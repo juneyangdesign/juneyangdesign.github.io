@@ -250,6 +250,27 @@
   // outward with the ripple; a gap only opens where a tile is tipped. Light comes from the
   // upper left, so slopes facing it brighten a little and slopes facing away dim.
   var P = 560, MAX_TILT = 0.3, TILT_GAIN = 1.8; // gentle: about 17° at most
+  // Never muddy: whatever the mix (two tints, ripple, rings, shading), the final tile keeps its
+  // hue and lightness but its saturation can't drop below a clean, candy-pastel level, and it
+  // can't get dark. Near-white tiles are left alone.
+  function clean(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    var mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2;
+    if (mx - mn < 0.004) return [r * 255, g * 255, b * 255];      // pure white/grey: leave
+    var d = mx - mn, sat = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn), h;
+    if (mx === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+    else if (mx === g) h = ((b - r) / d + 2) / 6;
+    else h = ((r - g) / d + 4) / 6;
+    if (l > 0.985) return [r * 255, g * 255, b * 255];            // essentially white
+    sat = Math.max(sat, 0.82);
+    l = Math.max(l, 0.62);
+    function hue(p, q, t) { if (t < 0) t += 1; if (t > 1) t -= 1;
+      if (t < 1 / 6) return p + (q - p) * 6 * t; if (t < 1 / 2) return q;
+      if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6; return p; }
+    var q = l < 0.5 ? l * (1 + sat) : l + sat - l * sat, p = 2 * l - q;
+    return [hue(p, q, h + 1 / 3) * 255, hue(p, q, h) * 255, hue(p, q, h - 1 / 3) * 255];
+  }
+
   function tile(c) {
     if (c.dim < 0.01) return;
     ctx.globalAlpha = c.dim;
@@ -275,6 +296,7 @@
     shade = Math.max(-0.06, Math.min(0.3, shade)); // little darkening, so colors stay clean
     if (shade > 0) { r += (255 - r) * shade; g += (255 - g) * shade; b += (255 - b) * shade; }
     else { r *= 1 + shade * 0.6; g *= 1 + shade; b *= 1 + shade * 0.7; }
+    var cl = clean(r, g, b); r = cl[0]; g = cl[1]; b = cl[2];
     ctx.fillStyle = 'rgb(' + (r | 0) + ',' + (g | 0) + ',' + (b | 0) + ')';
     if (th < 0.015) { ctx.fillRect(c.x - h, c.y - h, h * 2, h * 2); ctx.globalAlpha = 1; return; }
     var dx = gx / mag, dy = gy / mag, cs = Math.cos(th), sn = Math.sin(th);
@@ -290,7 +312,7 @@
     }
     ctx.closePath();
     ctx.fill();
-    if (sn > 0.12) { ctx.strokeStyle = 'rgba(120,40,90,' + (0.1 * sn).toFixed(3) + ')'; ctx.lineWidth = 1; ctx.stroke(); }
+    if (sn > 0.12) { ctx.strokeStyle = 'rgba(255,255,255,' + (0.55 * sn).toFixed(3) + ')'; ctx.lineWidth = 1; ctx.stroke(); }
     ctx.globalAlpha = 1;
   }
 
