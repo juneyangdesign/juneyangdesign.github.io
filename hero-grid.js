@@ -87,7 +87,9 @@
       var fb = Math.max(0, Math.min(1, ((H - c0.y) + (c0.nz - 0.5) * gap * 2 - gap * 0.6) / (gap * 2.4)));
       // the header strip stays white; tiles come in unevenly just below it
       var ft = Math.max(0, Math.min(1, ((c0.y - top) + (c0.nz - 0.5) * gap * 2 - gap * 0.2) / (gap * 2.4)));
-      c0.dim = f0 * f0 * (3 - 2 * f0) * fb * fb * (3 - 2 * fb) * ft * ft * (3 - 2 * ft);
+      // near the text tiles stay faintly visible: the CSS haze above them blurs and softens them
+      var tf = 0.3 + 0.7 * f0 * f0 * (3 - 2 * f0);
+      c0.dim = tf * fb * fb * (3 - 2 * fb) * ft * ft * (3 - 2 * ft);
     }
     if (old.length === cells.length) for (var k = 0; k < cells.length; k++) { var ok = old[k], nk = cells[k]; nk.e = ok.e; nk.a = ok.a; nk.at = ok.at; nk.tt = ok.tt; nk.tc = ok.tc; }
 

@@ -49,6 +49,33 @@ a { color: inherit; text-decoration: none; }
 body { position: relative; }
 .hero-grid { position: absolute; top: 0; left: 0; width: 100%; height: 100vh; pointer-events: none; z-index: 0; }
 .site-header, .home { position: relative; z-index: 1; }
+/* Soft haze + blur behind the nav and the intro text, so the tiles melt away near the words
+   (same idea as the fade at the bottom of the window) */
+.site-header::before {
+  content: "";
+  position: absolute;
+  left: -100vw; right: -100vw; top: -40px; height: calc(100% + 90px);
+  background: linear-gradient(to bottom, var(--bg) 45%, rgba(255, 255, 255, 0));
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 50%, transparent);
+  mask-image: linear-gradient(to bottom, #000 50%, transparent);
+  pointer-events: none;
+  z-index: -1;
+}
+.intro { position: relative; }
+.intro::before {
+  content: "";
+  position: absolute;
+  left: -120px; top: 14%; bottom: 10%;
+  width: min(1320px, 92%);
+  background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255, 255, 255, .92) 35%, rgba(255, 255, 255, .6) 65%, rgba(255, 255, 255, 0) 100%);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 45%, transparent 100%);
+  mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 45%, transparent 100%);
+  pointer-events: none;
+  z-index: -1;
+}
+.intro > * { position: relative; }
 .intro {
   min-height: calc(100vh / var(--fit, 1) - 140px);
   display: flex;
@@ -155,6 +182,7 @@ body { position: relative; }
 @media (max-width: 1023px) {
   :root { --side: 40px; }
   .intro { padding-left: 0; min-height: calc(100svh - 130px); }
+  .intro::before { left: -24px; width: calc(100% + 48px); }
   .intro__title { font-size: 40px; }
   .work-head { margin-top: 0; }
   .work { margin-top: 40px; column-gap: 32px; }
