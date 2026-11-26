@@ -115,7 +115,7 @@
           rot: rand(i, j, 3) * Math.PI,
           spin: rand(i, j, 4) - 0.5,
           pick: rand(i, j, 5), tint: TINTS[Math.floor(rand(i, j, 5) * TINTS.length)],
-          a: pinkAlpha(rand(i, j, 6)), dim: 1, nz: rand(i, j, 7), sw: 0, ix: 0, iy: 0, gx: 0, gy: 0, re: 0,
+          a: pinkAlpha(rand(i, j, 6)), dim: 1, nz: rand(i, j, 7), sw: 0, ix: 0, iy: 0, da: 0, dc: null, gx: 0, gy: 0, re: 0,
           e: 0
         });
       }
@@ -200,8 +200,13 @@
   //   center          bloom from the middle out to all four corners
   //   corners         waves from all four corners meeting in the middle
   //   curtain         falls top to bottom with a softly staggered front
-  //   drops           a handful of small paint drops land one after another and spread
+  //   drops           a handful of small paint drops, each its own color, land one after another
+  //                   and soak outward: dark at the center, fading to light at the edge
   var MOVES = ['side', 'corner', 'center', 'corners', 'curtain', 'drops'];
+  // paint-drop colors from the palette: [light edge, deep center]
+  var DROP_COLORS = [['#fbd0ee', '#e255c0'], ['#e3d8fd', '#8b63ec'], ['#d6e0fd', '#5576e6'], ['#fde1f4', '#f08ad2']].map(function (p) {
+    return p.map(function (h) { return rgb(h).map(function (v) { return v + (255 - v) * 0.12; }); });
+  });
   var hero = null, accents = [], nextAt = 0, lastMove = '', moveCount = 0, idleMix = 0, idleStart = 0;
   var MOVE_MS = 4200, REST_MS = [2400, 3400];
   function ease(x) { return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2; }
@@ -216,8 +221,10 @@
         var p = { x: (0.1 + Math.random() * 0.85) * W, y: (0.1 + Math.random() * 0.8) * H };
         if (list.every(function (q) { return Math.hypot(q.x - p.x, q.y - p.y) > gap * 5; })) list.push(p);
       }
+      var last = -1;
       m.drops = list.map(function (p, i) {
-        return { x: p.x, y: p.y, t: t + i * (380 + Math.random() * 220), life: 1700, R: gap * (2.2 + Math.random() * 1.3) };
+        var ci; do { ci = Math.floor(Math.random() * DROP_COLORS.length); } while (ci === last); last = ci;
+        return { x: p.x, y: p.y, t: t + i * (380 + Math.random() * 220), life: 1900, R: gap * (2.4 + Math.random() * 1.4), col: DROP_COLORS[ci] };
       });
       m.arrive = function () { return t + MOVE_MS * 0.5; };
       return m;
@@ -252,21 +259,28 @@
   function moveAt(m, c, t) {
     var age = t - m.t; if (age < 0 || age > m.life) return null;
     if (m.k === 'drops') {
-      // each drop spreads out quickly (ease-out) into a soft disc, then fades; the spreading
-      // edge is a little stronger and tips the tiles outward
-      var amt = 0, tx = 0, ty = 0;
+      // each drop soaks outward (ease-out) like wet paint: darkest at the center, fading
+      // smoothly to light at its edge, then the whole drop fades. Its spreading edge tips the
+      // tiles outward a touch. Overlapping drops: the stronger one wins on each tile.
+      var amt = 0, tx = 0, ty = 0, col = null;
       for (var i = 0; i < m.drops.length; i++) {
         var dp = m.drops[i], a = t - dp.t; if (a < 0 || a > dp.life) continue;
-        var f = a / dp.life, grow = 1 - Math.pow(1 - Math.min(1, f / 0.55), 3);
-        var rad = dp.R * grow, ddx = c.x - dp.x, ddy = c.y - dp.y, d = Math.sqrt(ddx * ddx + ddy * ddy) || 1;
-        var inside = 1 / (1 + Math.exp((d - rad) / (gap * 0.35)));            // soft-edged disc
-        var edge = Math.exp(-Math.pow((d - rad) / (gap * 0.55), 2));
-        var fade = f < 0.55 ? 1 : 1 - (f - 0.55) / 0.45;
-        amt = Math.max(amt, (inside * 0.75 + edge * 0.35) * fade);
-        var tip = edge * fade * (1 - grow * 0.6) * 0.03;
+        var f = a / dp.life, grow = 1 - Math.pow(1 - Math.min(1, f / 0.5), 3);
+        var rad = Math.max(gap * 0.4, dp.R * grow), ddx = c.x - dp.x, ddy = c.y - dp.y, d = Math.sqrt(ddx * ddx + ddy * ddy) || 1;
+        var x = d / rad; if (x >= 1.15) continue;
+        var depth = x < 1 ? Math.pow(1 - x, 1.4) : 0;                       // dark center → light edge
+        var rim = Math.exp(-Math.pow((x - 1) / 0.18, 2)) * 0.25;            // faint wet edge
+        var fade = f < 0.5 ? 1 : Math.pow(1 - (f - 0.5) / 0.5, 1.3);
+        var v = Math.min(1, depth + rim) * fade;
+        if (v > amt) {
+          amt = v;
+          var lo = dp.col[0], hi = dp.col[1], k2 = Math.min(1, depth * 1.15);
+          col = [lo[0] + (hi[0] - lo[0]) * k2, lo[1] + (hi[1] - lo[1]) * k2, lo[2] + (hi[2] - lo[2]) * k2];
+        }
+        var tip = rim * 4 * fade * (1 - grow * 0.6) * 0.03;
         tx += ddx / d * tip; ty += ddy / d * tip;
       }
-      return [Math.min(1, amt), tx, ty];
+      return [Math.min(1, amt), tx, ty, col];
     }
     var off = m.pos(c) - m.front(t);                         // > 0: front hasn't arrived yet
     var lead = Math.exp(-(off * off) / (2 * m.w * m.w));
@@ -306,7 +320,12 @@
     accents = accents.filter(function (a) { return t - a.t <= a.life; });
     for (var i = 0; i < cells.length; i++) {
       var c = cells[i], sum = 0, ix = 0, iy = 0;
-      if (hero) { var r = moveAt(hero, c, t); if (r) { sum = r[0]; ix = r[1]; iy = r[2]; } }
+      c.da = 0;
+      if (hero) {
+        var r = moveAt(hero, c, t);
+        if (r && r[3]) { c.da = r[0] * idleMix; c.dc = r[3]; ix = r[1]; iy = r[2]; }   // paint drop: its own color
+        else if (r) { sum = r[0]; ix = r[1]; iy = r[2]; }
+      }
       for (var j = 0; j < accents.length; j++) {
         var a = accents[j], age = t - a.t; if (age < 0) continue;
         var ddx = c.x - a.x, ddy = c.y - a.y;
@@ -385,6 +404,10 @@
     } else if (mixB > 0) {
       var col2 = rampColor(0.15 + ring * 0.55);
       r += (col2[0] - r) * mixB; g += (col2[1] - g) * mixB; b += (col2[2] - b) * mixB;
+    }
+    if (c.da > 0.002) {   // paint drop: blend toward that drop's own color
+      var dm = Math.min(0.9, c.da);
+      r += (c.dc[0] - r) * dm; g += (c.dc[1] - g) * dm; b += (c.dc[2] - b) * dm;
     }
     var h = gap / 2 - 1.25; // a thin, even gap between tiles
     var gx = c.gx || 0, gy = c.gy || 0, mag = Math.sqrt(gx * gx + gy * gy);

@@ -33,6 +33,8 @@
   --focus:      var(--pink-500);
   /* headline gradient: a bright, clean pink into a deep violet and deep blue (large text, ≥3.9:1) */
   --gradient:   linear-gradient(90deg, #e62fa8, #7e47e0 52%, #4a62d9);
+  /* soft pastel version for quiet details like tag outlines */
+  --gradient-soft: linear-gradient(90deg, #f6b3e2, #cbb8fb 52%, #b3c4fb);
 
   /* Type */
   --font-sans: "Figtree", system-ui, sans-serif;
