@@ -1,8 +1,8 @@
 /* Hero grid. Two looks, set by data-mode on the canvas: "squares" or the default glyphs.
    Squares: pink tiles with thin gaps. Moving the cursor sends smooth rings outward that tip the
-   tiles as they pass and fade steadily; tiles under the cursor warm to a deep pink. Mostly white by
-   default; after a moment without hovering the pinks come up, a ghost ripple wanders and color
-   rings spread.
+   tiles near it and fade within a few tiles; tiles under the cursor warm to a deep pink. Mostly
+   white by default; after a moment without hovering the pinks come up and soft color drifts and
+   rings move across the grid (color only, no tile motion).
    Glyphs: a quiet field of tiny gray marks that bloom into the brand palette
    around the cursor and fade out behind it, leaving a short trail. When the pointer is
    idle (or on touch screens) a soft bloom drifts slowly on its own. Static for people who
@@ -118,11 +118,11 @@
   // passes, so a soft crest rolls across the grid. Timed in milliseconds, so it looks the same
   // at any frame rate.
   var waves = [], lastWave = { x: -1e9, y: -1e9, t: 0 };
-  var RING_V = 0.48, RING_LIFE = 900, RING_AMP = 0.08;   // px/ms, ms, slope
+  var RING_V = 0.4, RING_LIFE = 620, RING_AMP = 0.085;   // px/ms, ms, slope
   function ripples(t, idle, spd, k) {
     var i, c;
     var moving = !idle && spd > 2 && t - ptr.last < 70; // only while the mouse is really moving
-    var ghost = idle && idleMix > 0.05;
+    var ghost = false; // idle mode moves colors only, no tile motion
     if (moving || ghost) {
       var mx = ptr.x - lastWave.x, my = ptr.y - lastWave.y;
       if (mx * mx + my * my > gap * gap * 0.8 || t - lastWave.t > (ghost ? 180 : 110)) {
@@ -143,7 +143,7 @@
         var off = d - RING_V * age;
         if (off > w * 3 || off < -w * 3) continue;
         var life = 1 - age / RING_LIFE;
-        var amp = rw.s * life * life * Math.exp(-d / (gap * 7)) * RING_AMP;
+        var amp = rw.s * life * life * Math.exp(-d / (gap * 2.2)) * RING_AMP; // stays near the cursor
         var prof = -(off / w) * Math.exp(-(off * off) / (2 * w * w)) * 1.65; // one smooth crest
         tx += (dx / d) * prof * amp; ty += (dy / d) * prof * amp;
       }
