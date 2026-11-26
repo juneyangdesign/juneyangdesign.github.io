@@ -1,5 +1,6 @@
 /* Hero grid. Two looks, set by data-mode on the canvas: "squares" or the default glyphs.
-   Squares: pink tiles; the cursor tints tiles a deeper pink that spreads softly outward and fades.
+   Squares: pink tiles; the cursor tints tiles a deeper pink that spreads softly outward and fades,
+   and tiles lean gently away from it as the color passes.
    Glyphs: a quiet field of tiny gray marks that bloom into the brand palette
    around the cursor and fade out behind it, leaving a short trail. When the pointer is
    idle (or on touch screens) a soft bloom drifts slowly on its own. Static for people who
@@ -53,7 +54,7 @@
           rot: rand(i, j, 3) * Math.PI,
           spin: rand(i, j, 4) - 0.5,
           tint: TINTS[Math.floor(rand(i, j, 5) * TINTS.length)],
-          a: pinkAlpha(rand(i, j, 6)), dim: 1,
+          a: pinkAlpha(rand(i, j, 6)), dim: 1, dx: 1, dy: 0,
           e: 0
         });
       }
@@ -89,13 +90,14 @@
 
   // Spread: the cursor tints the tiles under it a deeper pink, and that color soaks outward
   // to neighboring tiles (a simple diffusion), fading as it travels. No movement, no bounce.
-  var cols = 0, rows = 0, next = [], lastDrop = 0;
+  var cols = 0, rows = 0, next = [], lastDrop = 0, src = { x: 0, y: 0 };
   var DEEP = [212, 66, 146];
   function spread(t, idle) {
     var n = cells.length, i, c;
     if (next.length !== n) next = new Array(n);
     // inject under the cursor
     if (!idle) {
+      src.x = ptr.x; src.y = ptr.y;
       var RR = gap * 1.6;
       for (i = 0; i < n; i++) {
         c = cells[i];
@@ -105,7 +107,7 @@
     } else if (t - lastDrop > 2800) { // a soft bloom now and then while idle
       lastDrop = t;
       var k = Math.floor(Math.random() * n), ck = cells[k];
-      if (ck && ck.dim === 1) ck.e = Math.max(ck.e, 0.75);
+      if (ck && ck.dim === 1) { ck.e = Math.max(ck.e, 0.75); src.x = ck.x; src.y = ck.y; }
     }
     // diffuse to the four neighbors, then fade
     for (i = 0; i < n; i++) {
@@ -116,17 +118,55 @@
       if (y < rows - 1) { sum += cells[i + cols].e; cnt++; }
       next[i] = (e + 0.16 * (sum - cnt * e)) * 0.982;
     }
-    for (i = 0; i < n; i++) cells[i].e = next[i] < 0.002 ? 0 : next[i];
+    for (i = 0; i < n; i++) {
+      c = cells[i];
+      c.e = next[i] < 0.002 ? 0 : next[i];
+      if (c.e > 0.01) { // lean away from the source, turning smoothly
+        var vx = c.x - src.x, vy = c.y - src.y, vl = Math.sqrt(vx * vx + vy * vy) || 1;
+        c.dx += (vx / vl - c.dx) * 0.12; c.dy += (vy / vl - c.dy) * 0.12;
+        var dl = Math.sqrt(c.dx * c.dx + c.dy * c.dy) || 1; c.dx /= dl; c.dy /= dl;
+      }
+    }
   }
 
+  // Each tile leans gently away from where the color came from, by an amount that follows the
+  // spreading color, so the lean travels outward as a soft wave. It eases back flat as the
+  // color fades: no springs, no overshoot.
+  var P = 560, MAX_TILT = 0.62; // perspective distance, max lean in radians (about 35°)
   function tile(c) {
     var a = c.a * c.dim;
     var r = 255 + (c.tint[0] - 255) * a, g = 255 + (c.tint[1] - 255) * a, b = 255 + (c.tint[2] - 255) * a;
-    var e = Math.min(1, c.e * 1.25) * (c.dim < 1 ? 0.5 : 1) * 0.82;
-    r += (DEEP[0] - r) * e; g += (DEEP[1] - g) * e; b += (DEEP[2] - b) * e;
+    var e = Math.min(1, c.e * 1.25) * (c.dim < 1 ? 0.5 : 1);
+    var deep = e * 0.82;
+    r += (DEEP[0] - r) * deep; g += (DEEP[1] - g) * deep; b += (DEEP[2] - b) * deep;
     var h = (gap - 1) / 2;
+    var th = MAX_TILT * e * e * (3 - 2 * e) * (c.dim < 1 ? 0.6 : 1); // smoothstep for a soft start/end
+    if (th < 0.01) {
+      ctx.fillStyle = 'rgb(' + (r | 0) + ',' + (g | 0) + ',' + (b | 0) + ')';
+      ctx.fillRect(c.x - h, c.y - h, h * 2, h * 2);
+      return;
+    }
+    // rotate the square about the in-plane axis perpendicular to its lean direction (dx, dy)
+    var dx = c.dx, dy = c.dy, cs = Math.cos(th), sn = Math.sin(th), k = 1 - 0.05 * e;
+    var twist = e * 0.14 * c.spin * 2, rc = Math.cos(twist), rs = Math.sin(twist); // slight, per-tile
+    ctx.beginPath();
+    var corners = [[-h, -h], [h, -h], [h, h], [-h, h]];
+    for (var i = 0; i < 4; i++) {
+      var px = corners[i][0] * k, py = corners[i][1] * k;
+      var pd = px * dx + py * dy;                  // part of the corner along the lean
+      var qx = px - dx * pd + dx * pd * cs, qy = py - dy * pd + dy * pd * cs, z = pd * sn;
+      var f = P / (P - z);  // the edge nearer the source lifts toward the viewer
+      var ox = qx * f, oy = qy * f;
+      ctx[i ? 'lineTo' : 'moveTo'](c.x + ox * rc - oy * rs, c.y + ox * rs + oy * rc);
+    }
+    ctx.closePath();
+    var lit = 0.22 * sn; // tilted faces catch a little light
+    r += (255 - r) * lit; g += (255 - g) * lit; b += (255 - b) * lit;
     ctx.fillStyle = 'rgb(' + (r | 0) + ',' + (g | 0) + ',' + (b | 0) + ')';
-    ctx.fillRect(c.x - h, c.y - h, h * 2, h * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(120,40,90,' + (0.12 * sn).toFixed(3) + ')';
+    ctx.lineWidth = 1;
+    ctx.stroke();
   }
 
   function glyph(c, s, t) {
