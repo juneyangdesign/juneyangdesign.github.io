@@ -15,12 +15,33 @@
   // data-mode="squares": soft tinted tiles that tilt and go white around the cursor.
   // Anything else: the glyph field.
   var SQUARES = canvas.getAttribute('data-mode') === 'squares';
-  // (glyph mode) brand colors for the blooming marks
-  // Resting tiles: periwinkle-lavender is the clear main color (about two thirds of tinted
-  // tiles); the brand pink and blue come in as smaller accents (about 1 in 6 each)
-  var TINTS = ['#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#f472d0', '#f472d0', '#6b8cf5', '#6b8cf5'].map(function (h) {
-    return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
-  });
+  // Tile color schemes. Pick with data-palette on the canvas, or add #blue / #pink to the URL
+  // to compare. Each: resting tints (main color ~3/4, the other as an accent) and the ripple
+  // ramp from its pale edge to its deepest point.
+  function rgb(h) { return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)]; }
+  var SCHEMES = {
+    blue: { // blue main, pink accents
+      tints: ['#6b8cf5', '#6b8cf5', '#6b8cf5', '#6b8cf5', '#6b8cf5', '#6b8cf5', '#6b8cf5', '#6b8cf5', '#6b8cf5', '#f472d0', '#f472d0', '#f472d0'],
+      ramp: [[244, 214, 246], [170, 188, 250], [120, 150, 245], [95, 125, 236]]
+    },
+    pink: { // pink main, blue accents
+      tints: ['#f472d0', '#f472d0', '#f472d0', '#f472d0', '#f472d0', '#f472d0', '#f472d0', '#f472d0', '#f472d0', '#6b8cf5', '#6b8cf5', '#6b8cf5'],
+      ramp: [[251, 212, 240], [246, 160, 222], [238, 120, 205], [170, 140, 240]]
+    }
+  };
+  var TINTS, RAMP;
+  function schemeName() {
+    var h = (location.hash || '').slice(1);
+    return SCHEMES[h] ? h : (SCHEMES[canvas.getAttribute('data-palette')] ? canvas.getAttribute('data-palette') : 'blue');
+  }
+  function useScheme(name) {
+    var sc = SCHEMES[name];
+    TINTS = sc.tints.map(rgb);
+    // each ramp stop is lifted well toward white, so the hover never gets too dark
+    RAMP = sc.ramp.map(function (c) { return c.map(function (v) { return v + (255 - v) * 0.3; }); });
+    // existing tiles drift to the new colors (same tile keeps the same slot in the list)
+    for (var i = 0; i < cells.length; i++) cells[i].tt = TINTS[Math.floor(cells[i].pick * TINTS.length)];
+  }
 
   var PALETTE = ['#f472d0', '#ee6bd2', '#a78bfa', '#6b8cf5', '#a5b4fc'].map(function (h) {
     return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
@@ -57,7 +78,7 @@
           col: PALETTE[Math.floor(rand(i, j, 2) * PALETTE.length)],
           rot: rand(i, j, 3) * Math.PI,
           spin: rand(i, j, 4) - 0.5,
-          tint: TINTS[Math.floor(rand(i, j, 5) * TINTS.length)],
+          pick: rand(i, j, 5), tint: TINTS[Math.floor(rand(i, j, 5) * TINTS.length)],
           a: pinkAlpha(rand(i, j, 6)), dim: 1, nz: rand(i, j, 7), gx: 0, gy: 0, re: 0,
           e: 0
         });
@@ -90,12 +111,6 @@
   // Spread: the cursor tints the tiles under it a deeper pink, and that color soaks outward
   // to neighboring tiles (a simple diffusion), fading as it travels. No movement, no bounce.
   var cols = 0, rows = 0, next = [], lastT = 0, STEP = 1000 / 60;
-  // Ripple / cursor color ramp, light to dark, all in the main color family: pale lavender →
-  // periwinkle → deeper blue-violet. Each stop is lifted a little toward white so even the
-  // darkest point stays soft.
-  var RAMP = [[244, 214, 246], [167, 160, 250], [127, 134, 243], [91, 111, 232]].map(function (c) {
-    return c.map(function (v) { return v + (255 - v) * 0.1; });
-  });
   function rampColor(x) { // x: 0..1
     x = Math.max(0, Math.min(1, x)) * (RAMP.length - 1);
     var i = Math.min(RAMP.length - 2, Math.floor(x)), f = x - i, a = RAMP[i], b = RAMP[i + 1];
@@ -205,7 +220,7 @@
     var e = Math.min(1, c.e * 1.3);
     // under the cursor the tile walks down the ramp (pale lavender at the edge, blue-violet at the center);
     // idle color rings use the lighter half of the ramp
-    var ring = c.re || 0, mixA = Math.min(1, e * 1.5), mixB = ring * 0.5;
+    var ring = c.re || 0, mixA = Math.min(0.85, e * 1.3), mixB = ring * 0.45;
     if (mixA >= mixB && mixA > 0) {
       var col = rampColor(e);
       r += (col[0] - r) * mixA; g += (col[1] - g) * mixA; b += (col[2] - b) * mixA;
@@ -349,6 +364,8 @@
     }).observe(canvas);
   }
 
+  useScheme(schemeName());
+  window.addEventListener('hashchange', function () { useScheme(schemeName()); });
   layout();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(layout);
   window.addEventListener('load', layout);
