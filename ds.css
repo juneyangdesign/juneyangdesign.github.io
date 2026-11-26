@@ -5,12 +5,12 @@
 
 :root {
   /* Brand colors (500 = the main swatch) — clean, saturated hues so the pink never reads muddy */
-  --pink-50:    #fdeef6;
-  --pink-100:   #fbcfe5;
-  --pink-300:   #f9a8d4;
-  --pink-500:   #f472b6;  /* main brand pink — tiles, fills, large shapes */
-  --pink-600:   #be185d;  /* pink text on white (6:1) */
-  --pink-700:   #9d174d;
+  --pink-50:    #fdeefa;
+  --pink-100:   #fbcdef;
+  --pink-300:   #f9a8e6;
+  --pink-500:   #f472d0;  /* main brand pink: cool and bright — tiles, fills, large shapes */
+  --pink-600:   #b5208f;  /* pink text on white (5.9:1) */
+  --pink-700:   #a91d85;
   --purple-300: #c4b5fd;
   --purple-500: #a78bfa;
   --blue-300:   #a5b4fc;
@@ -32,7 +32,7 @@
   --tag-fg:     var(--pink-600);
   --focus:      var(--pink-500);
   /* headline gradient: each stop a touch deeper than the swatch so large text reads (≥3.5:1) */
-  --gradient:   linear-gradient(90deg, #ec4899, #9d5cf5 52%, #5b7cf0);
+  --gradient:   linear-gradient(90deg, #db45b8, #9d5cf5 52%, #5b7cf0);
 
   /* Type */
   --font-sans: "Figtree", system-ui, sans-serif;

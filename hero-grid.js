@@ -17,11 +17,11 @@
   var SQUARES = canvas.getAttribute('data-mode') === 'squares';
   // (glyph mode) brand colors for the blooming marks
   // Resting tile tints from the design system (ds.css): mostly pink, some purple and blue
-  var TINTS = ['#f472b6', '#f9a8d4', '#f472b6', '#ec4899', '#fbcfe5', '#c4b5fd', '#a78bfa', '#a5b4fc', '#6b8cf5'].map(function (h) {
+  var TINTS = ['#f472d0', '#f9a8e6', '#f472d0', '#ee6bd2', '#fbcdef', '#c4b5fd', '#a78bfa', '#a5b4fc', '#6b8cf5'].map(function (h) {
     return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
   });
 
-  var PALETTE = ['#f472b6', '#ec4899', '#a78bfa', '#6b8cf5', '#a5b4fc'].map(function (h) {
+  var PALETTE = ['#f472d0', '#ee6bd2', '#a78bfa', '#6b8cf5', '#a5b4fc'].map(function (h) {
     return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
   });
   var BASE = [196, 196, 204];
@@ -91,7 +91,7 @@
   var cols = 0, rows = 0, next = [], lastT = 0, STEP = 1000 / 60;
   // Ripple / cursor color ramp, light to dark: light pink → pink → purple → blue. Each stop is
   // lifted a little toward white so even the darkest point stays soft.
-  var RAMP = [[251, 207, 229], [244, 114, 182], [167, 139, 250], [107, 140, 245]].map(function (c) {
+  var RAMP = [[251, 205, 239], [244, 114, 208], [167, 139, 250], [107, 140, 245]].map(function (c) {
     return c.map(function (v) { return v + (255 - v) * 0.1; });
   });
   function rampColor(x) { // x: 0..1
