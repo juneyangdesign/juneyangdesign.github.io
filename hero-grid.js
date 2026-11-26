@@ -111,12 +111,15 @@
     return Math.max(-1, Math.min(1, z));
   }
 
+  var DEEP = [212, 66, 146]; // the deeper pink tiles warm toward under the cursor
   function tile(c, z) {
     var a = c.a * c.dim;
     var r = 255 + (c.tint[0] - 255) * a, g = 255 + (c.tint[1] - 255) * a, b = 255 + (c.tint[2] - 255) * a;
+    var e = Math.min(1, c.e) * (c.dim < 1 ? 0.55 : 1) * 0.85;
+    r += (DEEP[0] - r) * e; g += (DEEP[1] - g) * e; b += (DEEP[2] - b) * e;
     var up = Math.max(0, z), down = Math.max(0, -z);
     var lift = Math.min(1, up * 1.3);
-    r += (255 - r) * lift * 0.8; g += (255 - g) * lift * 0.8; b += (255 - b) * lift * 0.8;
+    r += (255 - r) * lift * 0.55; g += (255 - g) * lift * 0.55; b += (255 - b) * lift * 0.55;
     r *= 1 - down * 0.06; g *= 1 - down * 0.12; b *= 1 - down * 0.07;
     var h = (gap - 1) / 2 * (1 + z * 0.08);
     if (up > 0.04) {
@@ -191,7 +194,13 @@
         c.e = target > c.e ? c.e + (target - c.e) * 0.3 : c.e * 0.955;
       }
       if (SQUARES) {
-        if (!reduce && Math.random() < 0.0004) reroll(c); // slow shimmer
+        if (!reduce) {
+          if (Math.random() < 0.0004) reroll(c); // slow shimmer
+          // Tiles under the cursor warm to a deeper pink, then fade back slowly (a short trail)
+          var qx = c.x - ptr.x, qy = c.y - ptr.y, qd = Math.sqrt(qx * qx + qy * qy), RR = gap * 2.6;
+          var want = !idle && qd < RR ? Math.pow(1 - qd / RR, 1.3) : 0;
+          c.e = want > c.e ? c.e + (want - c.e) * 0.35 : c.e * 0.977;
+        }
         tile(c, reduce ? 0 : waveAt(c, t));
         continue;
       }
