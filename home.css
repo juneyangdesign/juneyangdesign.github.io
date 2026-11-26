@@ -67,12 +67,12 @@ body { position: relative; }
 .intro::before {
   content: "";
   position: absolute;
-  left: -120px; top: 14%; bottom: 10%;
-  width: min(1320px, 92%);
+  left: -200px; top: 6%; bottom: 2%;
+  width: min(1640px, 110%);
   background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(255, 255, 255, .92) 35%, rgba(255, 255, 255, .6) 65%, rgba(255, 255, 255, 0) 100%);
   -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 45%, transparent 100%);
-  mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 45%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 50%, transparent 100%);
+  mask-image: radial-gradient(ellipse 50% 50% at 50% 50%, #000 50%, transparent 100%);
   pointer-events: none;
   z-index: -1;
 }
@@ -183,7 +183,7 @@ body { position: relative; }
 @media (max-width: 1023px) {
   :root { --side: 40px; }
   .intro { padding-left: 0; min-height: calc(100svh - 130px); }
-  .intro::before { left: -24px; width: calc(100% + 48px); }
+  .intro::before { left: -40px; width: calc(100% + 80px); top: 4%; bottom: 0; }
   .intro__title { font-size: 40px; }
   .work-head { margin-top: 0; }
   .work { margin-top: 40px; column-gap: 32px; }
