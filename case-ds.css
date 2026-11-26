@@ -114,12 +114,12 @@ body { background: var(--bg); color: var(--ink); }
 .sheet-panel { padding: 0; background: none; border-radius: 16px; }
 .sheet-panel__img { border: 1px solid var(--line); border-radius: 16px; }
 
-/* Reflections: number + title above, then a box with one key statement and squiggle bullets */
-.reflections { display: flex; flex-direction: column; gap: 64px; }
-.reflection > .number { margin-bottom: 8px; }
-.reflection > .subheading { margin-bottom: 20px; }
+/* Reflections: one box each — number, a key statement (the box's heading), then squiggle bullets */
+.reflections { display: flex; flex-direction: column; gap: 24px; }
 .reflection__box { padding: 40px; gap: 32px; }
+.reflection__box > .number { margin-bottom: -20px; }   /* sits close to its statement */
 .reflection__key {
+  margin: 0;
   font-size: 24px;
   line-height: 1.4;
   font-weight: 500;
