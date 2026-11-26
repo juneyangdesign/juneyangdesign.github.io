@@ -144,21 +144,21 @@ body { position: relative; }
 }
 /* Selected state: the card lifts and a thin ring in the calm brand gradient fades in a few
    pixels outside the thumbnail — outside the image, so it works with every cover's colors */
-.project__frame { position: relative; transition: transform .4s cubic-bezier(.2, .7, .2, 1); }
+.project__frame { position: relative; isolation: isolate; transition: transform .4s cubic-bezier(.2, .7, .2, 1); }
 .project:hover .project__frame, .project:focus-visible .project__frame { transform: translateY(-4px); }
+/* A real 2px gradient border (white padding-box over the gradient border-box) renders evenly at
+   any zoom. Corners are concentric with the thumbnail: 20px radius + 6px gap + 2px border. */
 .project__frame::before {
   content: "";
   position: absolute;
-  inset: -7px;
-  border-radius: 26px;
-  padding: 1.5px;
-  background: var(--gradient-title);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  inset: -8px;
+  border-radius: 28px;
+  border: 2px solid transparent;
+  background: linear-gradient(var(--bg), var(--bg)) padding-box, var(--gradient-title) border-box;
   opacity: 0;
   transition: opacity .35s ease;
   pointer-events: none;
+  z-index: -1;
 }
 .project:hover .project__frame::before, .project:focus-visible .project__frame::before { opacity: 1; }
 .project__media img {
@@ -245,7 +245,7 @@ body { position: relative; }
   .work-head .ds-label { font-size: 12px; }
   .work { grid-template-columns: 1fr; row-gap: 48px; margin-top: 28px; }
   .project__media { border-radius: 12px; }
-  .project__frame::before { inset: -5px; border-radius: 17px; }
+  .project__frame::before { inset: -6px; border-radius: 18px; }   /* 12px radius + 4px gap + 2px border */
   .project__title { margin-top: 16px; font-size: 22px; line-height: 28px; }
   .project__desc { font-size: 15px; }
   .project__tags { margin-top: 12px; gap: 6px; }
