@@ -610,6 +610,6 @@ a.link { text-decoration: underline; text-underline-offset: 3px; }
 
 .site-header { justify-content: space-between; align-items: center; }
 .site-logo { display: block; line-height: 0; }
-.site-logo img { height: 30px; width: auto; }
+.site-logo img { height: 34px; width: auto; }   /* swirly j logo */
 .site-logo:hover { opacity: 0.6; }
-@media (max-width: 640px) { .site-logo img { height: 24px; } }
+@media (max-width: 640px) { .site-logo img { height: 28px; } }
