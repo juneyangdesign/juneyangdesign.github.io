@@ -157,8 +157,8 @@ body { position: relative; }
   font-weight: 600;
   line-height: 35px;
   letter-spacing: -0.015em;
-  /* the brand gradient sits behind the letters; the text color fades out on hover to reveal it */
-  background: var(--gradient);
+  /* a calmer brand gradient sits behind the letters; the text color fades out on hover to reveal it */
+  background: var(--gradient-title);
   -webkit-background-clip: text;
   background-clip: text;
   width: fit-content;

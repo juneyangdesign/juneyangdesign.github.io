@@ -207,8 +207,8 @@
   var DROP_COLORS = [['#fbd0ee', '#e255c0'], ['#e3d8fd', '#8b63ec'], ['#d6e0fd', '#5576e6'], ['#fde1f4', '#f08ad2']].map(function (p) {
     return p.map(function (h) { return rgb(h).map(function (v) { return v + (255 - v) * 0.12; }); });
   });
-  var hero = null, accents = [], nextAt = 0, lastMove = '', moveCount = 0, idleMix = 0, idleStart = 0;
-  var MOVE_MS = 4200, REST_MS = [2400, 3400];
+  var hero = null, twinkles = [], comet = null, nextComet = 0, nextTw = 0, nextAt = 0, lastMove = '', moveCount = 0, idleMix = 0, idleStart = 0;
+  var MOVE_MS = 4200, REST_MS = [2600, 3800], CALM_MS = [6500, 10000], MAX_TW = 3;
   function ease(x) { return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2; }
   function makeMove(t) {
     var opts = MOVES.filter(function (m) { return m !== lastMove; });
@@ -216,16 +216,17 @@
     var m = { k: kind, t: t, life: MOVE_MS, w: gap * 1.4, trail: gap * 5 };
     if (kind === 'drops') {
       // 4–6 drops, spaced out over the grid and staggered in time
-      var n = 4 + Math.floor(Math.random() * 3), list = [], tries = 0;
+      var n = 2 + Math.floor(Math.random() * 2), list = [], tries = 0;   // 2–3 big drops
       while (list.length < n && tries++ < 60) {
         var p = { x: (0.1 + Math.random() * 0.85) * W, y: (0.1 + Math.random() * 0.8) * H };
-        if (list.every(function (q) { return Math.hypot(q.x - p.x, q.y - p.y) > gap * 5; })) list.push(p);
+        if (list.every(function (q) { return Math.hypot(q.x - p.x, q.y - p.y) > gap * 7; })) list.push(p);
       }
       var last = -1;
       m.drops = list.map(function (p, i) {
         var ci; do { ci = Math.floor(Math.random() * DROP_COLORS.length); } while (ci === last); last = ci;
-        return { x: p.x, y: p.y, t: t + i * (380 + Math.random() * 220), life: 1900, R: gap * (2.4 + Math.random() * 1.4), col: DROP_COLORS[ci] };
+        return { x: p.x, y: p.y, t: t + i * (700 + Math.random() * 500), life: 4400, R: gap * (4 + Math.random() * 1.5), col: DROP_COLORS[ci] };
       });
+      m.life = 6200;   // slower: room for the drops to spread and fade
       m.arrive = function () { return t + MOVE_MS * 0.5; };
       return m;
     }
@@ -259,25 +260,25 @@
   function moveAt(m, c, t) {
     var age = t - m.t; if (age < 0 || age > m.life) return null;
     if (m.k === 'drops') {
-      // each drop soaks outward (ease-out) like wet paint: darkest at the center, fading
-      // smoothly to light at its edge, then the whole drop fades. Its spreading edge tips the
-      // tiles outward a touch. Overlapping drops: the stronger one wins on each tile.
+      // each drop is a soft blot of its own color: it spreads quickly, then keeps diffusing
+      // gently while it fades (eased), so the edges dissolve first and the center last. No rim,
+      // no hard edge. Overlapping drops: the stronger one wins on each tile.
       var amt = 0, tx = 0, ty = 0, col = null;
       for (var i = 0; i < m.drops.length; i++) {
         var dp = m.drops[i], a = t - dp.t; if (a < 0 || a > dp.life) continue;
-        var f = a / dp.life, grow = 1 - Math.pow(1 - Math.min(1, f / 0.5), 3);
-        var rad = Math.max(gap * 0.4, dp.R * grow), ddx = c.x - dp.x, ddy = c.y - dp.y, d = Math.sqrt(ddx * ddx + ddy * ddy) || 1;
-        var x = d / rad; if (x >= 1.15) continue;
-        var depth = x < 1 ? Math.pow(1 - x, 1.4) : 0;                       // dark center → light edge
-        var rim = Math.exp(-Math.pow((x - 1) / 0.18, 2)) * 0.25;            // faint wet edge
-        var fade = f < 0.5 ? 1 : Math.pow(1 - (f - 0.5) / 0.5, 1.3);
-        var v = Math.min(1, depth + rim) * fade;
+        var f = a / dp.life;
+        var rad = dp.R * (0.35 + 0.65 * (1 - Math.pow(1 - Math.min(1, f / 0.45), 3)) + 0.25 * Math.max(0, f - 0.45));
+        var ddx = c.x - dp.x, ddy = c.y - dp.y, d = Math.sqrt(ddx * ddx + ddy * ddy) || 1;
+        var shape = Math.exp(-2.2 * (d / rad) * (d / rad));                    // dark center → light edge
+        var fin = Math.min(1, f / 0.18), fout = f < 0.4 ? 1 : 0.5 + 0.5 * Math.cos(Math.PI * (f - 0.4) / 0.6);
+        var v = shape * fin * fout;
+        if (v < 0.01) continue;
         if (v > amt) {
           amt = v;
-          var lo = dp.col[0], hi = dp.col[1], k2 = Math.min(1, depth * 1.15);
+          var lo = dp.col[0], hi = dp.col[1], k2 = Math.min(1, shape * 1.1);
           col = [lo[0] + (hi[0] - lo[0]) * k2, lo[1] + (hi[1] - lo[1]) * k2, lo[2] + (hi[2] - lo[2]) * k2];
         }
-        var tip = rim * 4 * fade * (1 - grow * 0.6) * 0.03;
+        var tip = shape * (d / rad) * fin * fout * (1 - Math.min(1, f / 0.45)) * 0.03;  // only while spreading
         tx += ddx / d * tip; ty += ddy / d * tip;
       }
       return [Math.min(1, amt), tx, ty, col];
@@ -296,28 +297,38 @@
     var tip = -(off / m.w) * lead * env * 0.035;
     return [amt, dx * tip, dy * tip];
   }
-  function makeAccent(t) {
-    var R = function (a, b) { return a + Math.random() * (b - a); }, out = [];
-    var n = Math.random() < 0.5 ? 1 : 3;
-    var x0 = R(0.2, 0.9) * W, y0 = R(0.15, 0.85) * H;
-    for (var i = 0; i < n; i++) out.push({ t: t + i * 260, life: 1500, x: x0 + (n > 1 ? R(-2.5, 2.5) * gap : 0), y: y0 + (n > 1 ? R(-1.5, 1.5) * gap : 0), r: gap * (n > 1 ? 0.8 : 1.6) });
-    return out;
-  }
   function colorRings(t, idle, k) {
     // effects begin after ~1.5s without hovering, ease in over ~2s, and ease out on hover
     if (!idle) idleStart = t;
     var on = idle && t - idleStart > 1500;
     idleMix += ((on ? 1 : 0) - idleMix) * (1 - Math.pow(1 - (on ? 0.008 : 0.04), k));
-    if (!on && idleMix < 0.02) { hero = null; accents = []; nextAt = t + 600; }
+    if (!on && idleMix < 0.02) { hero = null; twinkles = []; nextAt = t + 600; }
     if (on && !hero && t >= nextAt) {
       hero = makeMove(t); moveCount++;
       if (shifting && moveCount % 3 === 0 && hero.k !== 'corners' && hero.k !== 'drops') changeScheme(hero.arrive, hero.t, hero.t + hero.life * 0.78);
-      var rest = REST_MS[0] + Math.random() * (REST_MS[1] - REST_MS[0]);
-      nextAt = t + MOVE_MS + rest;
-      if (Math.random() < 0.6) { var at = t + MOVE_MS + rest * 0.35; accents = makeAccent(at); }
+      // after each move: a short rest, or (about 1 in 3) a longer calm stretch
+      var calm = Math.random() < 0.35, R = calm ? CALM_MS : REST_MS;
+      nextAt = t + hero.life + R[0] + Math.random() * (R[1] - R[0]);
     }
     if (hero && t - hero.t > hero.life) hero = null;
-    accents = accents.filter(function (a) { return t - a.t <= a.life; });
+    // between moves: a few single tiles slowly deepen and fade (never more than 3 at once)
+    twinkles = twinkles.filter(function (w) { return t - w.t <= w.life; });
+    var quiet = !hero || t - hero.t > hero.life * 0.85;
+    if (on && quiet && twinkles.length < MAX_TW && t >= nextTw && cells.length) {
+      var pickI = Math.floor(Math.random() * cells.length);
+      if (cells[pickI].dim > 0.5) twinkles.push({ i: pickI, t: t, life: 2400 + Math.random() * 1600, amp: 0.65 + Math.random() * 0.25 });
+      nextTw = t + 700 + Math.random() * 1100;
+    }
+    // also in calm moments: one small comet of color glides slowly across the grid
+    if (comet && t - comet.t > comet.life) comet = null;
+    if (on && !hero && !comet && t >= nextComet && t < nextAt - 2500) {
+      var dirs = [[1, 0], [-1, 0], [1, 0.45], [-1, 0.45], [1, -0.45], [-1, -0.45]], dd = dirs[Math.floor(Math.random() * dirs.length)];
+      var L = Math.sqrt(dd[0] * dd[0] + dd[1] * dd[1]), ux = dd[0] / L, uy = dd[1] / L;
+      var sx = ux > 0 ? -gap * 2 : W + gap * 2, sy = H * (0.2 + Math.random() * 0.6) - uy * W * 0.5;
+      var dist = Math.abs(W / ux) + gap * 6, speed = 0.26;
+      comet = { t: t, x: sx, y: sy, ux: ux, uy: uy, speed: speed, life: dist / speed, len: gap * 3 };
+      nextComet = t + comet.life + 1500 + Math.random() * 2500;
+    }
     for (var i = 0; i < cells.length; i++) {
       var c = cells[i], sum = 0, ix = 0, iy = 0;
       c.da = 0;
@@ -326,13 +337,25 @@
         if (r && r[3]) { c.da = r[0] * idleMix; c.dc = r[3]; ix = r[1]; iy = r[2]; }   // paint drop: its own color
         else if (r) { sum = r[0]; ix = r[1]; iy = r[2]; }
       }
-      for (var j = 0; j < accents.length; j++) {
-        var a = accents[j], age = t - a.t; if (age < 0) continue;
-        var ddx = c.x - a.x, ddy = c.y - a.y;
-        sum += Math.exp(-(ddx * ddx + ddy * ddy) / (a.r * a.r)) * Math.sin(Math.PI * age / a.life) * 0.6; // accents stay small and soft
-      }
       c.re = Math.min(1, sum) * idleMix;
       c.ix = ix * idleMix; c.iy = iy * idleMix;
+    }
+    for (var q = 0; q < twinkles.length; q++) {
+      var w = twinkles[q], tc = cells[w.i]; if (!tc) continue;
+      var ph = (t - w.t) / w.life, glow = 0.5 - 0.5 * Math.cos(2 * Math.PI * ph);   // eased in and out
+      tc.re = Math.max(tc.re, glow * w.amp * idleMix);
+    }
+    if (comet) {
+      var ca = t - comet.t, head = comet.speed * ca;
+      var cenv = Math.min(1, ca / 500) * Math.min(1, (comet.life - ca) / 500);
+      for (var ci2 = 0; ci2 < cells.length; ci2++) {
+        var cc2 = cells[ci2], rx = cc2.x - comet.x, ry = cc2.y - comet.y;
+        var along = rx * comet.ux + ry * comet.uy, perp = Math.abs(rx * -comet.uy + ry * comet.ux);
+        var behind = head - along;                                   // 0 at the head, grows down the tail
+        if (behind < -gap || behind > comet.len * 3 || perp > gap * 1.5) continue;
+        var body = Math.exp(-(perp * perp) / (2 * gap * gap * 0.22)) * (behind < 0 ? Math.exp(-(behind * behind) / (gap * gap * 0.3)) : Math.exp(-behind / comet.len));
+        cc2.re = Math.max(cc2.re, body * cenv * idleMix);
+      }
     }
   }
 
