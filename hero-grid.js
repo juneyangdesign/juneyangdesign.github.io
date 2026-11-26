@@ -12,7 +12,7 @@
   // Anything else: the glyph field.
   var SQUARES = canvas.getAttribute('data-mode') === 'squares';
   // Tile tints lean rose/orchid with a little violet and indigo
-  var TINTS = ['#e796bb', '#ef8fc0', '#e796bb', '#ef8fc0', '#d17ae6', '#b98ce8'].map(function (h) {
+  var TINTS = ['#f08cc4', '#ee8fc3', '#e796bb', '#f39bcd', '#ea7fbd', '#f5a3cf'].map(function (h) {
     return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
   });
 
@@ -37,8 +37,8 @@
     H = stop ? stop.offsetTop : window.innerHeight;
     canvas.style.height = H + 'px';
     var small = W < 760;
-    gap = SQUARES ? (small ? 44 : 72) : (small ? 30 : 44);
-    radius = SQUARES ? (small ? 120 : 230) : (small ? 130 : 260);
+    gap = SQUARES ? (small ? 46 : 76) : (small ? 30 : 44);
+    radius = SQUARES ? (small ? 110 : 200) : (small ? 130 : 260);
 
     var cols = Math.ceil(W / gap) + 1, rows = Math.ceil(H / gap);
     var ox = (W - (cols - 1) * gap) / 2, oy = SQUARES ? gap / 2 : gap * 0.75;
@@ -52,7 +52,7 @@
           rot: rand(i, j, 3) * Math.PI,
           spin: rand(i, j, 4) - 0.5,
           tint: TINTS[Math.floor(rand(i, j, 5) * TINTS.length)],
-          a: tileAlpha(rand(i, j, 6)), at: 0, dim: 1,
+          a: pinkAlpha(rand(i, j, 6)), dim: 1, ang: 0, vel: 0, on: false, hold: 0, axis: 0, dir: 1, tilt: 0.3,
           e: 0
         });
       }
@@ -67,11 +67,11 @@
       var c0 = cells[n], h0 = gap / 2, dim = 1;
       for (var bI = 0; bI < boxes.length; bI++) {
         var bx = boxes[bI];
-        if (c0.x + h0 > bx[0] - 12 && c0.x - h0 < bx[2] + 12 && c0.y + h0 > bx[1] - 8 && c0.y - h0 < bx[3] + 8) dim = 0.18;
+        if (c0.x + h0 > bx[0] - 12 && c0.x - h0 < bx[2] + 12 && c0.y + h0 > bx[1] - 8 && c0.y - h0 < bx[3] + 8) dim = 0.3;
       }
-      c0.dim = dim; c0.at = c0.a;
+      c0.dim = dim;
     }
-    if (old.length === cells.length) for (var k = 0; k < cells.length; k++) { cells[k].e = old[k].e; cells[k].a = old[k].a; cells[k].at = old[k].at; }
+    if (old.length === cells.length) for (var k = 0; k < cells.length; k++) { cells[k].e = old[k].e; cells[k].a = old[k].a; cells[k].tint = old[k].tint; }
 
     var rect = canvas.getBoundingClientRect();
     scale = W ? rect.width / W : 1; // CSS zoom on <body> scales the page
@@ -82,30 +82,65 @@
     if (reduce) draw(0);
   }
 
-  // Most tiles stay white or barely tinted; a few are a stronger pink
-  function tileAlpha(r) { return r < 0.5 ? 0 : Math.pow((r - 0.5) / 0.5, 1.5) * 0.55; }
+  // Tile front colors: about a quarter white, the rest pink at varied strengths
+  function pinkAlpha(r) { return r < 0.24 ? 0 : 0.14 + Math.pow((r - 0.24) / 0.76, 1.3) * 0.66; }
+  function reroll(c) { c.tint = TINTS[Math.floor(Math.random() * TINTS.length)]; c.a = pinkAlpha(Math.random()); }
 
+  // Draw one tile as a card rotated in 3D (about the Y or X axis) with perspective.
+  // Front face is the pink, back face is a soft white; a thin gray edge gives it thickness.
+  var P = 520; // perspective distance
   function tile(c) {
-    var e = c.e, size = gap - 3;
-    var tint = c.tint, a = c.a * c.dim * (1 - Math.min(1, e * 1.4));
-    // tint over white, fading toward a cool white as the tile flips
-    var r = 255 + (tint[0] - 255) * a, g = 255 + (tint[1] - 255) * a, b = 255 + (tint[2] - 255) * a;
-    var f = Math.min(1, e * 1.5);
-    r += (247 - r) * f; g += (247 - g) * f; b += (249 - b) * f;
-    ctx.save();
-    ctx.translate(c.x, c.y);
-    ctx.rotate(e * 0.16 * (c.spin > 0 ? 1 : -1));
-    var k = 1 - e * 0.14, half = size * k / 2;
-    if (e > 0.02) {
-      ctx.fillStyle = 'rgba(40,30,70,' + (0.07 * e).toFixed(3) + ')';
-      ctx.fillRect(-half + 2 * e, -half + 3 * e, half * 2, half * 2);
+    var h = (gap - 1) / 2, th = c.ang, cs = Math.cos(th), sn = Math.sin(th);
+    var pts = [[-h, -h], [h, -h], [h, h], [-h, h]].map(function (q) {
+      var x, y, z;
+      if (c.axis === 0) { x = q[0] * cs; z = q[0] * sn; y = q[1]; }      // flip left/right
+      else { y = q[1] * cs; z = q[1] * sn; x = q[0]; }                    // flip up/down
+      var f = P / (P - z * c.dir);
+      return [c.x + x * f, c.y + y * f];
+    });
+    var front = cs >= 0, lit = 0.86 + 0.14 * Math.abs(cs);
+    var r, g, b;
+    if (front) {
+      var a = c.a * c.dim;
+      r = 255 + (c.tint[0] - 255) * a; g = 255 + (c.tint[1] - 255) * a; b = 255 + (c.tint[2] - 255) * a;
+    } else { r = 248; g = 247; b = 250; }
+    r *= lit; g *= lit; b *= lit;
+    var moving = Math.abs(sn) > 0.02;
+    if (moving) { // edge / shadow for depth
+      ctx.fillStyle = 'rgba(60,40,70,' + (0.10 * Math.abs(sn) + 0.03).toFixed(3) + ')';
+      ctx.beginPath();
+      for (var i = 0; i < 4; i++) ctx[i ? 'lineTo' : 'moveTo'](pts[i][0] + 1.5, pts[i][1] + 2);
+      ctx.closePath(); ctx.fill();
     }
     ctx.fillStyle = 'rgb(' + (r | 0) + ',' + (g | 0) + ',' + (b | 0) + ')';
-    ctx.fillRect(-half, -half, half * 2, half * 2);
-    ctx.strokeStyle = 'rgba(30,20,60,' + (0.045 + 0.05 * e).toFixed(3) + ')';
-    ctx.lineWidth = 1;
-    ctx.strokeRect(-half + 0.5, -half + 0.5, half * 2 - 1, half * 2 - 1);
-    ctx.restore();
+    ctx.beginPath();
+    for (var k = 0; k < 4; k++) ctx[k ? 'lineTo' : 'moveTo'](pts[k][0], pts[k][1]);
+    ctx.closePath(); ctx.fill();
+    if (moving || !front) {
+      ctx.strokeStyle = 'rgba(40,30,60,' + (0.05 + 0.08 * Math.abs(sn)).toFixed(3) + ')';
+      ctx.lineWidth = 1; ctx.stroke();
+    }
+  }
+
+  // Spring each tile toward flipped (white side up, resting at a slight tilt) or back to pink
+  function stepTile(c, now, near, vx, vy) {
+    if (near > 0) {
+      if (!c.on) {
+        c.on = true;
+        c.axis = Math.abs(vx) >= Math.abs(vy) ? 0 : 1;   // flip the way the cursor is moving
+        c.dir = (c.axis === 0 ? vx : vy) >= 0 ? 1 : -1;
+        c.tilt = 0.18 + Math.random() * 0.32;
+      }
+      c.hold = now + 450 + Math.random() * 500;
+    }
+    if (c.on && now > c.hold) c.on = false;
+    var target = c.on ? Math.PI - c.tilt : 0;
+    var before = c.ang;
+    c.vel += (target - c.ang) * 0.085;
+    c.vel *= 0.74;
+    c.ang += c.vel;
+    // When the pink side swings back into view it may come back a different pink
+    if (before > Math.PI / 2 && c.ang <= Math.PI / 2 && Math.random() < 0.6) reroll(c);
   }
 
   function glyph(c, s, t) {
@@ -146,10 +181,11 @@
     }
     if (!ptr.seen) { ptr.x = ptr.tx; ptr.y = ptr.ty; ptr.seen = true; }
     var follow = idle ? 0.04 : 0.2;
-    ptr.x += (ptr.tx - ptr.x) * follow;
-    ptr.y += (ptr.ty - ptr.y) * follow;
+    var pvx = (ptr.tx - ptr.x) * follow, pvy = (ptr.ty - ptr.y) * follow;
+    ptr.x += pvx;
+    ptr.y += pvy;
 
-    var R = idle ? radius * 0.75 : radius, strength = idle ? (W < 760 ? 0.45 : 0.6) : 1;
+    var R = idle ? radius * (SQUARES ? 0.6 : 0.75) : radius, strength = idle ? (W < 760 ? 0.45 : 0.6) : 1;
     for (var k = 0; k < cells.length; k++) {
       var c = cells[k];
       if (!reduce) {
@@ -159,8 +195,9 @@
       }
       if (SQUARES) {
         if (!reduce) {
-          if (Math.random() < 0.0015) c.at = tileAlpha(Math.random());
-          c.a += (c.at - c.a) * 0.02;
+          var ddx = c.x - ptr.x, ddy = c.y - ptr.y;
+          stepTile(c, t, (ddx * ddx + ddy * ddy < R * R * 0.42) ? 1 : 0, pvx, pvy);
+          if (!c.on && Math.abs(c.ang) < 0.01 && Math.random() < 0.0006) reroll(c); // slow shimmer
         }
         tile(c);
         continue;
