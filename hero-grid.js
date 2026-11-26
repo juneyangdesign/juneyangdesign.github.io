@@ -17,11 +17,11 @@
   var SQUARES = canvas.getAttribute('data-mode') === 'squares';
   // (glyph mode) brand colors for the blooming marks
   // Resting tile tints from the design system (ds.css): mostly pink, some purple and blue
-  var TINTS = ['#e2779f', '#ec95b6', '#e2779f', '#f6c1d4', '#c08ae0', '#a97be6', '#9b8cf0', '#6f83e0'].map(function (h) {
+  var TINTS = ['#f472b6', '#f9a8d4', '#f472b6', '#ec4899', '#fbcfe5', '#c4b5fd', '#a78bfa', '#a5b4fc', '#6b8cf5'].map(function (h) {
     return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
   });
 
-  var PALETTE = ['#e2779f', '#ec95b6', '#a97be6', '#6f83e0', '#9b8cf0'].map(function (h) {
+  var PALETTE = ['#f472b6', '#ec4899', '#a78bfa', '#6b8cf5', '#a5b4fc'].map(function (h) {
     return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
   });
   var BASE = [196, 196, 204];
@@ -91,8 +91,8 @@
   var cols = 0, rows = 0, next = [], lastT = 0, STEP = 1000 / 60;
   // Ripple / cursor color ramp, light to dark: light pink → pink → purple → blue. Each stop is
   // lifted a little toward white so even the darkest point stays soft.
-  var RAMP = [[246, 193, 212], [226, 119, 159], [169, 123, 230], [111, 131, 224]].map(function (c) {
-    return c.map(function (v) { return v + (255 - v) * 0.18; });
+  var RAMP = [[251, 207, 229], [244, 114, 182], [167, 139, 250], [107, 140, 245]].map(function (c) {
+    return c.map(function (v) { return v + (255 - v) * 0.1; });
   });
   function rampColor(x) { // x: 0..1
     x = Math.max(0, Math.min(1, x)) * (RAMP.length - 1);
@@ -216,7 +216,7 @@
     // the ripple only shows around the cursor and its short trail (where the pink has spread)
     var th = Math.min(MAX_TILT, mag * TILT_GAIN);
     var shade = -(gx + gy) * 1.1;
-    shade = Math.max(-0.14, Math.min(0.3, shade));
+    shade = Math.max(-0.06, Math.min(0.3, shade)); // little darkening, so colors stay clean
     if (shade > 0) { r += (255 - r) * shade; g += (255 - g) * shade; b += (255 - b) * shade; }
     else { r *= 1 + shade * 0.6; g *= 1 + shade; b *= 1 + shade * 0.7; }
     ctx.fillStyle = 'rgb(' + (r | 0) + ',' + (g | 0) + ',' + (b | 0) + ')';
