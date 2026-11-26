@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Doodle lab – June Yang</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=4">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="ds.css?v=9">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #fff; color: var(--ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+    main { max-width: 1160px; margin: 0 auto; padding: 72px 24px 160px; }
+    h1 { font-size: 36px; font-weight: 500; letter-spacing: -0.015em; margin: 0 0 12px; }
+    h2 { font-size: 24px; font-weight: 500; letter-spacing: -0.01em; margin: 0 0 8px; }
+    p { margin: 0; line-height: 1.5; }
+    .muted { color: #6b6b6b; }
+    .label { font-family: var(--font-mono); font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: #6b6b6b; }
+    section { margin-top: 96px; }
+    .intro { max-width: 60ch; }
+
+    /* grids of big specimens */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; margin-top: 32px; }
+    .tile { border: 1px solid var(--line); border-radius: 16px; aspect-ratio: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 14px; cursor: default; transition: border-color .2s; }
+    .tile:hover { border-color: #d6d6d6; }
+    .tile .mark { width: 72px; height: 72px; }
+    .tile .label { font-size: 12px; }
+    .tile.yours .label::after { content: " · yours"; color: var(--pink-600); }
+
+    .toggle { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; margin-top: 20px; }
+    .toggle button { font: inherit; font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase;
+                     border: 0; background: none; padding: 8px 14px; border-radius: 999px; color: #6b6b6b; cursor: pointer; }
+    .toggle button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+
+    /* reflection preview (same look as the case study) */
+    .reflection { border: 1px solid transparent; border-radius: 16px; padding: 40px; display: flex; flex-direction: column; gap: 32px;
+                  background: linear-gradient(#fff,#fff) padding-box, var(--gradient-soft) border-box; margin-top: 24px; }
+    .reflection h3 { margin: 0; font-size: 24px; line-height: 1.4; font-weight: 500; letter-spacing: -0.01em; max-width: 40ch; }
+    .reflection ul { list-style: none; margin: 0; padding: 0; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0,1fr); gap: 24px 48px; }
+    .reflection li { font-size: 17px; line-height: 1.5; }
+    .reflection li .mark { display: block; width: 28px; height: 28px; margin-bottom: 10px; }
+    .reflection .close { padding-top: 24px; border-top: 1px solid var(--line); color: var(--ink-2); font-size: 17px; max-width: 72ch; }
+    @media (max-width: 720px) {
+      .reflection { padding: 28px; }
+      .reflection ul { grid-auto-flow: row; }
+      .reflection li { display: grid; grid-template-columns: 28px 1fr; column-gap: 12px; font-size: 16px; }
+      .reflection li .mark { margin: 0; }
+    }
+
+    .mark svg { width: 100%; height: 100%; overflow: visible; display: block; }
+    /* line doodles: redraw on hover */
+    .line-path { transition: stroke-dashoffset 0s; }
+    .is-drawing .line-path { animation: draw .7s cubic-bezier(.6,.05,.3,1) both; }
+    @keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+    @media (prefers-reduced-motion: reduce) { .is-drawing .line-path { animation: none; } }
+  </style>
+</head>
+<body>
+<main>
+  <p class="label">Doodle lab</p>
+  <h1>Bullet marks: two directions</h1>
+  <p class="muted intro">Hover anything to see how it moves. Line doodles redraw like a pen stroke; organic shapes wobble and morph. The previews at the bottom show each set at real size in a reflection box.</p>
+
+  <section>
+    <p class="label">A · Line doodles</p>
+    <h2>Drawn from your references</h2>
+    <p class="muted">Single strokes, round ends, the same gradient as the rest of the site.</p>
+    <div class="grid" id="lines"></div>
+  </section>
+
+  <section>
+    <p class="label">B · Organic shapes</p>
+    <h2>Soft shapes with a translucent gradient fill</h2>
+    <p class="muted">Each one is generated, so it can morph on hover instead of just scaling.</p>
+    <div class="toggle" role="group" aria-label="Shape style">
+      <button type="button" data-style="fill" aria-pressed="true">Fill</button>
+      <button type="button" data-style="outline" aria-pressed="false">Fill + offset outline</button>
+    </div>
+    <div class="grid" id="shapes"></div>
+  </section>
+
+  <section>
+    <p class="label">Preview at real size</p>
+    <h2>In a reflection box</h2>
+    <div class="reflection" data-set="lines">
+      <p class="label">A · line doodles</p>
+      <h3>Even though I came in with some knowledge of the beauty industry, I couldn’t assume I understood everyone’s needs.</h3>
+      <ul>
+        <li><span class="mark" data-line="eloop"></span>I drew from my experience working in the industry to turn problems I’d noticed into something tangible.</li>
+        <li><span class="mark" data-line="bumps"></span>Talking with people about their experiences and frustrations showed me needs I hadn’t considered.</li>
+        <li><span class="mark" data-line="arch"></span>Seeing where people struggled during testing helped me challenge my initial assumptions and make more thoughtful design decisions.</li>
+      </ul>
+      <p class="close">Skincare is something so many people around me care about, so getting to have deeper conversations with them was one of my favorite parts of this project.</p>
+    </div>
+    <div class="reflection" data-set="shapes">
+      <p class="label">B · organic shapes</p>
+      <h3>Even though I came in with some knowledge of the beauty industry, I couldn’t assume I understood everyone’s needs.</h3>
+      <ul>
+        <li><span class="mark" data-shape="clover"></span>I drew from my experience working in the industry to turn problems I’d noticed into something tangible.</li>
+        <li><span class="mark" data-shape="blob"></span>Talking with people about their experiences and frustrations showed me needs I hadn’t considered.</li>
+        <li><span class="mark" data-shape="softstar"></span>Seeing where people struggled during testing helped me challenge my initial assumptions and make more thoughtful design decisions.</li>
+      </ul>
+      <p class="close">Skincare is something so many people around me care about, so getting to have deeper conversations with them was one of my favorite parts of this project.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const NS = 'http://www.w3.org/2000/svg';
+  let uid = 0;
+  const STOPS = [['0', '#e62fa8'], ['.52', '#7e47e0'], ['1', '#4a62d9']];
+  function gradDef(svg, x1, x2) {
+    const id = 'g' + (++uid);
+    const defs = document.createElementNS(NS, 'defs');
+    const lg = document.createElementNS(NS, 'linearGradient');
+    lg.setAttribute('id', id); lg.setAttribute('gradientUnits', 'userSpaceOnUse');
+    lg.setAttribute('x1', x1); lg.setAttribute('x2', x2); lg.setAttribute('y1', 0); lg.setAttribute('y2', 0);
+    for (const [o, c] of STOPS) { const s = document.createElementNS(NS, 'stop'); s.setAttribute('offset', o); s.setAttribute('stop-color', c); lg.appendChild(s); }
+    defs.appendChild(lg); svg.appendChild(defs);
+    return `url(#${id})`;
+  }
+
+  /* ---------- A: line doodles (0–100 box), hand-drawn, nothing perfectly even ---------- */
+  const LINES = {
+    // yours, from the Figma file (normalized)
+    loop: { yours: true, d: 'M 0.4 105.6 C -4.6 39.8 41.0 0 90.2 0 C 145.5 0 188.6 46.0 194.7 95.7 C 200.9 151.6 170.1 198.8 123.4 201.3 C 84.0 203.7 71.7 164.0 76.6 129.2 C 84.0 70.8 127.1 42.2 178.7 39.8 C 225.5 37.3 258.7 64.6 259.9 108.1 C 261.2 136.7 246.4 160.3 226.7 173.9', vb: '-18 -18 296 238' },
+    curl: { yours: true, d: 'M 8.9 221.9 C -9.9 165.8 -0.5 109.7 52.8 85.3 C 131 41.7 222 55.7 260 99.7 C 298 143.7 290 225.6 243 263.2 C 196 300.7 115 292.2 76 248.7 C 37 205.2 48.9 138.1 61.5 80.7 C 74.1 23.4 164.5 -29.8 260 19.5', vb: '-20 -20 324 327' },
+    spiral: { yours: true, d: 'M 186.7 146.0 C 215.2 164.5 205.6 218.3 154.5 224.5 C 89.8 233.8 72.8 139.2 113.7 98.9 C 157.9 55.5 263.8 69.3 284.2 137.5 C 304.6 208.8 252.7 310 138.2 310 C 49.7 306.9 -16.7 199.0 3.7 121.5 C 10.5 96.7 29.7 20 122.7 0', vb: '-22 -22 332 353' },
+    wave: { yours: true, d: 'M 0 110.8 C 13.1 29.0 52.4 10.4 74.3 71.1 C 91.8 124.8 120.2 145.9 144.2 85.1 C 161.7 40.7 177.2 -19.5 210 6.2 C 241.5 37.7 285.5 161.1 317.5 71.1', vb: '-22 -22 362 166' },
+    // new, from the references
+    eloop:  { d: 'M10 70 C34 74 62 62 62 44 C62 28 44 26 40 42 C35 64 58 84 90 70' },
+    bumps:  { d: 'M10 74 C11 42 33 40 36 70 C38 42 60 38 63 69 C65 44 88 44 90 75' },
+    arch:   { d: 'M16 80 C14 34 46 18 66 30 C80 38 86 58 84 80 M36 80 C35 58 46 48 56 50 C64 52 66 64 66 80' },
+    smile:  { d: 'M14 40 C22 70 46 80 66 74 C76 70 83 60 87 46' },
+    scurve: { d: 'M12 36 C22 18 42 24 38 44 C34 62 50 74 62 58 C72 44 82 44 90 58' },
+    burst:  { d: 'M50 12 C50 20 50 26 51 34 M22 26 C28 32 32 37 37 44 M79 24 C74 31 70 36 65 43' },
+    zigzag: { d: 'M8 66 C14 56 20 44 27 36 C33 46 39 57 46 67 C52 56 58 45 65 37 C72 47 78 58 86 68' },
+    coil:   { d: 'M6 66 C12 32 38 30 33 58 C30 75 17 64 25 50 C37 31 60 33 55 60 C52 75 40 66 48 52 C60 33 86 36 92 64' },
+  };
+  function lineMark(el, name) {
+    const spec = LINES[name]; if (!spec) return;
+    const svg = document.createElementNS(NS, 'svg');
+    const vb = spec.vb || '0 0 100 100'; svg.setAttribute('viewBox', vb);
+    const [vx, , vw] = vb.split(' ').map(Number);
+    const sw = (spec.vb ? vw : 100) * 0.09;
+    const paint = gradDef(svg, vx, vx + vw);
+    // draw each sub-path separately so multi-stroke marks redraw one after another
+    spec.d.split(/(?=M)/).forEach((seg, i) => {
+      const p = document.createElementNS(NS, 'path');
+      p.setAttribute('d', seg.trim()); p.setAttribute('fill', 'none'); p.setAttribute('stroke', paint);
+      p.setAttribute('stroke-width', sw); p.setAttribute('stroke-linecap', 'round'); p.setAttribute('stroke-linejoin', 'round');
+      p.setAttribute('pathLength', '1'); p.setAttribute('stroke-dasharray', '1 1'); p.classList.add('line-path');
+      p.style.animationDelay = (i * 0.12) + 's';
+      svg.appendChild(p);
+    });
+    el.replaceChildren(svg);
+    const host = el.closest('.tile, li') || el;
+    host.addEventListener('mouseenter', () => { el.classList.remove('is-drawing'); void el.offsetWidth; el.classList.add('is-drawing'); });
+  }
+
+  /* ---------- B: organic shapes, generated from polar curves so they can morph ---------- */
+  const SHAPES = {
+    blob:     (t, p) => 1 + .13 * Math.sin(2 * t + p[0]) + .08 * Math.sin(3 * t + p[1]) + .045 * Math.sin(5 * t + p[2]),
+    clover:   (t, p) => .74 + .26 * Math.abs(Math.cos(2 * t + p[0] * .08)) ** .8 + .03 * Math.sin(3 * t + p[1]),
+    softstar: (t, p) => .5 + .5 * Math.abs(Math.cos(2 * t + p[0] * .06)) ** 3.2 + .03 * Math.sin(5 * t + p[1]),
+    flower:   (t, p) => .84 + .16 * Math.cos(6 * t + p[0] * .1) + .03 * Math.sin(2 * t + p[1]),
+    peanut:   (t, p) => .8 + .22 * Math.cos(2 * t) * (1 - .25 * Math.cos(2 * t)) + .05 * Math.sin(3 * t + p[0]),
+    pebble:   (t, p) => 1 + .09 * Math.sin(2 * t + p[0]) + .05 * Math.sin(3 * t + p[1]),
+    starburst:(t, p) => .8 + .2 * Math.cos(9 * t + p[0] * .05) ** 3 + .02 * Math.sin(2 * t + p[1]),
+    bean:     (t, p) => .86 + .14 * Math.cos(2 * t) - .12 * Math.max(0, Math.sin(t + .3)) ** 4 + .04 * Math.sin(3 * t + p[0]),
+  };
+  const ASPECT = { peanut: [1, .86], bean: [1, .82], pebble: [1, .9] };
+  function shapePath(fn, phase, R, aspect) {
+    const N = 96; let d = '';
+    for (let i = 0; i <= N; i++) {
+      const t = i / N * Math.PI * 2, r = R * fn(t, phase);
+      const x = Math.cos(t) * r * aspect[0], y = Math.sin(t) * r * aspect[1];
+      d += (i ? 'L' : 'M') + x.toFixed(2) + ' ' + y.toFixed(2);
+    }
+    return d + 'Z';
+  }
+  let shapeStyle = 'fill';
+  const live = [];
+  function shapeMark(el, name) {
+    const fn = SHAPES[name]; if (!fn) return;
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '-60 -60 120 120');
+    const paint = gradDef(svg, -50, 50);
+    const g = document.createElementNS(NS, 'g');
+    const fill = document.createElementNS(NS, 'path');
+    fill.setAttribute('fill', paint); fill.setAttribute('fill-opacity', '.5');
+    const line = document.createElementNS(NS, 'path');
+    line.setAttribute('fill', 'none'); line.setAttribute('stroke', paint); line.setAttribute('stroke-width', '6');
+    line.setAttribute('stroke-linejoin', 'round');
+    g.append(fill, line); svg.appendChild(g); el.replaceChildren(svg);
+    const seed = [Math.random() * 6, Math.random() * 6, Math.random() * 6];
+    const st = { el, fn, fill, line, g, seed, aspect: ASPECT[name] || [1, 1], hover: 0, target: 0, time: 0 };
+    live.push(st);
+    const host = el.closest('.tile, li') || el;
+    host.addEventListener('mouseenter', () => { st.target = 1; kick(); });
+    host.addEventListener('mouseleave', () => { st.target = 0; kick(); });
+    render(st);
+  }
+  function render(st) {
+    const h = st.hover;                       // 0 = resting, 1 = hovered
+    const ph = st.seed.map((s, i) => s + st.time * (0.9 + i * 0.35));
+    const outline = shapeStyle === 'outline';
+    const R = outline ? 44 : 50;
+    st.fill.setAttribute('d', shapePath(st.fn, ph, R, st.aspect));
+    // outline uses a slightly different phase so the two never quite match
+    st.line.setAttribute('d', shapePath(st.fn, ph.map(v => v + 0.6), R, st.aspect));
+    st.line.style.display = outline ? '' : 'none';
+    st.fill.setAttribute('fill-opacity', outline ? .42 : .55);
+    // fill drifts off the outline at rest and settles onto it on hover
+    const off = outline ? 9 * (1 - h) : 0;
+    st.fill.setAttribute('transform', `translate(${off} ${off})`);
+    st.g.setAttribute('transform', `rotate(${(h * 14).toFixed(2)}) scale(${(1 + h * .08).toFixed(3)})`);
+  }
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let raf = 0, last = 0;
+  function kick() { if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); } }
+  function tick(now) {
+    const dt = Math.min(50, now - last) / 1000; last = now; let busy = false;
+    for (const st of live) {
+      const k = 1 - Math.pow(0.0015, dt);                 // smooth ease toward target
+      st.hover += (st.target - st.hover) * k;
+      if (!reduce) st.time += dt * 1.6 * st.hover;          // only morphs while hovered
+      if (Math.abs(st.target - st.hover) > 0.002 || st.target) busy = true;
+      render(st);
+    }
+    raf = busy ? requestAnimationFrame(tick) : 0;
+  }
+
+  /* ---------- build the page ---------- */
+  const lineGrid = document.getElementById('lines');
+  for (const name of Object.keys(LINES)) {
+    const tile = document.createElement('div'); tile.className = 'tile' + (LINES[name].yours ? ' yours' : '');
+    const m = document.createElement('span'); m.className = 'mark';
+    const l = document.createElement('span'); l.className = 'label'; l.textContent = name;
+    tile.append(m, l); lineGrid.appendChild(tile); lineMark(m, name);
+  }
+  const shapeGrid = document.getElementById('shapes');
+  for (const name of Object.keys(SHAPES)) {
+    const tile = document.createElement('div'); tile.className = 'tile';
+    const m = document.createElement('span'); m.className = 'mark';
+    const l = document.createElement('span'); l.className = 'label'; l.textContent = name;
+    tile.append(m, l); shapeGrid.appendChild(tile); shapeMark(m, name);
+  }
+  document.querySelectorAll('[data-line]').forEach(el => lineMark(el, el.dataset.line));
+  document.querySelectorAll('[data-shape]').forEach(el => shapeMark(el, el.dataset.shape));
+  document.querySelectorAll('.toggle button').forEach(b => b.addEventListener('click', () => {
+    shapeStyle = b.dataset.style;
+    document.querySelectorAll('.toggle button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    live.forEach(render);
+  }));
+})();
+</script>
+</body>
+</html>
