@@ -1,6 +1,6 @@
 /* Hero grid. Two looks, set by data-mode on the canvas: "squares" or the default glyphs.
-   Squares: flush pink tiles floating on a water surface. The cursor sends ripples outward and each
-   tile tilts with the slope under it; tiles near the cursor also warm to a deeper pink.
+   Squares: flush pink tiles floating on a water surface. Around the cursor (and its short trail)
+   tiles ripple, tilting with the slope under them, and warm to a deeper pink. Still when idle.
    Glyphs: a quiet field of tiny gray marks that bloom into the brand palette
    around the cursor and fade out behind it, leaving a short trail. When the pointer is
    idle (or on touch screens) a soft bloom drifts slowly on its own. Static for people who
@@ -94,7 +94,7 @@
   var DEEP = [212, 66, 146];
   // Water surface: a damped 2D wave on the tile grid. Moving the cursor presses the surface
   // down under it; the dip travels outward as smooth rings and dies away.
-  var WAVE_SPEED = 0.16, WAVE_DAMP = 0.014;
+  var WAVE_SPEED = 0.16, WAVE_DAMP = 0.03;
   function wave(spd, idleDrop) {
     var n = cells.length, i, c;
     if (spd > 0.2) {
@@ -133,10 +133,6 @@
         var dx = c.x - ptr.x, dy = c.y - ptr.y, d = Math.sqrt(dx * dx + dy * dy);
         if (d < RR) { var want = Math.pow(1 - d / RR, 1.2); if (want > c.e) c.e += (want - c.e) * 0.25; }
       }
-    } else if (t - lastDrop > 2800) { // a soft bloom now and then while idle
-      lastDrop = t;
-      var k = Math.floor(Math.random() * n), ck = cells[k];
-      if (ck && ck.dim === 1) { ck.e = Math.max(ck.e, 0.6); idleDrop = ck; }
     }
     // diffuse to the four neighbors, then fade
     for (i = 0; i < n; i++) {
@@ -163,8 +159,10 @@
     r += (DEEP[0] - r) * deep; g += (DEEP[1] - g) * deep; b += (DEEP[2] - b) * deep;
     var h = gap / 2 + 0.35; // a hair of overlap so flush tiles show no seams
     var gx = c.gx || 0, gy = c.gy || 0, mag = Math.sqrt(gx * gx + gy * gy);
-    var th = Math.min(MAX_TILT, mag * TILT_GAIN) * (c.dim < 1 ? 0.6 : 1);
-    var shade = (-(gx + gy) * 1.7) * (c.dim < 1 ? 0.5 : 1);
+    // the ripple only shows around the cursor and its short trail (where the pink has spread)
+    var near = Math.min(1, c.e * 2.2); near = near * near * (3 - 2 * near);
+    var th = Math.min(MAX_TILT, mag * TILT_GAIN) * near * (c.dim < 1 ? 0.6 : 1);
+    var shade = (-(gx + gy) * 1.7) * near * (c.dim < 1 ? 0.5 : 1);
     shade = Math.max(-0.14, Math.min(0.3, shade));
     if (shade > 0) { r += (255 - r) * shade; g += (255 - g) * shade; b += (255 - b) * shade; }
     else { r *= 1 + shade * 0.6; g *= 1 + shade; b *= 1 + shade * 0.7; }
