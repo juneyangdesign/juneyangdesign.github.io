@@ -302,11 +302,11 @@
     return [amt, dx * tip, dy * tip];
   }
   function colorRings(t, idle, k) {
-    // effects begin after ~1.5s without hovering, ease in over ~2s, and ease out on hover
+    // effects begin ~1.5s after the mouse settles (sooner on load), ease in over ~1s, and ease out on hover
     if (!idle) idleStart = t;
-    var on = idle && t - idleStart > 1500;
-    idleMix += ((on ? 1 : 0) - idleMix) * (1 - Math.pow(1 - (on ? 0.008 : 0.04), k));
-    if (!on && idleMix < 0.02) { hero = null; twinkles = []; nextAt = t + 600; }
+    var on = idle && t - idleStart > 400;
+    idleMix += ((on ? 1 : 0) - idleMix) * (1 - Math.pow(1 - (on ? 0.014 : 0.04), k));
+    if (!on && idleMix < 0.02) { hero = null; twinkles = []; nextAt = t + 250; }
     if (on && !hero && t >= nextAt) {
       hero = makeMove(t); moveCount++;
       if (shifting && moveCount % 3 === 0 && hero.k !== 'corners' && hero.k !== 'drops') changeScheme(hero.arrive, hero.t, hero.t + hero.life * 0.78);
@@ -495,7 +495,7 @@
 
   function draw(t) {
     ctx.clearRect(0, 0, W, H);
-    var idle = !ptr.inside || t - ptr.last > 3500;
+    var idle = !ptr.inside || t - ptr.last > 1100;
     if (idle) {
       ptr.tx = W * (0.55 + 0.38 * Math.sin(t * 0.00023) * Math.cos(t * 0.00009));
       ptr.ty = H * (0.5 + 0.36 * Math.sin(t * 0.00031 + 1.3));
@@ -555,7 +555,7 @@
   window.addEventListener('pointermove', function (e) {
     var rect = canvas.getBoundingClientRect();
     var x = (e.clientX - rect.left) / scale, y = (e.clientY - rect.top) / scale;
-    var was = ptr.inside && performance.now() - ptr.last < 3500;
+    var was = ptr.inside && performance.now() - ptr.last < 1100;
     ptr.inside = x >= 0 && y >= 0 && x <= W && y <= H;
     if (ptr.inside) {
       if (!was) { ptr.x = x; ptr.y = y; } // jump straight to the real cursor
