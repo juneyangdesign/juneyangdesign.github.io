@@ -200,8 +200,8 @@
   //   center          bloom from the middle out to all four corners
   //   corners         waves from all four corners meeting in the middle
   //   curtain         falls top to bottom with a softly staggered front
-  //   drops           a handful of small paint drops, each its own color, land one after another
-  //                   and soak outward: dark at the center, fading to light at the edge
+  //   drops           2–3 small blooms, each its own color: a ring travels outward from each
+  //                   spot and the color clears behind it, center first
   var MOVES = ['side', 'corner', 'center', 'corners', 'curtain', 'drops'];
   // paint-drop colors from the palette: [light edge, deep center]
   var DROP_COLORS = [['#fbd0ee', '#e255c0'], ['#e3d8fd', '#8b63ec'], ['#d6e0fd', '#5576e6'], ['#fde1f4', '#f08ad2']].map(function (p) {
@@ -219,14 +219,15 @@
       var n = 2 + Math.floor(Math.random() * 2), list = [], tries = 0;   // 2–3 big drops
       while (list.length < n && tries++ < 60) {
         var p = { x: (0.1 + Math.random() * 0.85) * W, y: (0.1 + Math.random() * 0.8) * H };
-        if (list.every(function (q) { return Math.hypot(q.x - p.x, q.y - p.y) > gap * 7; })) list.push(p);
+        if (list.every(function (q) { return Math.hypot(q.x - p.x, q.y - p.y) > gap * 8; })) list.push(p);
       }
       var last = -1;
       m.drops = list.map(function (p, i) {
         var ci; do { ci = Math.floor(Math.random() * DROP_COLORS.length); } while (ci === last); last = ci;
-        return { x: p.x, y: p.y, t: t + i * (700 + Math.random() * 500), life: 4400, R: gap * (4 + Math.random() * 1.5), col: DROP_COLORS[ci] };
+        var Rmax = gap * (5.5 + Math.random() * 1.5), v = 0.11;        // ring reach and speed (px/ms)
+        return { x: p.x, y: p.y, t: t + i * (650 + Math.random() * 450), v: v, R: Rmax, life: Rmax * 1.1 / v, col: DROP_COLORS[ci] };
       });
-      m.life = 6200;   // slower: room for the drops to spread and fade
+      m.life = Math.max.apply(null, m.drops.map(function (d) { return d.t - t + d.life; })) + 300;
       m.arrive = function () { return t + MOVE_MS * 0.5; };
       return m;
     }
@@ -260,25 +261,28 @@
   function moveAt(m, c, t) {
     var age = t - m.t; if (age < 0 || age > m.life) return null;
     if (m.k === 'drops') {
-      // each drop is a soft blot of its own color: it spreads quickly, then keeps diffusing
-      // gently while it fades (eased), so the edges dissolve first and the center last. No rim,
-      // no hard edge. Overlapping drops: the stronger one wins on each tile.
-      var amt = 0, tx = 0, ty = 0, col = null;
+      // each drop is a small version of the center bloom: a ring of its own color travels
+      // slowly outward and gets gently weaker as it widens; behind the ring the color leaves a
+      // short afterglow that fades, so the drop clears from the center outward (a ripple), not
+      // all at once. Tiles tip a little as the ring passes. Strongest drop wins per tile.
+      var amt = 0, tx = 0, ty = 0, col = null, w = gap * 0.95, trail = gap * 1.8;
       for (var i = 0; i < m.drops.length; i++) {
         var dp = m.drops[i], a = t - dp.t; if (a < 0 || a > dp.life) continue;
-        var f = a / dp.life;
-        var rad = dp.R * (0.35 + 0.65 * (1 - Math.pow(1 - Math.min(1, f / 0.45), 3)) + 0.25 * Math.max(0, f - 0.45));
+        var front = dp.v * a, strength = Math.pow(Math.max(0, 1 - front / (dp.R * 1.1)), 1.2);
+        var start = Math.min(1, a / 350);
         var ddx = c.x - dp.x, ddy = c.y - dp.y, d = Math.sqrt(ddx * ddx + ddy * ddy) || 1;
-        var shape = Math.exp(-2.2 * (d / rad) * (d / rad));                    // dark center → light edge
-        var fin = Math.min(1, f / 0.18), fout = f < 0.4 ? 1 : 0.5 + 0.5 * Math.cos(Math.PI * (f - 0.4) / 0.6);
-        var v = shape * fin * fout;
+        var off = d - front;
+        if (off > w * 3 || off < -trail * 4) continue;
+        var lead = Math.exp(-(off * off) / (2 * w * w));
+        var glow = off < 0 ? 0.6 * Math.exp(off / trail) : 0;
+        var v = Math.max(lead, glow) * strength * start;
         if (v < 0.01) continue;
         if (v > amt) {
           amt = v;
-          var lo = dp.col[0], hi = dp.col[1], k2 = Math.min(1, shape * 1.1);
+          var lo = dp.col[0], hi = dp.col[1], k2 = Math.min(1, lead * strength * 1.1);
           col = [lo[0] + (hi[0] - lo[0]) * k2, lo[1] + (hi[1] - lo[1]) * k2, lo[2] + (hi[2] - lo[2]) * k2];
         }
-        var tip = shape * (d / rad) * fin * fout * (1 - Math.min(1, f / 0.45)) * 0.03;  // only while spreading
+        var tip = -(off / w) * lead * strength * start * 0.03;
         tx += ddx / d * tip; ty += ddy / d * tip;
       }
       return [Math.min(1, amt), tx, ty, col];
