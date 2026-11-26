@@ -1,19 +1,21 @@
 /* June Yang design system — shared tokens.
-   Same system as the resume: Figtree for text, DM Mono for small labels,
-   and the indigo → violet → orchid gradient (rose as a secondary accent).
-   Pages link this file before their own stylesheet and read only these variables. */
+   Same system as the resume: Figtree for text, DM Mono for small labels.
+   Color: pink leads, with purple and blue as supporting accents. The gradient runs
+   pink → purple → blue. Pages link this file first and read only these variables. */
 
 :root {
-  /* Brand colors (500 = the swatch from Figma) */
-  --indigo-50:  #efeef9;
-  --indigo-100: #dddaf3;
-  --indigo-500: #6254c3;
-  --indigo-600: #5548a8;
-  --indigo-700: #483d8e;
-  --violet-500: #9b5cf6;
-  --orchid-500: #d17ae6;
-  --rose-500:   #e796bb;
-  --rose-50:    #fcf1f6;
+  /* Brand colors (500 = the main swatch) */
+  --pink-50:    #fde8f0;
+  --pink-100:   #f6c1d4;
+  --pink-300:   #ec95b6;
+  --pink-500:   #e2779f;  /* main brand pink — tiles, fills, large shapes */
+  --pink-600:   #b23f6c;  /* pink text on white (5.5:1) */
+  --pink-700:   #a3355f;
+  --purple-300: #c08ae0;
+  --purple-500: #a97be6;
+  --blue-300:   #9b8cf0;
+  --blue-500:   #6f83e0;
+  --blue-50:    #eef0fc;
 
   /* Neutrals */
   --ink:        #161616;  /* headings, body */
@@ -24,12 +26,13 @@
   --bg:         #ffffff;
 
   /* Roles */
-  --link:       var(--indigo-600);
-  --link-hover: var(--indigo-700);
-  --tag-bg:     var(--indigo-50);
-  --tag-fg:     var(--indigo-600);
-  --focus:      var(--indigo-500);
-  --gradient:   linear-gradient(90deg, var(--indigo-500), var(--violet-500) 55%, var(--orchid-500));
+  --link:       var(--pink-600);
+  --link-hover: var(--pink-700);
+  --tag-bg:     var(--pink-50);
+  --tag-fg:     var(--pink-600);
+  --focus:      var(--pink-500);
+  /* headline gradient: each stop a touch deeper than the swatch so large text reads (≥3.5:1) */
+  --gradient:   linear-gradient(90deg, #cf5a88, #9466dc 52%, #5f74d8);
 
   /* Type */
   --font-sans: "Figtree", system-ui, sans-serif;

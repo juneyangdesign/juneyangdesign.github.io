@@ -1,12 +1,12 @@
 /* Hero grid. Two looks, set by data-mode on the canvas: "squares" or the default glyphs.
    Squares: pink tiles with thin gaps. Moving the cursor sends smooth rings outward that tip the
-   tiles near it and fade within a few tiles; tiles under the cursor shade from rose to indigo. Mostly
+   tiles near it and fade within a few tiles; tiles under the cursor shade from pink through purple to blue. Mostly
    white by default; after a moment without hovering the pinks come up and soft color drifts and
    rings move across the grid (color only, no tile motion).
    Glyphs: a quiet field of tiny gray marks that bloom into the brand palette
    around the cursor and fade out behind it, leaving a short trail. When the pointer is
    idle (or on touch screens) a soft bloom drifts slowly on its own. Static for people who
-   prefer reduced motion. Colors come from ds.css: indigo, violet, orchid, rose. */
+   prefer reduced motion. Colors come from ds.css: pink, purple, blue. */
 (function () {
   var canvas = document.querySelector('.hero-grid');
   if (!canvas || !canvas.getContext) return;
@@ -15,13 +15,13 @@
   // data-mode="squares": soft tinted tiles that tilt and go white around the cursor.
   // Anything else: the glyph field.
   var SQUARES = canvas.getAttribute('data-mode') === 'squares';
-  // Tile tints lean rose/orchid with a little violet and indigo
-  // Resting tile tints from the design system: rose, orchid, violet and indigo (ds.css)
-  var TINTS = ['#e796bb', '#e796bb', '#d17ae6', '#d17ae6', '#9b5cf6', '#8178d6', '#6254c3'].map(function (h) {
+  // (glyph mode) brand colors for the blooming marks
+  // Resting tile tints from the design system (ds.css): mostly pink, some purple and blue
+  var TINTS = ['#e2779f', '#ec95b6', '#e2779f', '#f6c1d4', '#c08ae0', '#a97be6', '#9b8cf0', '#6f83e0'].map(function (h) {
     return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
   });
 
-  var PALETTE = ['#6254c3', '#9b5cf6', '#d17ae6', '#e796bb', '#8178d6'].map(function (h) {
+  var PALETTE = ['#e2779f', '#ec95b6', '#a97be6', '#6f83e0', '#9b8cf0'].map(function (h) {
     return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
   });
   var BASE = [196, 196, 204];
@@ -89,9 +89,9 @@
   // Spread: the cursor tints the tiles under it a deeper pink, and that color soaks outward
   // to neighboring tiles (a simple diffusion), fading as it travels. No movement, no bounce.
   var cols = 0, rows = 0, next = [], lastT = 0, STEP = 1000 / 60;
-  // Ripple / cursor color ramp, light to dark: rose → orchid → violet → indigo. Each stop is
+  // Ripple / cursor color ramp, light to dark: light pink → pink → purple → blue. Each stop is
   // lifted a little toward white so even the darkest point stays soft.
-  var RAMP = [[231, 150, 187], [209, 122, 230], [155, 92, 246], [98, 84, 195]].map(function (c) {
+  var RAMP = [[246, 193, 212], [226, 119, 159], [169, 123, 230], [111, 131, 224]].map(function (c) {
     return c.map(function (v) { return v + (255 - v) * 0.18; });
   });
   function rampColor(x) { // x: 0..1
@@ -201,7 +201,7 @@
     var a = c.a * (0.16 + 0.84 * idleMix), tc = c.tc || c.tint;
     var r = 255 + (tc[0] - 255) * a, g = 255 + (tc[1] - 255) * a, b = 255 + (tc[2] - 255) * a;
     var e = Math.min(1, c.e * 1.3);
-    // under the cursor the tile walks down the ramp (rose at the edge, indigo at the center);
+    // under the cursor the tile walks down the ramp (light pink at the edge, blue at the center);
     // idle color rings use the lighter half of the ramp
     var ring = c.re || 0, mixA = Math.min(1, e * 1.5), mixB = ring * 0.5;
     if (mixA >= mixB && mixA > 0) {
