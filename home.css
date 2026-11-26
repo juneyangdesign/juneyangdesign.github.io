@@ -140,9 +140,27 @@ body { position: relative; }
 }
 .project:hover .project__media,
 .project:focus-visible .project__media {
-  transform: translateY(-4px);
   box-shadow: 0 14px 32px -12px rgba(0, 0, 0, .18), 0 4px 10px -6px rgba(0, 0, 0, .08);
 }
+/* Selected state: the card lifts and a thin ring in the calm brand gradient fades in a few
+   pixels outside the thumbnail — outside the image, so it works with every cover's colors */
+.project__frame { position: relative; transition: transform .4s cubic-bezier(.2, .7, .2, 1); }
+.project:hover .project__frame, .project:focus-visible .project__frame { transform: translateY(-4px); }
+.project__frame::before {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  border-radius: 26px;
+  padding: 1.5px;
+  background: var(--gradient-title);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0;
+  transition: opacity .35s ease;
+  pointer-events: none;
+}
+.project:hover .project__frame::before, .project:focus-visible .project__frame::before { opacity: 1; }
 .project__media img {
   width: 100%;
   height: 100%;
@@ -190,12 +208,14 @@ body { position: relative; }
   line-height: 1.3;
 }
 .project:hover .project__title, .project:focus-visible .project__title { color: transparent; }
-.project:focus-visible { outline: 2px solid var(--focus); outline-offset: 8px; border-radius: 20px; }
+.project:focus-visible { outline: none; } /* the gradient ring shows focus instead */
 
 @media (prefers-reduced-motion: reduce) {
   .project__media img, .project__media { transition: none; }
   .project:hover .project__media img { transform: none; }
   .project:hover .project__media, .project:focus-visible .project__media { transform: none; }
+  .project__frame { transition: none; }
+  .project:hover .project__frame, .project:focus-visible .project__frame { transform: none; }
 }
 
 @media (max-width: 1023px) {
@@ -221,6 +241,7 @@ body { position: relative; }
   .work-head .ds-label { font-size: 12px; }
   .work { grid-template-columns: 1fr; row-gap: 48px; margin-top: 28px; }
   .project__media { border-radius: 12px; }
+  .project__frame::before { inset: -5px; border-radius: 17px; }
   .project__title { margin-top: 16px; font-size: 22px; line-height: 28px; }
   .project__desc { font-size: 15px; }
   .project__tags { margin-top: 12px; gap: 8px; }
