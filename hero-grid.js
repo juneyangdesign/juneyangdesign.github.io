@@ -113,7 +113,7 @@
   var DEEP = [196, 44, 128]; // deep pink under the cursor
   // Water surface: a damped 2D wave on the tile grid. Moving the cursor presses the surface
   // down under it; the dip travels outward as smooth rings and dies away.
-  var WAVE_SPEED = 0.16, WAVE_DAMP = 0.03;
+  var WAVE_SPEED = 0.12, WAVE_DAMP = 0.02; // slower, longer rings
   function wave(spd, idleDrop) {
     var n = cells.length, i, c;
     // ignore the tiny jitter of a hovering hand; only real movement pushes the water
@@ -218,7 +218,8 @@
     var h = gap / 2 - 1.25; // a thin, even gap between tiles
     var gx = c.gx || 0, gy = c.gy || 0, mag = Math.sqrt(gx * gx + gy * gy);
     // the ripple only shows around the cursor and its short trail (where the pink has spread)
-    var near = Math.min(1, c.e * 2.2); near = near * near * (3 - 2 * near);
+    // motion shows wherever the cursor's influence has spread (a wider, softer area than the pink)
+    var near = Math.min(1, c.e * 6); near = near * near * (3 - 2 * near);
     var th = Math.min(MAX_TILT, mag * TILT_GAIN) * near;
     var shade = (-(gx + gy) * 1.1) * near;
     shade = Math.max(-0.14, Math.min(0.3, shade));
