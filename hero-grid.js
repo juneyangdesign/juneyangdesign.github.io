@@ -55,7 +55,7 @@
           rot: rand(i, j, 3) * Math.PI,
           spin: rand(i, j, 4) - 0.5,
           tint: TINTS[Math.floor(rand(i, j, 5) * TINTS.length)],
-          a: pinkAlpha(rand(i, j, 6)), dim: 1, h: 0, v: 0, nv: 0, gx: 0, gy: 0, re: 0,
+          a: pinkAlpha(rand(i, j, 6)), dim: 1, nz: rand(i, j, 7), h: 0, v: 0, nv: 0, gx: 0, gy: 0, re: 0,
           e: 0
         });
       }
@@ -75,8 +75,14 @@
         var ex = Math.max(bx[0] - c0.x, 0, c0.x - bx[2]), ey = Math.max(bx[1] - c0.y, 0, c0.y - bx[3]);
         dmin = Math.min(dmin, Math.sqrt(ex * ex + ey * ey));
       }
-      var f0 = Math.max(0, Math.min(1, (dmin - gap * 0.15) / (gap * 2.2)));
-      c0.dim = f0 * f0 * (3 - 2 * f0);
+      // Organic edge: each tile fades at its own point (random + a slow wobble), so the clear
+      // area around the text dissolves unevenly instead of forming a box
+      var wob = Math.sin(c0.x * 0.011 + c0.y * 0.004) * 0.5 + Math.sin(c0.y * 0.017 - c0.x * 0.006) * 0.5;
+      var jit = (c0.nz - 0.5) * gap * 2.4 + wob * gap * 0.9;
+      var f0 = Math.max(0, Math.min(1, (dmin + jit - gap * 0.4) / (gap * 2.6)));
+      // the same dissolve along the bottom edge
+      var fb = Math.max(0, Math.min(1, ((H - c0.y) + (c0.nz - 0.5) * gap * 2 - gap * 0.6) / (gap * 2.4)));
+      c0.dim = f0 * f0 * (3 - 2 * f0) * fb * fb * (3 - 2 * fb);
     }
     if (old.length === cells.length) for (var k = 0; k < cells.length; k++) { var ok = old[k], nk = cells[k]; nk.e = ok.e; nk.a = ok.a; nk.at = ok.at; nk.tt = ok.tt; nk.tc = ok.tc; }
 

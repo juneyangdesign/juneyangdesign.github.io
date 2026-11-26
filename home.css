@@ -48,7 +48,6 @@ a { color: inherit; text-decoration: none; }
 /* Hero fills the first screen: header + intro + "Selected work" label = 100vh */
 body { position: relative; }
 .hero-grid { position: absolute; top: 0; left: 0; width: 100%; height: 100vh; pointer-events: none; z-index: 0; }
-.hero-grid[data-mode="squares"] { -webkit-mask-image: linear-gradient(#000 90%, transparent); mask-image: linear-gradient(#000 90%, transparent); }
 .site-header, .home { position: relative; z-index: 1; }
 .intro {
   min-height: calc(100vh / var(--fit, 1) - 140px);
