@@ -193,29 +193,60 @@
     }
   }
 
-  // When nobody is hovering, slow rings of deeper pink spread out from random spots and fade.
-  var rings = [], lastRing = 0, idleMix = 0, idleStart = 0, RING_SPEED = 0.09, RING_LIFE = 7000;
+  // Idle show: when nobody is hovering, a rotating set of color-only effects plays across the
+  // grid, a new one every few seconds, overlapping softly. All use the current scheme's ripple
+  // colors and pass through clean() like everything else, and they fade out when you hover.
+  //   sweep   a broad band of color rolls across the whole screen at a random angle
+  //   ring    a ring of color expands from a random spot across the entire grid
+  //   sparkle random spots bloom one after another and fade
+  //   rain    many small quick drops of color land and fade
+  var fx = [], nextFx = 0, lastKind = '', idleMix = 0, idleStart = 0;
+  var KINDS = ['sweep', 'ring', 'sparkle', 'rain'];
+  function startFx(t) {
+    var kinds = KINDS.filter(function (k) { return k !== lastKind; });
+    var kind = kinds[Math.floor(Math.random() * kinds.length)]; lastKind = kind;
+    var R = function (a, b) { return a + Math.random() * (b - a); };
+    if (kind === 'sweep') {
+      var ang = R(0, Math.PI * 2);
+      fx.push({ k: 'sweep', t: t, life: 5200, cx: Math.cos(ang), cy: Math.sin(ang), w: gap * 3.2, amp: 0.95 });
+    } else if (kind === 'ring') {
+      fx.push({ k: 'ring', t: t, life: 6500, x: R(0.15, 0.95) * W, y: R(0.1, 0.9) * H, v: 0.22, w: gap * 1.8, amp: 1 });
+    } else if (kind === 'sparkle') {
+      for (var i = 0; i < 11; i++) fx.push({ k: 'bloom', t: t + i * R(140, 260), life: R(1600, 2400), x: R(0.05, 0.98) * W, y: R(0.05, 0.95) * H, r: gap * R(1.1, 2.2), amp: R(0.75, 1) });
+    } else { // rain
+      for (var j = 0; j < 26; j++) fx.push({ k: 'bloom', t: t + R(0, 3200), life: R(700, 1100), x: R(0, 1) * W, y: R(0, 1) * H, r: gap * R(0.55, 0.9), amp: R(0.6, 0.9) });
+    }
+    nextFx = t + R(3600, 5200);
+  }
+  function fxAt(e, c, t) {
+    var age = t - e.t;
+    if (age < 0 || age > e.life) return 0;
+    var life = age / e.life;
+    if (e.k === 'bloom') {
+      var dx = c.x - e.x, dy = c.y - e.y, d2 = (dx * dx + dy * dy) / (e.r * e.r);
+      return Math.exp(-d2) * Math.sin(Math.PI * life) * e.amp;
+    }
+    var fade = Math.sin(Math.PI * Math.min(1, life * 1.1));      // eases in, then out
+    if (e.k === 'sweep') {
+      var span = W * Math.abs(e.cx) + H * Math.abs(e.cy);          // grid length along the sweep
+      var lo = Math.min(0, W * e.cx) + Math.min(0, H * e.cy);
+      var front = lo - e.w * 2 + (span + e.w * 4) * life;
+      var off = c.x * e.cx + c.y * e.cy - front;
+      return Math.exp(-(off * off) / (2 * e.w * e.w)) * fade * e.amp;
+    }
+    var rx = c.x - e.x, ry = c.y - e.y, off2 = Math.sqrt(rx * rx + ry * ry) - e.v * age;
+    return Math.exp(-(off2 * off2) / (2 * e.w * e.w)) * fade * e.amp;
+  }
   function colorRings(t, idle, k) {
     // effects begin after ~1.5s without hovering, ease in over ~2s, and ease out on hover
     if (!idle) idleStart = t;
     var on = idle && t - idleStart > 1500;
     idleMix += ((on ? 1 : 0) - idleMix) * (1 - Math.pow(1 - (on ? 0.008 : 0.04), k));
-    if (idleMix > 0.3 && t - lastRing > 2200 + Math.random() * 1800) {
-      lastRing = t;
-      rings.push({ x: W * (0.15 + Math.random() * 0.8), y: H * (0.1 + Math.random() * 0.8), t: t });
-      if (rings.length > 4) rings.shift();
-    }
-    var band = gap * 2.2;
+    if (idleMix > 0.3 && t >= nextFx) startFx(t);
+    fx = fx.filter(function (e) { return t - e.t <= e.life; });
     for (var i = 0; i < cells.length; i++) {
       var c = cells[i], sum = 0;
-      for (var j = 0; j < rings.length; j++) {
-        var rg = rings[j], age = t - rg.t;
-        if (age < 0 || age > RING_LIFE) continue;
-        var dx = c.x - rg.x, dy = c.y - rg.y, d = Math.sqrt(dx * dx + dy * dy);
-        var off = d - RING_SPEED * age, life = age / RING_LIFE;
-        var fade = Math.sin(Math.PI * Math.min(1, life * 1.15)); // fades in, then out
-        sum += Math.exp(-(off * off) / (2 * band * band)) * fade;
-      }
+      for (var j = 0; j < fx.length; j++) sum += fxAt(fx[j], c, t);
       c.re = Math.min(1, sum) * idleMix;
     }
   }
@@ -279,13 +310,13 @@
     var r = 255 + (tc[0] - 255) * a, g = 255 + (tc[1] - 255) * a, b = 255 + (tc[2] - 255) * a;
     var e = Math.min(1, c.e * 1.3);
     // under the cursor the tile walks down the ramp (pale lavender at the edge, blue-violet at the center);
-    // idle color rings use the lighter half of the ramp
-    var ring = c.re || 0, mixA = Math.min(0.85, e * 1.3), mixB = ring * 0.45;
+    // idle effects walk part way down the ramp
+    var ring = c.re || 0, mixA = Math.min(0.85, e * 1.3), mixB = ring * 0.62;
     if (mixA >= mixB && mixA > 0) {
       var col = rampColor(e);
       r += (col[0] - r) * mixA; g += (col[1] - g) * mixA; b += (col[2] - b) * mixA;
     } else if (mixB > 0) {
-      var col2 = rampColor(ring * 0.55);
+      var col2 = rampColor(0.25 + ring * 0.6);
       r += (col2[0] - r) * mixB; g += (col2[1] - g) * mixB; b += (col2[2] - b) * mixB;
     }
     var h = gap / 2 - 1.25; // a thin, even gap between tiles
