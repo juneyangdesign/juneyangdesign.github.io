@@ -34,8 +34,8 @@
       ramp: [[244, 214, 246], [170, 188, 250], [120, 150, 245], [95, 125, 236]]
     }
   };
-  var CYCLE = ['pink', 'purple', 'blue'], HOLD = 14000, SWEEP = 5000; // ms per color, ms per change
-  var shifting = false, cyc = 0, nextShift = 0, sweepStart = -1e9, rampFrom = null, rampTo = null;
+  var CYCLE = ['pink', 'purple', 'blue'];
+  var shifting = false, cyc = 0, rampFrom = null, rampTo = null;
   var TINTS, RAMP;
   function schemeName() {
     var h = (location.hash || '').slice(1), d = canvas.getAttribute('data-palette');
@@ -50,7 +50,6 @@
     if (name === 'shift') {
       cyc = Math.floor(Math.random() * CYCLE.length); // each visit starts somewhere different
       name = CYCLE[cyc];
-      nextShift = performance.now() + HOLD;
     }
     var sc = SCHEMES[name];
     TINTS = sc.tints.map(rgb);
@@ -58,28 +57,26 @@
     // existing tiles drift to the new colors (same tile keeps the same slot in the list)
     for (var i = 0; i < cells.length; i++) { cells[i].tt = TINTS[Math.floor(cells[i].pick * TINTS.length)]; cells[i].sw = 0; }
   }
-  // Move to the next main color: tiles pick up the new tint in a soft sweep from left to
-  // right (with a little randomness), and the ripple colors blend across over the same time.
+  // Color changes ride on a full-screen sweep: changeScheme() is given each tile's arrival time
+  // (when the sweep's front reaches it), so tiles switch as the front passes and the ripple
+  // colors blend across over the same span.
+  var rampT0 = 0, rampT1 = 0;
+  function changeScheme(arrive, t0, t1) {
+    cyc = (cyc + 1) % CYCLE.length;
+    var sc = SCHEMES[CYCLE[cyc]];
+    TINTS = sc.tints.map(rgb);
+    rampFrom = RAMP; rampTo = liftRamp(sc.ramp); rampT0 = t0; rampT1 = t1;
+    for (var i = 0; i < cells.length; i++) cells[i].sw = arrive(cells[i]);
+  }
   function shiftStep(t) {
-    if (!shifting) return;
-    if (t >= nextShift) {
-      cyc = (cyc + 1) % CYCLE.length;
-      var sc = SCHEMES[CYCLE[cyc]];
-      TINTS = sc.tints.map(rgb);
-      rampFrom = RAMP; rampTo = liftRamp(sc.ramp);
-      sweepStart = t; nextShift = t + HOLD;
-      for (var i = 0; i < cells.length; i++) {
-        var c = cells[i];
-        c.sw = t + (c.x / (W || 1)) * SWEEP * 0.75 + c.nz * SWEEP * 0.25;
-      }
-    }
     for (var j = 0; j < cells.length; j++) {
       var cj = cells[j];
       if (cj.sw && t >= cj.sw) { cj.tt = TINTS[Math.floor(cj.pick * TINTS.length)]; cj.sw = 0; }
     }
-    var f = Math.max(0, Math.min(1, (t - sweepStart) / SWEEP));
-    if (f < 1) RAMP = rampFrom.map(function (a, k) { return a.map(function (v, m) { return v + (rampTo[k][m] - v) * f; }); });
-    else RAMP = rampTo;
+    if (rampTo && rampT1 > rampT0) {
+      var f = Math.max(0, Math.min(1, (t - rampT0) / (rampT1 - rampT0)));
+      RAMP = f < 1 ? rampFrom.map(function (a, k) { return a.map(function (v, m) { return v + (rampTo[k][m] - v) * f; }); }) : rampTo;
+    }
   }
 
   var PALETTE = ['#f472d0', '#ee6bd2', '#a78bfa', '#6b8cf5', '#a5b4fc'].map(function (h) {
@@ -118,7 +115,7 @@
           rot: rand(i, j, 3) * Math.PI,
           spin: rand(i, j, 4) - 0.5,
           pick: rand(i, j, 5), tint: TINTS[Math.floor(rand(i, j, 5) * TINTS.length)],
-          a: pinkAlpha(rand(i, j, 6)), dim: 1, nz: rand(i, j, 7), sw: 0, gx: 0, gy: 0, re: 0,
+          a: pinkAlpha(rand(i, j, 6)), dim: 1, nz: rand(i, j, 7), sw: 0, ix: 0, iy: 0, gx: 0, gy: 0, re: 0,
           e: 0
         });
       }
@@ -175,7 +172,7 @@
       }
     }
     while (waves.length && t - waves[0].t > RING_LIFE) waves.shift();
-    var w = gap * 0.95, ease = 1 - Math.pow(0.72, k);
+    var w = gap * 0.95, follow = 1 - Math.pow(0.72, k);
     for (i = 0; i < cells.length; i++) {
       c = cells[i];
       var tx = 0, ty = 0;
@@ -189,65 +186,103 @@
         var prof = -(off / w) * Math.exp(-(off * off) / (2 * w * w)) * 1.65; // one smooth crest
         tx += (dx / d) * prof * amp; ty += (dy / d) * prof * amp;
       }
-      c.gx += (tx - c.gx) * ease; c.gy += (ty - c.gy) * ease;
+      tx += c.ix || 0; ty += c.iy || 0;   // the idle move's gentle tip
+      c.gx += (tx - c.gx) * follow; c.gy += (ty - c.gy) * follow;
     }
   }
 
-  // Idle show: when nobody is hovering, a rotating set of color-only effects plays across the
-  // grid, a new one every few seconds, overlapping softly. All use the current scheme's ripple
-  // colors and pass through clean() like everything else, and they fade out when you hover.
-  //   sweep   a broad band of color rolls across the whole screen at a random angle
-  //   ring    a ring of color expands from a random spot across the entire grid
-  //   sparkle random spots bloom one after another and fade
-  //   rain    many small quick drops of color land and fade
-  var fx = [], nextFx = 0, lastKind = '', idleMix = 0, idleStart = 0;
-  var KINDS = ['sweep', 'ring', 'sparkle', 'rain'];
-  function startFx(t) {
-    var kinds = KINDS.filter(function (k) { return k !== lastKind; });
-    var kind = kinds[Math.floor(Math.random() * kinds.length)]; lastKind = kind;
-    var R = function (a, b) { return a + Math.random() * (b - a); };
-    if (kind === 'sweep') {
-      var ang = R(0, Math.PI * 2);
-      fx.push({ k: 'sweep', t: t, life: 5200, cx: Math.cos(ang), cy: Math.sin(ang), w: gap * 3.2, amp: 0.95 });
-    } else if (kind === 'ring') {
-      fx.push({ k: 'ring', t: t, life: 6500, x: R(0.15, 0.95) * W, y: R(0.1, 0.9) * H, v: 0.22, w: gap * 1.8, amp: 1 });
-    } else if (kind === 'sparkle') {
-      for (var i = 0; i < 7; i++) fx.push({ k: 'bloom', t: t + i * R(140, 260), life: R(1600, 2400), x: R(0.05, 0.98) * W, y: R(0.05, 0.95) * H, r: gap * R(1.1, 2.2), amp: R(0.75, 1) });
-    } else { // rain
-      for (var j = 0; j < 16; j++) fx.push({ k: 'bloom', t: t + R(0, 3200), life: R(700, 1100), x: R(0, 1) * W, y: R(0, 1) * H, r: gap * R(0.55, 0.9), amp: R(0.6, 0.9) });
+  // Idle director. When nobody is hovering, it plays ONE full-screen move at a time, like a
+  // lighting cue: a clear front of color travels across every tile at a steady speed, tiles
+  // tip gently as it passes, and a soft afterglow fades behind it. Then a rest. During a rest
+  // there may be one small accent (a single bloom, or three tiny ones), never during a move.
+  // Every third move also carries the color change (pink → purple → blue).
+  //   side / corner   sweep from one edge, or one corner to the opposite one
+  //   center          bloom from the middle out to all four corners
+  //   corners         waves from all four corners meeting in the middle
+  //   curtain         falls top to bottom with a softly staggered front
+  var MOVES = ['side', 'corner', 'center', 'corners', 'curtain'];
+  var hero = null, accents = [], nextAt = 0, lastMove = '', moveCount = 0, idleMix = 0, idleStart = 0;
+  var MOVE_MS = 4200, REST_MS = [2400, 3400];
+  function ease(x) { return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2; }
+  function makeMove(t) {
+    var opts = MOVES.filter(function (m) { return m !== lastMove; });
+    var kind = opts[Math.floor(Math.random() * opts.length)]; lastMove = kind;
+    var m = { k: kind, t: t, life: MOVE_MS, w: gap * 1.4, trail: gap * 5 };
+    if (kind === 'side') {
+      var dirs = [[1, 0], [-1, 0], [0, 1]]; var d = dirs[Math.floor(Math.random() * dirs.length)];
+      m.dx = d[0]; m.dy = d[1];
+    } else if (kind === 'corner') {
+      var sx = Math.random() < 0.5 ? 1 : -1, sy = Math.random() < 0.5 ? 1 : -1, L = Math.sqrt(W * W + H * H);
+      m.dx = sx * W / L; m.dy = sy * H / L;
+    } else if (kind === 'curtain') {
+      m.dx = 0; m.dy = 1;
     }
-    nextFx = t + R(3600, 5200);
+    // distance each tile is from the start, and the farthest distance (the front covers 0..span)
+    m.pos = function (c) {
+      if (kind === 'center') return Math.sqrt((c.x - W / 2) * (c.x - W / 2) + (c.y - H / 2) * (c.y - H / 2));
+      if (kind === 'corners') {
+        var a = Math.min(Math.hypot(c.x, c.y), Math.hypot(W - c.x, c.y), Math.hypot(c.x, H - c.y), Math.hypot(W - c.x, H - c.y));
+        return a;
+      }
+      var p = c.x * m.dx + c.y * m.dy - (Math.min(0, W * m.dx) + Math.min(0, H * m.dy));
+      if (kind === 'curtain') p += (rand(Math.round(c.x / gap), 0, 9) - 0.5) * gap * 2.2; // staggered columns
+      return p;
+    };
+    m.span = kind === 'center' ? Math.hypot(W / 2, H / 2) : kind === 'corners' ? Math.hypot(W / 2, H / 2)
+      : Math.abs(W * m.dx) + Math.abs(H * m.dy) + (kind === 'curtain' ? gap : 0);
+    // the front moves at a steady speed across the whole grid
+    m.front = function (tt) { return -m.w * 2 + (m.span + m.w * 2) * Math.min(1, (tt - m.t) / (m.life * 0.78)); };
+    m.arrive = function (c) { return m.t + m.life * 0.78 * (m.pos(c) + m.w * 2) / (m.span + m.w * 2); };
+    return m;
   }
-  function fxAt(e, c, t) {
-    var age = t - e.t;
-    if (age < 0 || age > e.life) return 0;
-    var life = age / e.life;
-    if (e.k === 'bloom') {
-      var dx = c.x - e.x, dy = c.y - e.y, d2 = (dx * dx + dy * dy) / (e.r * e.r);
-      return Math.exp(-d2) * Math.sin(Math.PI * life) * e.amp;
-    }
-    var fade = Math.sin(Math.PI * Math.min(1, life * 1.1));      // eases in, then out
-    if (e.k === 'sweep') {
-      var span = W * Math.abs(e.cx) + H * Math.abs(e.cy);          // grid length along the sweep
-      var lo = Math.min(0, W * e.cx) + Math.min(0, H * e.cy);
-      var front = lo - e.w * 2 + (span + e.w * 4) * life;
-      var off = c.x * e.cx + c.y * e.cy - front;
-      return Math.exp(-(off * off) / (2 * e.w * e.w)) * fade * e.amp;
-    }
-    var rx = c.x - e.x, ry = c.y - e.y, off2 = Math.sqrt(rx * rx + ry * ry) - e.v * age;
-    return Math.exp(-(off2 * off2) / (2 * e.w * e.w)) * fade * e.amp;
+  function moveAt(m, c, t) {
+    var age = t - m.t; if (age < 0 || age > m.life) return null;
+    var off = m.pos(c) - m.front(t);                         // > 0: front hasn't arrived yet
+    var lead = Math.exp(-(off * off) / (2 * m.w * m.w));
+    var glow = off < 0 ? 0.5 * Math.exp(off / m.trail) : 0;  // afterglow behind the front
+    var env = Math.min(1, age / 300) * Math.min(1, (m.life - age) / 900);
+    var amt = Math.max(lead, glow) * env;
+    // gentle tip as the front passes: toward the front, then away (direction of travel)
+    var dx, dy;
+    if (m.k === 'center' || m.k === 'corners') {
+      var cx = m.k === 'center' ? W / 2 : (c.x < W / 2 ? 0 : W), cy = m.k === 'center' ? H / 2 : (c.y < H / 2 ? 0 : H);
+      dx = c.x - cx; dy = c.y - cy; var L = Math.sqrt(dx * dx + dy * dy) || 1; dx /= L; dy /= L;
+    } else { dx = m.dx; dy = m.dy; }
+    var tip = -(off / m.w) * lead * env * 0.035;
+    return [amt, dx * tip, dy * tip];
+  }
+  function makeAccent(t) {
+    var R = function (a, b) { return a + Math.random() * (b - a); }, out = [];
+    var n = Math.random() < 0.5 ? 1 : 3;
+    var x0 = R(0.2, 0.9) * W, y0 = R(0.15, 0.85) * H;
+    for (var i = 0; i < n; i++) out.push({ t: t + i * 260, life: 1500, x: x0 + (n > 1 ? R(-2.5, 2.5) * gap : 0), y: y0 + (n > 1 ? R(-1.5, 1.5) * gap : 0), r: gap * (n > 1 ? 0.8 : 1.6) });
+    return out;
   }
   function colorRings(t, idle, k) {
     // effects begin after ~1.5s without hovering, ease in over ~2s, and ease out on hover
     if (!idle) idleStart = t;
     var on = idle && t - idleStart > 1500;
     idleMix += ((on ? 1 : 0) - idleMix) * (1 - Math.pow(1 - (on ? 0.008 : 0.04), k));
-    if (idleMix > 0.3 && t >= nextFx) startFx(t);
-    fx = fx.filter(function (e) { return t - e.t <= e.life; });
+    if (!on && idleMix < 0.02) { hero = null; accents = []; nextAt = t + 600; }
+    if (on && !hero && t >= nextAt) {
+      hero = makeMove(t); moveCount++;
+      if (shifting && moveCount % 3 === 0 && hero.k !== 'corners') changeScheme(hero.arrive, hero.t, hero.t + hero.life * 0.78);
+      var rest = REST_MS[0] + Math.random() * (REST_MS[1] - REST_MS[0]);
+      nextAt = t + MOVE_MS + rest;
+      if (Math.random() < 0.6) { var at = t + MOVE_MS + rest * 0.35; accents = makeAccent(at); }
+    }
+    if (hero && t - hero.t > hero.life) hero = null;
+    accents = accents.filter(function (a) { return t - a.t <= a.life; });
     for (var i = 0; i < cells.length; i++) {
-      var c = cells[i], sum = 0;
-      for (var j = 0; j < fx.length; j++) sum += fxAt(fx[j], c, t);
+      var c = cells[i], sum = 0, ix = 0, iy = 0;
+      if (hero) { var r = moveAt(hero, c, t); if (r) { sum = r[0]; ix = r[1]; iy = r[2]; } }
+      for (var j = 0; j < accents.length; j++) {
+        var a = accents[j], age = t - a.t; if (age < 0) continue;
+        var ddx = c.x - a.x, ddy = c.y - a.y;
+        sum += Math.exp(-(ddx * ddx + ddy * ddy) / (a.r * a.r)) * Math.sin(Math.PI * age / a.life) * 0.6; // accents stay small and soft
+      }
       c.re = Math.min(1, sum) * idleMix;
+      c.ix = ix * idleMix; c.iy = iy * idleMix;
     }
   }
 
@@ -255,7 +290,7 @@
     var n = cells.length, i, c;
     if (next.length !== n) next = new Array(n);
     // inject under the cursor, or under the wandering "ghost" while idle
-    var amt = idle ? idleMix * 0.85 : 1;
+    var amt = idle ? 0 : 1;   // no wandering trail while idle: the director owns that time
     if (amt > 0.02) {
       var RR = gap * 1.6;
       for (i = 0; i < n; i++) {
@@ -312,12 +347,12 @@
     var e = Math.min(1, c.e * 1.3);
     // under the cursor the tile walks down the ramp (pale lavender at the edge, blue-violet at the center);
     // idle effects walk part way down the ramp
-    var ring = c.re || 0, mixA = Math.min(0.85, e * 1.3), mixB = ring * 0.42;
+    var ring = c.re || 0, mixA = Math.min(0.85, e * 1.3), mixB = ring * 0.62;
     if (mixA >= mixB && mixA > 0) {
       var col = rampColor(e);
       r += (col[0] - r) * mixA; g += (col[1] - g) * mixA; b += (col[2] - b) * mixA;
     } else if (mixB > 0) {
-      var col2 = rampColor(0.15 + ring * 0.45);
+      var col2 = rampColor(0.15 + ring * 0.55);
       r += (col2[0] - r) * mixB; g += (col2[1] - g) * mixB; b += (col2[2] - b) * mixB;
     }
     var h = gap / 2 - 1.25; // a thin, even gap between tiles
@@ -401,7 +436,7 @@
         shiftStep(t);
         colorRings(t, idle, k);
         spread(t, idle, Math.sqrt(pvx * pvx + pvy * pvy) / k, k);
-        for (var q = 0; q < cells.length; q++) { if (Math.random() < 0.0004 * k) reroll(cells[q]); easeColor(cells[q], k); }
+        for (var q = 0; q < cells.length; q++) { if (Math.random() < 0.00012 * k) reroll(cells[q]); easeColor(cells[q], k); }
       }
       for (var k2 = 0; k2 < cells.length; k2++) tile(cells[k2]);
       return;
