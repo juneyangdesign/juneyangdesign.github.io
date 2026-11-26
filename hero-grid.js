@@ -1,4 +1,5 @@
 /* Hero grid. Two looks, set by data-mode on the canvas: "squares" or the default glyphs.
+   Squares: pink tiles that stay put while soft ripples spread out from the cursor like water.
    Glyphs: a quiet field of tiny gray marks that bloom into the brand palette
    around the cursor and fade out behind it, leaving a short trail. When the pointer is
    idle (or on touch screens) a soft bloom drifts slowly on its own. Static for people who
@@ -37,7 +38,7 @@
     H = stop ? stop.offsetTop : window.innerHeight;
     canvas.style.height = H + 'px';
     var small = W < 760;
-    gap = SQUARES ? (small ? 46 : 76) : (small ? 30 : 44);
+    gap = SQUARES ? (small ? 44 : 68) : (small ? 30 : 44);
     radius = SQUARES ? (small ? 110 : 200) : (small ? 130 : 260);
 
     var cols = Math.ceil(W / gap) + 1, rows = Math.ceil(H / gap);
@@ -52,7 +53,7 @@
           rot: rand(i, j, 3) * Math.PI,
           spin: rand(i, j, 4) - 0.5,
           tint: TINTS[Math.floor(rand(i, j, 5) * TINTS.length)],
-          a: pinkAlpha(rand(i, j, 6)), dim: 1, ang: 0, vel: 0, on: false, hold: 0, axis: 0, dir: 1, tilt: 0.3,
+          a: pinkAlpha(rand(i, j, 6)), dim: 1,
           e: 0
         });
       }
@@ -82,65 +83,48 @@
     if (reduce) draw(0);
   }
 
-  // Tile front colors: about a quarter white, the rest pink at varied strengths
+  // Tile colors: about a quarter white, the rest pink at varied strengths
   function pinkAlpha(r) { return r < 0.24 ? 0 : 0.14 + Math.pow((r - 0.24) / 0.76, 1.3) * 0.66; }
   function reroll(c) { c.tint = TINTS[Math.floor(Math.random() * TINTS.length)]; c.a = pinkAlpha(Math.random()); }
 
-  // Draw one tile as a card rotated in 3D (about the Y or X axis) with perspective.
-  // Front face is the pink, back face is a soft white; a thin gray edge gives it thickness.
-  var P = 520; // perspective distance
-  function tile(c) {
-    var h = (gap - 1) / 2, th = c.ang, cs = Math.cos(th), sn = Math.sin(th);
-    var pts = [[-h, -h], [h, -h], [h, h], [-h, h]].map(function (q) {
-      var x, y, z;
-      if (c.axis === 0) { x = q[0] * cs; z = q[0] * sn; y = q[1]; }      // flip left/right
-      else { y = q[1] * cs; z = q[1] * sn; x = q[0]; }                    // flip up/down
-      var f = P / (P - z * c.dir);
-      return [c.x + x * f, c.y + y * f];
-    });
-    var front = cs >= 0, lit = 0.86 + 0.14 * Math.abs(cs);
-    var r, g, b;
-    if (front) {
-      var a = c.a * c.dim;
-      r = 255 + (c.tint[0] - 255) * a; g = 255 + (c.tint[1] - 255) * a; b = 255 + (c.tint[2] - 255) * a;
-    } else { r = 248; g = 247; b = 250; }
-    r *= lit; g *= lit; b *= lit;
-    var moving = Math.abs(sn) > 0.02;
-    if (moving) { // edge / shadow for depth
-      ctx.fillStyle = 'rgba(60,40,70,' + (0.10 * Math.abs(sn) + 0.03).toFixed(3) + ')';
-      ctx.beginPath();
-      for (var i = 0; i < 4; i++) ctx[i ? 'lineTo' : 'moveTo'](pts[i][0] + 1.5, pts[i][1] + 2);
-      ctx.closePath(); ctx.fill();
+  // Ripples: the cursor drops soft rings that spread outward like water. A tile under a
+  // passing crest lifts a touch (slightly larger, lighter, faint shadow); under a trough it
+  // settles a hair deeper. Tiles never move from their spot.
+  var ripples = [], lastDrop = { x: -1e9, y: -1e9, t: 0 };
+  var SPEED = 0.3, LIFE = 2000;           // px per ms, ms
+  function drop(x, y, t, s) {
+    ripples.push({ x: x, y: y, t: t, s: s });
+    if (ripples.length > 14) ripples.shift();
+  }
+  function waveAt(c, t) {
+    var z = 0, wl = gap * 2.4, w = gap * 1.1;
+    for (var i = 0; i < ripples.length; i++) {
+      var rp = ripples[i], age = t - rp.t;
+      if (age < 0 || age > LIFE) continue;
+      var dx = c.x - rp.x, dy = c.y - rp.y, d = Math.sqrt(dx * dx + dy * dy);
+      var front = d - SPEED * age;
+      if (front > w * 3 || front < -wl * 1.5) continue;
+      var env = Math.exp(-(front * front) / (2 * w * w));
+      var fade = 1 - age / LIFE;
+      z += rp.s * env * Math.cos(front / wl * Math.PI * 2) * fade / (1 + d / 700);
     }
-    ctx.fillStyle = 'rgb(' + (r | 0) + ',' + (g | 0) + ',' + (b | 0) + ')';
-    ctx.beginPath();
-    for (var k = 0; k < 4; k++) ctx[k ? 'lineTo' : 'moveTo'](pts[k][0], pts[k][1]);
-    ctx.closePath(); ctx.fill();
-    if (moving || !front) {
-      ctx.strokeStyle = 'rgba(40,30,60,' + (0.05 + 0.08 * Math.abs(sn)).toFixed(3) + ')';
-      ctx.lineWidth = 1; ctx.stroke();
-    }
+    return Math.max(-1, Math.min(1, z));
   }
 
-  // Spring each tile toward flipped (white side up, resting at a slight tilt) or back to pink
-  function stepTile(c, now, near, vx, vy) {
-    if (near > 0) {
-      if (!c.on) {
-        c.on = true;
-        c.axis = Math.abs(vx) >= Math.abs(vy) ? 0 : 1;   // flip the way the cursor is moving
-        c.dir = (c.axis === 0 ? vx : vy) >= 0 ? 1 : -1;
-        c.tilt = 0.18 + Math.random() * 0.32;
-      }
-      c.hold = now + 450 + Math.random() * 500;
+  function tile(c, z) {
+    var a = c.a * c.dim;
+    var r = 255 + (c.tint[0] - 255) * a, g = 255 + (c.tint[1] - 255) * a, b = 255 + (c.tint[2] - 255) * a;
+    var up = Math.max(0, z), down = Math.max(0, -z);
+    var lift = Math.min(1, up * 1.3);
+    r += (255 - r) * lift * 0.8; g += (255 - g) * lift * 0.8; b += (255 - b) * lift * 0.8;
+    r *= 1 - down * 0.06; g *= 1 - down * 0.12; b *= 1 - down * 0.07;
+    var h = (gap - 1) / 2 * (1 + z * 0.08);
+    if (up > 0.04) {
+      ctx.fillStyle = 'rgba(90,40,80,' + (0.07 * up).toFixed(3) + ')';
+      ctx.fillRect(c.x - h + 1.5 * up, c.y - h + 3 * up, h * 2, h * 2);
     }
-    if (c.on && now > c.hold) c.on = false;
-    var target = c.on ? Math.PI - c.tilt : 0;
-    var before = c.ang;
-    c.vel += (target - c.ang) * 0.085;
-    c.vel *= 0.74;
-    c.ang += c.vel;
-    // When the pink side swings back into view it may come back a different pink
-    if (before > Math.PI / 2 && c.ang <= Math.PI / 2 && Math.random() < 0.6) reroll(c);
+    ctx.fillStyle = 'rgb(' + (r | 0) + ',' + (g | 0) + ',' + (b | 0) + ')';
+    ctx.fillRect(c.x - h, c.y - h, h * 2, h * 2);
   }
 
   function glyph(c, s, t) {
@@ -186,6 +170,19 @@
     ptr.y += pvy;
 
     var R = idle ? radius * (SQUARES ? 0.6 : 0.75) : radius, strength = idle ? (W < 760 ? 0.45 : 0.6) : 1;
+    if (SQUARES && !reduce) {
+      if (!idle) {
+        var mx = ptr.x - lastDrop.x, my = ptr.y - lastDrop.y;
+        if (mx * mx + my * my > gap * gap * 1.2 && t - lastDrop.t > 110) {
+          drop(ptr.x, ptr.y, t, Math.min(1, 0.7 + Math.sqrt(pvx * pvx + pvy * pvy) / 30));
+          lastDrop = { x: ptr.x, y: ptr.y, t: t };
+        }
+      } else if (t - lastDrop.t > 2600) { // an occasional raindrop while idle
+        var rx = W * (0.5 + Math.random() * 0.45), ry = H * (0.15 + Math.random() * 0.7);
+        drop(rx, ry, t, 0.6);
+        lastDrop = { x: rx, y: ry, t: t };
+      }
+    }
     for (var k = 0; k < cells.length; k++) {
       var c = cells[k];
       if (!reduce) {
@@ -194,12 +191,8 @@
         c.e = target > c.e ? c.e + (target - c.e) * 0.3 : c.e * 0.955;
       }
       if (SQUARES) {
-        if (!reduce) {
-          var ddx = c.x - ptr.x, ddy = c.y - ptr.y;
-          stepTile(c, t, (ddx * ddx + ddy * ddy < R * R * 0.42) ? 1 : 0, pvx, pvy);
-          if (!c.on && Math.abs(c.ang) < 0.01 && Math.random() < 0.0006) reroll(c); // slow shimmer
-        }
-        tile(c);
+        if (!reduce && Math.random() < 0.0004) reroll(c); // slow shimmer
+        tile(c, reduce ? 0 : waveAt(c, t));
         continue;
       }
       var m = Math.min(1, c.e * 1.7);
