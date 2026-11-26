@@ -60,9 +60,11 @@
         });
       }
     }
-    // Where the text sits (logo, nav, headline, meta items)
+    // Where the text sits (headline, meta items), and where the header strip ends
     var cr = canvas.getBoundingClientRect(), boxes = [];
-    Array.prototype.forEach.call(document.querySelectorAll('.intro__title, .intro__meta > div, .site-logo, .site-nav'), function (el) {
+    var hdr = document.querySelector('.site-header'), top = 0;
+    if (hdr) { var hr0 = hdr.getBoundingClientRect(); top = (hr0.bottom - cr.top) / (cr.height / H); }
+    Array.prototype.forEach.call(document.querySelectorAll('.intro__title, .intro__meta > div'), function (el) {
       var r = el.getBoundingClientRect();
       boxes.push([(r.left - cr.left) / (cr.width / W), (r.top - cr.top) / (cr.height / H), (r.right - cr.left) / (cr.width / W), (r.bottom - cr.top) / (cr.height / H)]);
     });
@@ -82,7 +84,9 @@
       var f0 = Math.max(0, Math.min(1, (dmin + jit - gap * 0.4) / (gap * 2.6)));
       // the same dissolve along the bottom edge
       var fb = Math.max(0, Math.min(1, ((H - c0.y) + (c0.nz - 0.5) * gap * 2 - gap * 0.6) / (gap * 2.4)));
-      c0.dim = f0 * f0 * (3 - 2 * f0) * fb * fb * (3 - 2 * fb);
+      // the header strip stays white; tiles come in unevenly just below it
+      var ft = Math.max(0, Math.min(1, ((c0.y - top) + (c0.nz - 0.5) * gap * 2 - gap * 0.2) / (gap * 2.4)));
+      c0.dim = f0 * f0 * (3 - 2 * f0) * fb * fb * (3 - 2 * fb) * ft * ft * (3 - 2 * ft);
     }
     if (old.length === cells.length) for (var k = 0; k < cells.length; k++) { var ok = old[k], nk = cells[k]; nk.e = ok.e; nk.a = ok.a; nk.at = ok.at; nk.tt = ok.tt; nk.tc = ok.tc; }
 
