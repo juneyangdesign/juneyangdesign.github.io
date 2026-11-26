@@ -27,7 +27,7 @@
             align-items: center; justify-content: center; gap: 14px; cursor: default; transition: border-color .2s; }
     .tile:hover { border-color: #d6d6d6; }
     .tile .mark { width: 72px; height: 72px; }
-    .tile .label { font-size: 12px; }
+    .tile .label { font-size: 12px; text-align: center; }
     .tile.yours .label::after { content: " · yours"; color: var(--pink-600); }
 
     .toggle { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; margin-top: 20px; }
@@ -66,8 +66,8 @@
 
   <section>
     <p class="label">A · Line doodles</p>
-    <h2>Drawn from your references</h2>
-    <p class="muted">Single strokes, round ends, the same gradient as the rest of the site.</p>
+    <h2>Drawn from your references, cleaned up</h2>
+    <p class="muted">Single strokes with even, rounded curves and round ends, in the same gradient as the rest of the site.</p>
     <div class="grid" id="lines"></div>
   </section>
 
@@ -126,27 +126,26 @@
 
   /* ---------- A: line doodles (0–100 box), hand-drawn, nothing perfectly even ---------- */
   const LINES = {
-    // yours, from the Figma file (normalized)
-    loop: { yours: true, d: 'M 0.4 105.6 C -4.6 39.8 41.0 0 90.2 0 C 145.5 0 188.6 46.0 194.7 95.7 C 200.9 151.6 170.1 198.8 123.4 201.3 C 84.0 203.7 71.7 164.0 76.6 129.2 C 84.0 70.8 127.1 42.2 178.7 39.8 C 225.5 37.3 258.7 64.6 259.9 108.1 C 261.2 136.7 246.4 160.3 226.7 173.9', vb: '-18 -18 296 238' },
-    curl: { yours: true, d: 'M 8.9 221.9 C -9.9 165.8 -0.5 109.7 52.8 85.3 C 131 41.7 222 55.7 260 99.7 C 298 143.7 290 225.6 243 263.2 C 196 300.7 115 292.2 76 248.7 C 37 205.2 48.9 138.1 61.5 80.7 C 74.1 23.4 164.5 -29.8 260 19.5', vb: '-20 -20 324 327' },
-    spiral: { yours: true, d: 'M 186.7 146.0 C 215.2 164.5 205.6 218.3 154.5 224.5 C 89.8 233.8 72.8 139.2 113.7 98.9 C 157.9 55.5 263.8 69.3 284.2 137.5 C 304.6 208.8 252.7 310 138.2 310 C 49.7 306.9 -16.7 199.0 3.7 121.5 C 10.5 96.7 29.7 20 122.7 0', vb: '-22 -22 332 353' },
-    wave: { yours: true, d: 'M 0 110.8 C 13.1 29.0 52.4 10.4 74.3 71.1 C 91.8 124.8 120.2 145.9 144.2 85.1 C 161.7 40.7 177.2 -19.5 210 6.2 C 241.5 37.7 285.5 161.1 317.5 71.1', vb: '-22 -22 362 166' },
-    // new, from the references
-    eloop:  { d: 'M10 70 C34 74 62 62 62 44 C62 28 44 26 40 42 C35 64 58 84 90 70' },
-    bumps:  { d: 'M10 74 C11 42 33 40 36 70 C38 42 60 38 63 69 C65 44 88 44 90 75' },
-    arch:   { d: 'M16 80 C14 34 46 18 66 30 C80 38 86 58 84 80 M36 80 C35 58 46 48 56 50 C64 52 66 64 66 80' },
-    smile:  { d: 'M14 40 C22 70 46 80 66 74 C76 70 83 60 87 46' },
-    scurve: { d: 'M12 36 C22 18 42 24 38 44 C34 62 50 74 62 58 C72 44 82 44 90 58' },
-    burst:  { d: 'M50 12 C50 20 50 26 51 34 M22 26 C28 32 32 37 37 44 M79 24 C74 31 70 36 65 43' },
-    zigzag: { d: 'M8 66 C14 56 20 44 27 36 C33 46 39 57 46 67 C52 56 58 45 65 37 C72 47 78 58 86 68' },
-    coil:   { d: 'M6 66 C12 32 38 30 33 58 C30 75 17 64 25 50 C37 31 60 33 55 60 C52 75 40 66 48 52 C60 33 86 36 92 64' },
+    // cleaner, rounder set: even curves and true arcs; loop/curl/spiral/wave are June's shapes, smoothed
+    loop: { yours: true, d: 'M14 64 C12 40 26 24 44 24 C62 24 74 40 70 58 C66 74 50 80 44 70 C38 60 50 44 66 44 C82 44 90 56 88 70 C87 76 84 80 80 83' },
+    curl: { yours: true, d: 'M22 84 C14 64 20 44 40 38 C60 32 80 44 80 62 C80 78 66 86 54 82 C42 78 38 64 44 50 C52 32 68 20 86 22' },
+    spiral: { yours: true, d: 'M54 50 C50 44 58 38 64 44 C70 52 64 64 52 64 C38 64 32 50 38 38 C46 24 70 24 80 40 C90 58 80 82 56 84 C44 85 34 80 28 72' },
+    wave: { yours: true, d: 'M10 58 C18 34 32 34 40 50 C48 66 62 66 70 50 C78 34 88 36 92 46' },
+    eloop: { d: 'M10 68 C30 70 56 62 58 44 C59 32 46 28 40 38 C32 52 48 76 90 66' },
+    bumps: { d: 'M17 72 C17 44 39 44 39 72 C39 44 61 44 61 72 C61 44 83 44 83 72' },
+    arch: { d: 'M14 80 A36 36 0 0 1 86 80 M34 80 A16 16 0 0 1 66 80' },
+    smile: { d: 'M18 40 A32 32 0 0 0 82 40' },
+    scurve: { d: 'M22 30 C40 18 58 30 48 46 C38 62 56 76 78 66' },
+    burst: { d: 'M50 18 L50 36 M24 30 L35 44 M76 30 L65 44' },
+    zigzag: { d: 'M10 66 Q18 50 26 38 Q30 33 34 38 Q42 52 48 62 Q52 67 56 62 Q64 50 70 38 Q74 33 78 38 Q84 48 90 62' },
+    coil: { d: 'M6 66 C6 34 40 30 40 54 C40 70 24 70 26 54 C28 32 64 30 64 54 C64 70 48 70 50 54 C52 34 88 34 94 62' },
   };
   function lineMark(el, name) {
     const spec = LINES[name]; if (!spec) return;
     const svg = document.createElementNS(NS, 'svg');
     const vb = spec.vb || '0 0 100 100'; svg.setAttribute('viewBox', vb);
     const [vx, , vw] = vb.split(' ').map(Number);
-    const sw = (spec.vb ? vw : 100) * 0.09;
+    const sw = (spec.vb ? vw : 100) * 0.10;
     const paint = gradDef(svg, vx, vx + vw);
     // draw each sub-path separately so multi-stroke marks redraw one after another
     spec.d.split(/(?=M)/).forEach((seg, i) => {
