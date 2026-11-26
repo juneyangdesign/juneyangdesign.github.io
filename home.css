@@ -135,12 +135,7 @@ body { position: relative; }
   border-radius: 20px;
   overflow: hidden;
   background: var(--surface);
-  box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-  transition: transform .4s cubic-bezier(.2, .7, .2, 1), box-shadow .4s ease;
-}
-.project:hover .project__media,
-.project:focus-visible .project__media {
-  box-shadow: 0 14px 32px -12px rgba(0, 0, 0, .18), 0 4px 10px -6px rgba(0, 0, 0, .08);
+  transition: transform .4s cubic-bezier(.2, .7, .2, 1);
 }
 /* Selected state: the card lifts and a thin ring in the calm brand gradient fades in a few
    pixels outside the thumbnail — outside the image, so it works with every cover's colors */
@@ -154,7 +149,7 @@ body { position: relative; }
   inset: -8px;
   border-radius: 28px;
   border: 2px solid transparent;
-  background: linear-gradient(var(--bg), var(--bg)) padding-box, var(--gradient-title) border-box;
+  background: linear-gradient(var(--bg), var(--bg)) padding-box, var(--gradient-ring) border-box;
   opacity: 0;
   transition: opacity .35s ease;
   pointer-events: none;

@@ -33,8 +33,10 @@
   --focus:      var(--pink-500);
   /* headline gradient: a bright, clean pink into a deep violet and deep blue (large text, ≥3.9:1) */
   --gradient:   linear-gradient(90deg, #e62fa8, #7e47e0 52%, #4a62d9);
-  /* calmer version for hover states like project titles: same hues, less saturated */
-  --gradient-title: linear-gradient(90deg, #c9479f, #7c5ad2 52%, #5468cc);
+  /* calmer version for hover states like project titles: lighter and clean, not vivid (≥3.6:1) */
+  --gradient-title: linear-gradient(90deg, #d655b0, #8b66e6 52%, #6380e6);
+  /* light pastel version for the selected-card ring */
+  --gradient-ring: linear-gradient(90deg, #ef9ad6, #b79cf6 52%, #97aef5);
   /* soft pastel version for quiet details like tag outlines */
   --gradient-soft: linear-gradient(90deg, #f6b3e2, #cbb8fb 52%, #b3c4fb);
 
