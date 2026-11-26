@@ -16,8 +16,9 @@
   // Anything else: the glyph field.
   var SQUARES = canvas.getAttribute('data-mode') === 'squares';
   // (glyph mode) brand colors for the blooming marks
-  // Resting tile tints from the design system (ds.css): mostly pink, some purple and blue
-  var TINTS = ['#f472d0', '#f9a8e6', '#f472d0', '#ee6bd2', '#fbcdef', '#c4b5fd', '#a78bfa', '#a5b4fc', '#6b8cf5'].map(function (h) {
+  // Resting tiles: one clear main color (periwinkle-lavender, between the purple and blue in
+  // ds.css) varying only in strength, with the brand pink as a rare accent (about 1 in 12)
+  var TINTS = ['#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#f472d0'].map(function (h) {
     return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
   });
 
@@ -89,9 +90,10 @@
   // Spread: the cursor tints the tiles under it a deeper pink, and that color soaks outward
   // to neighboring tiles (a simple diffusion), fading as it travels. No movement, no bounce.
   var cols = 0, rows = 0, next = [], lastT = 0, STEP = 1000 / 60;
-  // Ripple / cursor color ramp, light to dark: light pink → pink → purple → blue. Each stop is
-  // lifted a little toward white so even the darkest point stays soft.
-  var RAMP = [[251, 205, 239], [244, 114, 208], [167, 139, 250], [107, 140, 245]].map(function (c) {
+  // Ripple / cursor color ramp, light to dark, all in the main color family: pale lavender →
+  // periwinkle → deeper blue-violet. Each stop is lifted a little toward white so even the
+  // darkest point stays soft.
+  var RAMP = [[221, 219, 253], [167, 160, 250], [127, 134, 243], [91, 111, 232]].map(function (c) {
     return c.map(function (v) { return v + (255 - v) * 0.1; });
   });
   function rampColor(x) { // x: 0..1
@@ -201,7 +203,7 @@
     var a = c.a * (0.16 + 0.84 * idleMix), tc = c.tc || c.tint;
     var r = 255 + (tc[0] - 255) * a, g = 255 + (tc[1] - 255) * a, b = 255 + (tc[2] - 255) * a;
     var e = Math.min(1, c.e * 1.3);
-    // under the cursor the tile walks down the ramp (light pink at the edge, blue at the center);
+    // under the cursor the tile walks down the ramp (pale lavender at the edge, blue-violet at the center);
     // idle color rings use the lighter half of the ramp
     var ring = c.re || 0, mixA = Math.min(1, e * 1.5), mixB = ring * 0.5;
     if (mixA >= mixB && mixA > 0) {
