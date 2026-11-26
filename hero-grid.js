@@ -136,7 +136,7 @@
 
   // Tile colors: about a quarter white, the rest pink at varied strengths
   // more tiles stay white, and tinted ones stay light
-  function pinkAlpha(r) { return r < 0.55 ? 0 : 0.08 + Math.pow((r - 0.55) / 0.45, 1.5) * 0.3; }
+  function pinkAlpha(r) { return r < 0.7 ? 0 : 0.06 + Math.pow((r - 0.7) / 0.3, 1.5) * 0.2; }   // ~3 in 10 tinted, all light
   function reroll(c) { c.tt = TINTS[Math.floor(Math.random() * TINTS.length)]; c.at = pinkAlpha(Math.random()); }
   function easeColor(c, k) { // drift toward a new pink over about a second and a half
     var f = 1 - Math.pow(0.97, k);
@@ -200,7 +200,8 @@
   //   center          bloom from the middle out to all four corners
   //   corners         waves from all four corners meeting in the middle
   //   curtain         falls top to bottom with a softly staggered front
-  var MOVES = ['side', 'corner', 'center', 'corners', 'curtain'];
+  //   drops           a handful of small paint drops land one after another and spread
+  var MOVES = ['side', 'corner', 'center', 'corners', 'curtain', 'drops'];
   var hero = null, accents = [], nextAt = 0, lastMove = '', moveCount = 0, idleMix = 0, idleStart = 0;
   var MOVE_MS = 4200, REST_MS = [2400, 3400];
   function ease(x) { return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2; }
@@ -208,6 +209,19 @@
     var opts = MOVES.filter(function (m) { return m !== lastMove; });
     var kind = opts[Math.floor(Math.random() * opts.length)]; lastMove = kind;
     var m = { k: kind, t: t, life: MOVE_MS, w: gap * 1.4, trail: gap * 5 };
+    if (kind === 'drops') {
+      // 4–6 drops, spaced out over the grid and staggered in time
+      var n = 4 + Math.floor(Math.random() * 3), list = [], tries = 0;
+      while (list.length < n && tries++ < 60) {
+        var p = { x: (0.1 + Math.random() * 0.85) * W, y: (0.1 + Math.random() * 0.8) * H };
+        if (list.every(function (q) { return Math.hypot(q.x - p.x, q.y - p.y) > gap * 5; })) list.push(p);
+      }
+      m.drops = list.map(function (p, i) {
+        return { x: p.x, y: p.y, t: t + i * (380 + Math.random() * 220), life: 1700, R: gap * (2.2 + Math.random() * 1.3) };
+      });
+      m.arrive = function () { return t + MOVE_MS * 0.5; };
+      return m;
+    }
     if (kind === 'side') {
       var dirs = [[1, 0], [-1, 0], [0, 1]]; var d = dirs[Math.floor(Math.random() * dirs.length)];
       m.dx = d[0]; m.dy = d[1];
@@ -237,6 +251,23 @@
   }
   function moveAt(m, c, t) {
     var age = t - m.t; if (age < 0 || age > m.life) return null;
+    if (m.k === 'drops') {
+      // each drop spreads out quickly (ease-out) into a soft disc, then fades; the spreading
+      // edge is a little stronger and tips the tiles outward
+      var amt = 0, tx = 0, ty = 0;
+      for (var i = 0; i < m.drops.length; i++) {
+        var dp = m.drops[i], a = t - dp.t; if (a < 0 || a > dp.life) continue;
+        var f = a / dp.life, grow = 1 - Math.pow(1 - Math.min(1, f / 0.55), 3);
+        var rad = dp.R * grow, ddx = c.x - dp.x, ddy = c.y - dp.y, d = Math.sqrt(ddx * ddx + ddy * ddy) || 1;
+        var inside = 1 / (1 + Math.exp((d - rad) / (gap * 0.35)));            // soft-edged disc
+        var edge = Math.exp(-Math.pow((d - rad) / (gap * 0.55), 2));
+        var fade = f < 0.55 ? 1 : 1 - (f - 0.55) / 0.45;
+        amt = Math.max(amt, (inside * 0.75 + edge * 0.35) * fade);
+        var tip = edge * fade * (1 - grow * 0.6) * 0.03;
+        tx += ddx / d * tip; ty += ddy / d * tip;
+      }
+      return [Math.min(1, amt), tx, ty];
+    }
     var off = m.pos(c) - m.front(t);                         // > 0: front hasn't arrived yet
     var lead = Math.exp(-(off * off) / (2 * m.w * m.w));
     var glow = off < 0 ? 0.5 * Math.exp(off / m.trail) : 0;  // afterglow behind the front
@@ -266,7 +297,7 @@
     if (!on && idleMix < 0.02) { hero = null; accents = []; nextAt = t + 600; }
     if (on && !hero && t >= nextAt) {
       hero = makeMove(t); moveCount++;
-      if (shifting && moveCount % 3 === 0 && hero.k !== 'corners') changeScheme(hero.arrive, hero.t, hero.t + hero.life * 0.78);
+      if (shifting && moveCount % 3 === 0 && hero.k !== 'corners' && hero.k !== 'drops') changeScheme(hero.arrive, hero.t, hero.t + hero.life * 0.78);
       var rest = REST_MS[0] + Math.random() * (REST_MS[1] - REST_MS[0]);
       nextAt = t + MOVE_MS + rest;
       if (Math.random() < 0.6) { var at = t + MOVE_MS + rest * 0.35; accents = makeAccent(at); }
@@ -342,7 +373,7 @@
     ctx.globalAlpha = c.dim;
     // mostly white by default; the pinks come up when the grid is playing on its own
     var acc = Math.floor(c.pick * TINTS.length) >= 9 ? 0.6 : 1;   // accent tiles stay lighter
-    var a = c.a * acc * (0.16 + 0.6 * idleMix), tc = c.tc || c.tint;
+    var a = c.a * acc * (0.14 + 0.36 * idleMix), tc = c.tc || c.tint;   // background stays quiet
     var r = 255 + (tc[0] - 255) * a, g = 255 + (tc[1] - 255) * a, b = 255 + (tc[2] - 255) * a;
     var e = Math.min(1, c.e * 1.3);
     // under the cursor the tile walks down the ramp (pale lavender at the edge, blue-violet at the center);
