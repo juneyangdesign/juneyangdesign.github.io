@@ -31,8 +31,9 @@
   --tag-bg:     var(--pink-50);
   --tag-fg:     var(--pink-600);
   --focus:      var(--pink-500);
-  /* headline gradient: each stop a touch deeper than the swatch so large text reads (≥3.5:1) */
-  --gradient:   linear-gradient(90deg, #db45b8, #9d5cf5 52%, #5b7cf0);
+  /* headline gradient: deeper, grounded versions of pink → purple → blue — still saturated (not
+     muddy) and ≥5:1 on white */
+  --gradient:   linear-gradient(90deg, #c02e9e, #7e47e0 52%, #4a62d9);
 
   /* Type */
   --font-sans: "Figtree", system-ui, sans-serif;

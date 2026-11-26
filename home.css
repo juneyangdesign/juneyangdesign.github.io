@@ -56,11 +56,11 @@ body { position: relative; }
   content: "";
   position: absolute;
   /* solid white through the whole nav row (plus a margin), then a long, eased fade */
-  left: -100vw; right: -100vw; top: -40px; height: calc(100% + 190px);
+  left: -100vw; right: -100vw; top: -40px; height: calc(100% + 290px);
   background: var(--bg);
   -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 150px), rgba(0,0,0,.8) calc(100% - 115px), rgba(0,0,0,.5) calc(100% - 75px), rgba(0,0,0,.2) calc(100% - 35px), transparent);
-  mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 150px), rgba(0,0,0,.8) calc(100% - 115px), rgba(0,0,0,.5) calc(100% - 75px), rgba(0,0,0,.2) calc(100% - 35px), transparent);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 190px), rgba(0,0,0,.85) calc(100% - 150px), rgba(0,0,0,.6) calc(100% - 105px), rgba(0,0,0,.32) calc(100% - 60px), rgba(0,0,0,.1) calc(100% - 25px), transparent);
+  mask-image: linear-gradient(to bottom, #000 0, #000 calc(100% - 190px), rgba(0,0,0,.85) calc(100% - 150px), rgba(0,0,0,.6) calc(100% - 105px), rgba(0,0,0,.32) calc(100% - 60px), rgba(0,0,0,.1) calc(100% - 25px), transparent);
   pointer-events: none;
   z-index: -1;
 }
