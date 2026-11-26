@@ -1,7 +1,8 @@
 /* Hero grid. Two looks, set by data-mode on the canvas: "squares" or the default glyphs.
-   Squares: flush pink tiles floating on a water surface. Around the cursor (and its short trail)
-   tiles ripple, tilting with the slope under them, and warm to a deep pink. Mostly white by default;
-   after a moment without hovering the pinks come up, a ghost ripple wanders and color rings spread.
+   Squares: pink tiles with thin gaps. Moving the cursor sends smooth rings outward that tip the
+   tiles as they pass and fade steadily; tiles under the cursor warm to a deep pink. Mostly white by
+   default; after a moment without hovering the pinks come up, a ghost ripple wanders and color
+   rings spread.
    Glyphs: a quiet field of tiny gray marks that bloom into the brand palette
    around the cursor and fade out behind it, leaving a short trail. When the pointer is
    idle (or on touch screens) a soft bloom drifts slowly on its own. Static for people who
@@ -55,7 +56,7 @@
           rot: rand(i, j, 3) * Math.PI,
           spin: rand(i, j, 4) - 0.5,
           tint: TINTS[Math.floor(rand(i, j, 5) * TINTS.length)],
-          a: pinkAlpha(rand(i, j, 6)), dim: 1, nz: rand(i, j, 7), h: 0, v: 0, nv: 0, gx: 0, gy: 0, re: 0,
+          a: pinkAlpha(rand(i, j, 6)), dim: 1, nz: rand(i, j, 7), gx: 0, gy: 0, re: 0,
           e: 0
         });
       }
@@ -102,60 +103,61 @@
   // Tile colors: about a quarter white, the rest pink at varied strengths
   function pinkAlpha(r) { return r < 0.24 ? 0 : 0.14 + Math.pow((r - 0.24) / 0.76, 1.3) * 0.66; }
   function reroll(c) { c.tt = TINTS[Math.floor(Math.random() * TINTS.length)]; c.at = pinkAlpha(Math.random()); }
-  function easeColor(c) { // drift toward a new pink over about a second and a half
-    c.a += (c.at - c.a) * 0.03;
-    for (var i = 0; i < 3; i++) c.tc[i] += (c.tt[i] - c.tc[i]) * 0.03;
+  function easeColor(c, k) { // drift toward a new pink over about a second and a half
+    var f = 1 - Math.pow(0.97, k);
+    c.a += (c.at - c.a) * f;
+    for (var i = 0; i < 3; i++) c.tc[i] += (c.tt[i] - c.tc[i]) * f;
   }
 
   // Spread: the cursor tints the tiles under it a deeper pink, and that color soaks outward
   // to neighboring tiles (a simple diffusion), fading as it travels. No movement, no bounce.
-  var cols = 0, rows = 0, next = [], lastDrop = 0, lastT = 0, acc = 0, STEP = 1000 / 60;
+  var cols = 0, rows = 0, next = [], lastT = 0, STEP = 1000 / 60;
   var DEEP = [196, 44, 128]; // deep pink under the cursor
-  // Water surface: a damped 2D wave on the tile grid. Moving the cursor presses the surface
-  // down under it; the dip travels outward as smooth rings and dies away.
-  var WAVE_SPEED = 0.12, WAVE_DAMP = 0.02; // slower, longer rings
-  function wave(spd, idleDrop) {
-    var n = cells.length, i, c;
-    // ignore the tiny jitter of a hovering hand; only real movement pushes the water
-    if (spd > 2) {
-      var RR = gap * 1.6, push = (Math.min(spd, 26) - 2) * 0.045;
-      for (i = 0; i < n; i++) {
-        c = cells[i];
-        var dx = c.x - ptr.x, dy = c.y - ptr.y, d = Math.sqrt(dx * dx + dy * dy);
-        if (d < RR) { var f = 1 - d / RR; c.v -= push * f * f; }
+  // Ripples: each cursor movement sends out one smooth ring that travels outward and fades
+  // steadily (no sloshing back). A tile tips toward the ring as it arrives and away as it
+  // passes, so a soft crest rolls across the grid. Timed in milliseconds, so it looks the same
+  // at any frame rate.
+  var waves = [], lastWave = { x: -1e9, y: -1e9, t: 0 };
+  var RING_V = 0.48, RING_LIFE = 900, RING_AMP = 0.08;   // px/ms, ms, slope
+  function ripples(t, idle, spd, k) {
+    var i, c;
+    var moving = !idle && spd > 2 && t - ptr.last < 70; // only while the mouse is really moving
+    var ghost = idle && idleMix > 0.05;
+    if (moving || ghost) {
+      var mx = ptr.x - lastWave.x, my = ptr.y - lastWave.y;
+      if (mx * mx + my * my > gap * gap * 0.8 || t - lastWave.t > (ghost ? 180 : 110)) {
+        var str = moving ? Math.max(0.15, Math.min(1, (spd - 2) / 14)) : 0.35 * idleMix;
+        waves.push({ x: ptr.x, y: ptr.y, t: t, s: str });
+        if (waves.length > 30) waves.shift();
+        lastWave = { x: ptr.x, y: ptr.y, t: t };
       }
     }
-    if (idleDrop) idleDrop.v -= 1.6;
-    for (i = 0; i < n; i++) {
-      var x = i % cols, y = (i / cols) | 0, hh = cells[i].h;
-      var l = x > 0 ? cells[i - 1].h : hh, r = x < cols - 1 ? cells[i + 1].h : hh;
-      var u = y > 0 ? cells[i - cols].h : hh, d2 = y < rows - 1 ? cells[i + cols].h : hh;
-      var vv = cells[i].v;
-      var vl = x > 0 ? cells[i - 1].v : vv, vr = x < cols - 1 ? cells[i + 1].v : vv;
-      var vu = y > 0 ? cells[i - cols].v : vv, vd = y < rows - 1 ? cells[i + cols].v : vv;
-      // wave + a little viscosity so neighboring tiles move together (no checkerboard shimmer)
-      cells[i].nv = vv + WAVE_SPEED * (l + r + u + d2 - 4 * hh) + 0.12 * (vl + vr + vu + vd - 4 * vv) - WAVE_DAMP * vv;
-    }
-    for (i = 0; i < n; i++) { c = cells[i]; c.v = c.nv; c.h = (c.h + c.v) * 0.994; }
-    // slope of the surface under each tile → how it tilts
-    for (i = 0; i < n; i++) {
-      var xi = i % cols, yi = (i / cols) | 0, hc = cells[i].h;
-      var hl = xi > 0 ? cells[i - 1].h : hc, hr = xi < cols - 1 ? cells[i + 1].h : hc;
-      var hu = yi > 0 ? cells[i - cols].h : hc, hd = yi < rows - 1 ? cells[i + cols].h : hc;
-      // each tile eases toward the slope under it rather than snapping to it (no shimmer)
-      var cc = cells[i];
-      cc.gx += ((hr - hl) / 2 - cc.gx) * 0.1;
-      cc.gy += ((hd - hu) / 2 - cc.gy) * 0.1;
+    while (waves.length && t - waves[0].t > RING_LIFE) waves.shift();
+    var w = gap * 0.95, ease = 1 - Math.pow(0.72, k);
+    for (i = 0; i < cells.length; i++) {
+      c = cells[i];
+      var tx = 0, ty = 0;
+      for (var j = 0; j < waves.length; j++) {
+        var rw = waves[j], age = t - rw.t;
+        var dx = c.x - rw.x, dy = c.y - rw.y, d = Math.sqrt(dx * dx + dy * dy) || 1;
+        var off = d - RING_V * age;
+        if (off > w * 3 || off < -w * 3) continue;
+        var life = 1 - age / RING_LIFE;
+        var amp = rw.s * life * life * Math.exp(-d / (gap * 7)) * RING_AMP;
+        var prof = -(off / w) * Math.exp(-(off * off) / (2 * w * w)) * 1.65; // one smooth crest
+        tx += (dx / d) * prof * amp; ty += (dy / d) * prof * amp;
+      }
+      c.gx += (tx - c.gx) * ease; c.gy += (ty - c.gy) * ease;
     }
   }
 
   // When nobody is hovering, slow rings of deeper pink spread out from random spots and fade.
   var rings = [], lastRing = 0, idleMix = 0, idleStart = 0, RING_SPEED = 0.09, RING_LIFE = 7000;
-  function colorRings(t, idle) {
+  function colorRings(t, idle, k) {
     // effects begin after ~1.5s without hovering, ease in over ~2s, and ease out on hover
     if (!idle) idleStart = t;
     var on = idle && t - idleStart > 1500;
-    idleMix += ((on ? 1 : 0) - idleMix) * (on ? 0.008 : 0.04);
+    idleMix += ((on ? 1 : 0) - idleMix) * (1 - Math.pow(1 - (on ? 0.008 : 0.04), k));
     if (idleMix > 0.3 && t - lastRing > 2200 + Math.random() * 1800) {
       lastRing = t;
       rings.push({ x: W * (0.15 + Math.random() * 0.8), y: H * (0.1 + Math.random() * 0.8), t: t });
@@ -176,8 +178,8 @@
     }
   }
 
-  function spread(t, idle, spd) {
-    var n = cells.length, i, c, idleDrop = null;
+  function spread(t, idle, spd, k) {
+    var n = cells.length, i, c;
     if (next.length !== n) next = new Array(n);
     // inject under the cursor, or under the wandering "ghost" while idle
     var amt = idle ? idleMix * 0.85 : 1;
@@ -186,7 +188,7 @@
       for (i = 0; i < n; i++) {
         c = cells[i];
         var dx = c.x - ptr.x, dy = c.y - ptr.y, d = Math.sqrt(dx * dx + dy * dy);
-        if (d < RR) { var want = Math.min(1, Math.pow(1 - d / RR, 1.1) * 1.4) * amt; if (want > c.e) c.e += (want - c.e) * 0.5; }
+        if (d < RR) { var want = Math.min(1, Math.pow(1 - d / RR, 1.1) * 1.4) * amt; if (want > c.e) c.e += (want - c.e) * (1 - Math.pow(0.5, k)); }
       }
     }
     // diffuse to the four neighbors, then fade
@@ -196,10 +198,10 @@
       if (x < cols - 1) { sum += cells[i + 1].e; cnt++; }
       if (y > 0) { sum += cells[i - cols].e; cnt++; }
       if (y < rows - 1) { sum += cells[i + cols].e; cnt++; }
-      next[i] = (e + 0.11 * (sum - cnt * e)) * 0.986;
+      next[i] = (e + 0.11 * k * (sum - cnt * e)) * Math.pow(0.986, k);
     }
     for (i = 0; i < n; i++) cells[i].e = next[i] < 0.002 ? 0 : next[i];
-    wave(idle ? 2 + 5 * idleMix : spd, idleDrop);
+    ripples(t, idle, spd, k);
   }
 
   // Tiles sit close with a thin gap. Each one tilts with the slope of the water under it, so the motion rolls
@@ -218,10 +220,8 @@
     var h = gap / 2 - 1.25; // a thin, even gap between tiles
     var gx = c.gx || 0, gy = c.gy || 0, mag = Math.sqrt(gx * gx + gy * gy);
     // the ripple only shows around the cursor and its short trail (where the pink has spread)
-    // motion shows wherever the cursor's influence has spread (a wider, softer area than the pink)
-    var near = Math.min(1, c.e * 6); near = near * near * (3 - 2 * near);
-    var th = Math.min(MAX_TILT, mag * TILT_GAIN) * near;
-    var shade = (-(gx + gy) * 1.1) * near;
+    var th = Math.min(MAX_TILT, mag * TILT_GAIN);
+    var shade = -(gx + gy) * 1.1;
     shade = Math.max(-0.14, Math.min(0.3, shade));
     if (shade > 0) { r += (255 - r) * shade; g += (255 - g) * shade; b += (255 - b) * shade; }
     else { r *= 1 + shade * 0.6; g *= 1 + shade; b *= 1 + shade * 0.7; }
@@ -284,18 +284,19 @@
     var follow = idle ? 0.04 : 0.2, pvx = 0, pvy = 0;
 
     if (SQUARES) {
-      // Step the simulation at a steady 60 per second, whatever the screen's refresh rate
+      // One smooth update per frame, scaled by the real time since the last frame
       var dt = lastT ? Math.min(100, t - lastT) : STEP;
-      lastT = t; acc += dt;
-      var steps = Math.min(4, Math.floor(acc / STEP)); acc -= steps * STEP; if (acc > STEP * 4) acc = 0;
-      for (var st = 0; st < steps; st++) {
-        pvx = (ptr.tx - ptr.x) * follow; pvy = (ptr.ty - ptr.y) * follow;
-        ptr.x += pvx; ptr.y += pvy;
-        if (!reduce) spread(t, idle, Math.sqrt(pvx * pvx + pvy * pvy));
-        if (!reduce) {
-          colorRings(t, idle);
-          for (var q = 0; q < cells.length; q++) { if (Math.random() < 0.0004) reroll(cells[q]); easeColor(cells[q]); }
-        }
+      lastT = t;
+      var k = Math.max(0.25, Math.min(2, dt / STEP));
+      // the idle "ghost" starts on its own path, never where your cursor was resting
+      if (idle && idleMix < 0.02) { ptr.x = ptr.tx; ptr.y = ptr.ty; }
+      var f = 1 - Math.pow(1 - follow, k);
+      pvx = (ptr.tx - ptr.x) * f; pvy = (ptr.ty - ptr.y) * f;
+      ptr.x += pvx; ptr.y += pvy;
+      if (!reduce) {
+        colorRings(t, idle, k);
+        spread(t, idle, Math.sqrt(pvx * pvx + pvy * pvy) / k, k);
+        for (var q = 0; q < cells.length; q++) { if (Math.random() < 0.0004 * k) reroll(cells[q]); easeColor(cells[q], k); }
       }
       for (var k2 = 0; k2 < cells.length; k2++) tile(cells[k2]);
       return;
