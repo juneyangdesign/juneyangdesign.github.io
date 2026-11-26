@@ -28,6 +28,7 @@
   </script>
 </head>
 <body>
+  <canvas class="hero-grid" aria-hidden="true"></canvas>
   <header class="site-header">
     <a class="site-logo" href="index.html"><img src="logo.png?v=1" width="79" height="30" alt="june! (home)"></a>
     <nav class="site-nav" aria-label="Main">
@@ -45,7 +46,7 @@
       </dl>
     </section>
 
-    <div class="work-head"><h2 class="ds-label">Selected work</h2></div>
+    <div class="work-head"><h2 class="ds-label"><a href="#work">Selected work <span class="work-head__arrow" aria-hidden="true">↓</span></a></h2></div>
     <section id="work" class="work" aria-label="Selected work">
       <a class="project" href="skyn/">
         <div class="project__media project__media--skyn">
@@ -116,5 +117,6 @@
     })();
   </script>
   <script src="scroll-fade.js?v=1"></script>
+  <script src="hero-grid.js?v=1"></script>
 </body>
 </html>
