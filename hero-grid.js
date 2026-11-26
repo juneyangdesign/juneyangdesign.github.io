@@ -118,7 +118,7 @@
     var n = cells.length, i, c;
     // ignore the tiny jitter of a hovering hand; only real movement pushes the water
     if (spd > 2) {
-      var RR = gap * 1.6, push = (Math.min(spd, 26) - 2) * 0.06;
+      var RR = gap * 1.6, push = (Math.min(spd, 26) - 2) * 0.045;
       for (i = 0; i < n; i++) {
         c = cells[i];
         var dx = c.x - ptr.x, dy = c.y - ptr.y, d = Math.sqrt(dx * dx + dy * dy);
@@ -205,7 +205,7 @@
   // Tiles sit close with a thin gap. Each one tilts with the slope of the water under it, so the motion rolls
   // outward with the ripple; a gap only opens where a tile is tipped. Light comes from the
   // upper left, so slopes facing it brighten a little and slopes facing away dim.
-  var P = 560, MAX_TILT = 0.55, TILT_GAIN = 3.2;
+  var P = 560, MAX_TILT = 0.3, TILT_GAIN = 1.8; // gentle: about 17° at most
   function tile(c) {
     if (c.dim < 0.01) return;
     ctx.globalAlpha = c.dim;
@@ -220,15 +220,15 @@
     // the ripple only shows around the cursor and its short trail (where the pink has spread)
     var near = Math.min(1, c.e * 2.2); near = near * near * (3 - 2 * near);
     var th = Math.min(MAX_TILT, mag * TILT_GAIN) * near;
-    var shade = (-(gx + gy) * 1.7) * near;
+    var shade = (-(gx + gy) * 1.1) * near;
     shade = Math.max(-0.14, Math.min(0.3, shade));
     if (shade > 0) { r += (255 - r) * shade; g += (255 - g) * shade; b += (255 - b) * shade; }
     else { r *= 1 + shade * 0.6; g *= 1 + shade; b *= 1 + shade * 0.7; }
     ctx.fillStyle = 'rgb(' + (r | 0) + ',' + (g | 0) + ',' + (b | 0) + ')';
     if (th < 0.015) { ctx.fillRect(c.x - h, c.y - h, h * 2, h * 2); ctx.globalAlpha = 1; return; }
     var dx = gx / mag, dy = gy / mag, cs = Math.cos(th), sn = Math.sin(th);
-    var twist = th * 0.12 * (c.spin > 0 ? 1 : -1), rc = Math.cos(twist), rs = Math.sin(twist);
-    var k = 1 - 0.06 * th; // tipped tiles shrink a touch, opening a soft gap
+    var twist = th * 0.06 * (c.spin > 0 ? 1 : -1), rc = Math.cos(twist), rs = Math.sin(twist);
+    var k = 1 - 0.03 * th; // tipped tiles shrink a touch, opening a soft gap
     ctx.beginPath();
     var corners = [[-h, -h], [h, -h], [h, h], [-h, h]];
     for (var i = 0; i < 4; i++) {
