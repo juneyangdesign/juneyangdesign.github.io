@@ -70,8 +70,9 @@ body { background: var(--bg); color: var(--ink); }
 .card.quote { border-left: 0; }
 
 /* Media panels: the wash is only for final/visual design. Process work (wireframes,
-   testing before/after) keeps its neutral grey panel, so color reads as "finished". */
-.phones, .sheet-panel, .video-frame, .feeds__before, .feeds__after, .figure-video {
+   testing before/after) and framed sheets like the style guide keep a neutral grey panel:
+   a thin band of wash around a white sheet reads as a gradient border. */
+.phones, .video-frame, .feeds__before, .feeds__after, .figure-video {
   background: var(--wash);
 }
 
