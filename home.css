@@ -98,6 +98,9 @@ body { position: relative; }
   line-height: 1.15;
   letter-spacing: -0.025em;
 }
+/* the colored phrase always starts on its own line, below the black text */
+.intro__title .ds-gradient { display: block; text-wrap: pretty; }
+@media (max-width: 1024px) { .intro__title, .intro__title .ds-gradient { text-wrap: balance; } }
 .intro__meta { display: flex; gap: 64px; margin: 40px 0 0; }
 .intro__meta dt { margin-bottom: 6px; }
 .intro__meta dd { margin: 0; font-size: 18px; line-height: 28px; color: var(--ink-2); }

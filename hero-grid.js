@@ -16,9 +16,9 @@
   // Anything else: the glyph field.
   var SQUARES = canvas.getAttribute('data-mode') === 'squares';
   // (glyph mode) brand colors for the blooming marks
-  // Resting tiles: one clear main color (periwinkle-lavender, between the purple and blue in
-  // ds.css) varying only in strength, with the brand pink as a rare accent (about 1 in 12)
-  var TINTS = ['#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#f472d0'].map(function (h) {
+  // Resting tiles: periwinkle-lavender is the clear main color (about two thirds of tinted
+  // tiles); the brand pink and blue come in as smaller accents (about 1 in 6 each)
+  var TINTS = ['#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#8f8ef7', '#f472d0', '#f472d0', '#6b8cf5', '#6b8cf5'].map(function (h) {
     return [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
   });
 
@@ -93,7 +93,7 @@
   // Ripple / cursor color ramp, light to dark, all in the main color family: pale lavender →
   // periwinkle → deeper blue-violet. Each stop is lifted a little toward white so even the
   // darkest point stays soft.
-  var RAMP = [[221, 219, 253], [167, 160, 250], [127, 134, 243], [91, 111, 232]].map(function (c) {
+  var RAMP = [[244, 214, 246], [167, 160, 250], [127, 134, 243], [91, 111, 232]].map(function (c) {
     return c.map(function (v) { return v + (255 - v) * 0.1; });
   });
   function rampColor(x) { // x: 0..1
