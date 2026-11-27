@@ -138,28 +138,16 @@ body { background: var(--bg); color: var(--ink); }
   gap: 24px var(--text-gap);
 }
 .squiggles li { font-size: 17px; line-height: 1.5; text-wrap: pretty; }
-.squiggles li::before {
-  content: "";
-  display: block;
-  width: 26px;
-  height: 24px;                 /* same box for every mark, so text lines up */
-  margin-bottom: 10px;
-  background: var(--gradient);
-  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  -webkit-mask-position: left center; mask-position: left center;
-}
-/* doodle tilt */
-.squiggles li:nth-child(1)::before { transform: rotate(-6deg); }
-.squiggles li:nth-child(2)::before { transform: rotate(5deg); }
-.squiggles li:nth-child(3)::before { transform: rotate(-3deg); }
-/* hand-drawn markers (edited by June in Figma "Doodle bullets"): two sets of three, so every point
-   gets its own mark. Odd reflections: loop, sparkle, wave. Even: curl, spiral, wave. */
-.reflection__box:nth-child(odd) .squiggles li:nth-child(1)::before { -webkit-mask-size: 23.8px 19.4px; mask-size: 23.8px 19.4px; -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-27.8 -27.8 315.6 256.9'%3E%3Cpath d='M 0.4 105.6 C -4.6 39.8 41 0 90.2 0 C 145.5 0 188.6 46 194.7 95.7 C 200.9 151.6 170.1 198.8 123.4 201.3 C 84 203.7 71.7 164 76.6 129.2 C 84 70.8 127.1 42.2 178.7 39.8 C 225.5 37.3 258.7 64.6 259.9 108.1 C 261.2 136.7 246.4 160.3 226.7 173.9' fill='none' stroke='black' stroke-width='29.1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-27.8 -27.8 315.6 256.9'%3E%3Cpath d='M 0.4 105.6 C -4.6 39.8 41 0 90.2 0 C 145.5 0 188.6 46 194.7 95.7 C 200.9 151.6 170.1 198.8 123.4 201.3 C 84 203.7 71.7 164 76.6 129.2 C 84 70.8 127.1 42.2 178.7 39.8 C 225.5 37.3 258.7 64.6 259.9 108.1 C 261.2 136.7 246.4 160.3 226.7 173.9' fill='none' stroke='black' stroke-width='29.1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }  /* loop */
-.reflection__box:nth-child(odd) .squiggles li:nth-child(2)::before { -webkit-mask-size: 17.2px 23.9px; mask-size: 17.2px 23.9px; -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-34.7 -34.7 284.4 394.4'%3E%3Cpath d='M 132.4 0 C 144.5 52 139.5 146 215 165.5 C 140.5 194.5 154 265.5 132.4 325 C 118.4 265.2 136.5 158.5 0 165.5 C 78.3 148.4 101.6 145.3 115.6 100.5 C 121.2 85.6 128 28.5 132.4 0 Z' fill='none' stroke='black' stroke-width='36.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-34.7 -34.7 284.4 394.4'%3E%3Cpath d='M 132.4 0 C 144.5 52 139.5 146 215 165.5 C 140.5 194.5 154 265.5 132.4 325 C 118.4 265.2 136.5 158.5 0 165.5 C 78.3 148.4 101.6 145.3 115.6 100.5 C 121.2 85.6 128 28.5 132.4 0 Z' fill='none' stroke='black' stroke-width='36.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }  /* sparkle */
-.reflection__box:nth-child(odd) .squiggles li:nth-child(3)::before { -webkit-mask-size: 23.9px 11.8px; mask-size: 23.9px 11.8px; -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-33.9 -33.9 385.3 189.8'%3E%3Cpath d='M 0 110.8 C 13.1 29 52.4 10.4 74.3 71.1 C 91.8 124.8 120.2 145.9 144.2 85.1 C 161.7 40.7 177.2 -19.5 210 6.2 C 241.5 37.7 285.5 161.1 317.5 71.1' fill='none' stroke='black' stroke-width='35.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-33.9 -33.9 385.3 189.8'%3E%3Cpath d='M 0 110.8 C 13.1 29 52.4 10.4 74.3 71.1 C 91.8 124.8 120.2 145.9 144.2 85.1 C 161.7 40.7 177.2 -19.5 210 6.2 C 241.5 37.7 285.5 161.1 317.5 71.1' fill='none' stroke='black' stroke-width='35.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }  /* wave */
-.reflection__box:nth-child(even) .squiggles li:nth-child(1)::before { -webkit-mask-size: 23.7px 23.9px; mask-size: 23.7px 23.9px; -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-30.6 -30.6 345.3 348.2'%3E%3Cpath d='M 8.9 221.9 C -9.9 165.8 -0.5 109.7 52.8 85.3 C 131 41.7 222 55.7 260 99.7 C 298 143.7 290 225.6 243 263.2 C 196 300.7 115 292.2 76 248.7 C 37 205.2 48.9 138.1 61.5 80.7 C 74.1 23.4 164.5 -29.8 260 19.5' fill='none' stroke='black' stroke-width='32.1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-30.6 -30.6 345.3 348.2'%3E%3Cpath d='M 8.9 221.9 C -9.9 165.8 -0.5 109.7 52.8 85.3 C 131 41.7 222 55.7 260 99.7 C 298 143.7 290 225.6 243 263.2 C 196 300.7 115 292.2 76 248.7 C 37 205.2 48.9 138.1 61.5 80.7 C 74.1 23.4 164.5 -29.8 260 19.5' fill='none' stroke='black' stroke-width='32.1' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }  /* curl */
-.reflection__box:nth-child(even) .squiggles li:nth-child(2)::before { -webkit-mask-size: 22.5px 23.9px; mask-size: 22.5px 23.9px; -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-33.1 -33.1 354.8 376.2'%3E%3Cpath d='M 186.7 146 C 215.2 164.5 205.6 218.3 154.5 224.5 C 89.8 233.8 72.8 139.2 113.7 98.9 C 157.9 55.5 263.8 69.3 284.2 137.5 C 304.6 208.8 252.7 310 138.2 310 C 49.7 306.9 -16.7 199 3.7 121.5 C 10.5 96.7 29.7 20 122.7 0' fill='none' stroke='black' stroke-width='34.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-33.1 -33.1 354.8 376.2'%3E%3Cpath d='M 186.7 146 C 215.2 164.5 205.6 218.3 154.5 224.5 C 89.8 233.8 72.8 139.2 113.7 98.9 C 157.9 55.5 263.8 69.3 284.2 137.5 C 304.6 208.8 252.7 310 138.2 310 C 49.7 306.9 -16.7 199 3.7 121.5 C 10.5 96.7 29.7 20 122.7 0' fill='none' stroke='black' stroke-width='34.7' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }  /* spiral */
-.reflection__box:nth-child(even) .squiggles li:nth-child(3)::before { -webkit-mask-size: 23.9px 11.8px; mask-size: 23.9px 11.8px; -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-33.9 -33.9 385.3 189.8'%3E%3Cpath d='M 0 110.8 C 13.1 29 52.4 10.4 74.3 71.1 C 91.8 124.8 120.2 145.9 144.2 85.1 C 161.7 40.7 177.2 -19.5 210 6.2 C 241.5 37.7 285.5 161.1 317.5 71.1' fill='none' stroke='black' stroke-width='35.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-33.9 -33.9 385.3 189.8'%3E%3Cpath d='M 0 110.8 C 13.1 29 52.4 10.4 74.3 71.1 C 91.8 124.8 120.2 145.9 144.2 85.1 C 161.7 40.7 177.2 -19.5 210 6.2 C 241.5 37.7 285.5 161.1 317.5 71.1' fill='none' stroke='black' stroke-width='35.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }  /* wave */
+/* bullet mark: one curly arrow (curly-arrow.js puts it in) */
+.curly-arrow { display: block; width: 40px; height: 23px; margin-bottom: 10px; }
+.curly-arrow svg { display: block; width: 100%; height: 100%; overflow: visible; transition: transform .45s cubic-bezier(.3,1.4,.5,1); }
+.squiggles li:hover .curly-arrow svg { transform: translateX(4px); }
+.curly-arrow path { stroke-dasharray: 1 1; stroke-dashoffset: 0; }
+.curly-arrow.is-waiting path { stroke-dashoffset: 1; }
+.curly-arrow.is-drawing .ca-body { animation: ca-draw .6s cubic-bezier(.6,.05,.3,1) both; }
+.curly-arrow.is-drawing .ca-head { animation: ca-draw .22s ease-out .52s both; }
+@keyframes ca-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+
 /* closing line: the personal note, set apart by a hairline */
 .reflection__close {
   margin: 0;
@@ -176,6 +164,6 @@ body { background: var(--bg); color: var(--ink); }
   .reflection__key { font-size: 20px; }
   .squiggles { grid-auto-flow: row; gap: 20px; }
   .reflection__close { font-size: 16px; padding-top: 20px; }
-  .squiggles li { font-size: 16px; display: grid; grid-template-columns: 28px 1fr; column-gap: 12px; }
-  .squiggles li::before { margin: 2px 0 0; justify-self: center; }
+  .squiggles li { font-size: 16px; display: grid; grid-template-columns: 34px 1fr; column-gap: 12px; }
+  .curly-arrow { width: 34px; height: 20px; margin: 2px 0 0; }
 }
