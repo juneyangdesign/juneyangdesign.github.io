@@ -118,7 +118,7 @@ body { background: var(--bg); color: var(--ink); }
    then a personal closing line */
 .reflections { display: flex; flex-direction: column; gap: 24px; }
 .reflection__box { padding: 40px; gap: 32px; }
-.reflection__box > .number { margin-bottom: -20px; }   /* sits close to its statement */
+.reflection__box > .label { margin: 0 0 -20px; }   /* sits close to its statement */
 .reflection__key {
   margin: 0;
   font-size: 24px;
@@ -157,11 +157,10 @@ body { background: var(--bg); color: var(--ink); }
 @keyframes tb-pop { from { opacity: 0; scale: .2; } to { opacity: 1; scale: 1; } }
 @keyframes tb-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 
-/* closing line: the personal note, set apart by a hairline */
+/* closing line: the personal note, in a softer grey */
 .reflection__close {
   margin: 0;
-  padding-top: 24px;
-  border-top: 1px solid var(--line);
+  padding-top: 4px;
   color: var(--ink-2);
   font-size: 17px;
   line-height: 1.5;
@@ -172,7 +171,7 @@ body { background: var(--bg); color: var(--ink); }
   .reflection__box { padding: 28px; gap: 24px; }
   .reflection__key { font-size: 20px; }
   .squiggles { grid-auto-flow: row; gap: 20px; }
-  .reflection__close { font-size: 16px; padding-top: 20px; }
+  .reflection__close { font-size: 16px; padding-top: 0; }
   .squiggles li { font-size: 16px; display: grid; grid-template-columns: 26px 1fr; column-gap: 12px; }
   .thought-mark { width: 24px; height: 23px; margin: 1px 0 0; }
 }
