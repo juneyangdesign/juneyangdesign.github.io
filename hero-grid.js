@@ -363,11 +363,16 @@
     }
   }
 
+  var HOLD_MS = 600, FADE_MS = 2400, IDLE_MS = HOLD_MS + FADE_MS;   // rest -> gentle fade -> idle effects
   function spread(t, idle, spd, k) {
     var n = cells.length, i, c;
     if (next.length !== n) next = new Array(n);
-    // inject under the cursor, or under the wandering "ghost" while idle
-    var amt = idle ? 0 : 1;   // no wandering trail while idle: the director owns that time
+    // inject under the cursor. When the mouse rests, the color under it holds briefly, then eases out
+    // over ~2.4s instead of cutting off (the injection becomes a soft floor that slowly lowers).
+    var still = t - ptr.last;
+    var hold = still < HOLD_MS ? 1 : Math.max(0, 1 - (still - HOLD_MS) / FADE_MS);
+    hold = hold * hold * (3 - 2 * hold);   // smoothstep
+    var amt = ptr.inside ? hold : 0;
     if (amt > 0.02) {
       var RR = gap * 1.6;
       for (i = 0; i < n; i++) {
@@ -495,7 +500,7 @@
 
   function draw(t) {
     ctx.clearRect(0, 0, W, H);
-    var idle = !ptr.inside || t - ptr.last > 1100;
+    var idle = !ptr.inside || t - ptr.last > IDLE_MS;
     if (idle) {
       ptr.tx = W * (0.55 + 0.38 * Math.sin(t * 0.00023) * Math.cos(t * 0.00009));
       ptr.ty = H * (0.5 + 0.36 * Math.sin(t * 0.00031 + 1.3));
@@ -555,7 +560,7 @@
   window.addEventListener('pointermove', function (e) {
     var rect = canvas.getBoundingClientRect();
     var x = (e.clientX - rect.left) / scale, y = (e.clientY - rect.top) / scale;
-    var was = ptr.inside && performance.now() - ptr.last < 1100;
+    var was = ptr.inside && performance.now() - ptr.last < IDLE_MS;
     ptr.inside = x >= 0 && y >= 0 && x <= W && y <= H;
     if (ptr.inside) {
       if (!was) { ptr.x = x; ptr.y = y; } // jump straight to the real cursor
