@@ -76,6 +76,8 @@ body { background: var(--bg); color: var(--ink); }
 .video-frame, .feeds__before, .feeds__after, .figure-video {
   background: var(--surface);
 }
+/* a panel that holds a phone mockup drops its background too */
+:is(.video-frame, .feeds__before, .feeds__after, .figure-video):has(.phone, .phone__frame, .phone__screen) { background: none; }
 
 /* Links in body copy */
 .content p a, .overview a { color: var(--link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
