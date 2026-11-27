@@ -139,9 +139,9 @@ body { background: var(--bg); color: var(--ink); }
 }
 .squiggles li { font-size: 17px; line-height: 1.5; text-wrap: pretty; }
 /* bullet mark: one curly arrow (curly-arrow.js puts it in) */
-.curly-arrow { display: block; width: 24px; height: 22.8px; margin-bottom: 10px; }
+.curly-arrow { display: block; width: 27px; height: 20.5px; margin-bottom: 10px; }
 .curly-arrow svg { display: block; width: 100%; height: 100%; overflow: visible; transition: transform .45s cubic-bezier(.3,1.4,.5,1); }
-.squiggles li:hover .curly-arrow svg { transform: translate(2px, 2px); }   /* nudges along its own angle */
+.squiggles li:hover .curly-arrow svg { transform: translate(3px, -1px); }   /* nudges along its own angle */
 .curly-arrow path { stroke-dasharray: 1 1; stroke-dashoffset: 0; }
 .curly-arrow.is-waiting path { stroke-dashoffset: 1; }
 .curly-arrow.is-drawing .ca-body { animation: ca-draw .6s cubic-bezier(.6,.05,.3,1) both; }
@@ -164,6 +164,6 @@ body { background: var(--bg); color: var(--ink); }
   .reflection__key { font-size: 20px; }
   .squiggles { grid-auto-flow: row; gap: 20px; }
   .reflection__close { font-size: 16px; padding-top: 20px; }
-  .squiggles li { font-size: 16px; display: grid; grid-template-columns: 24px 1fr; column-gap: 12px; }
-  .curly-arrow { width: 22px; height: 20.9px; margin: 2px 0 0; }
+  .squiggles li { font-size: 16px; display: grid; grid-template-columns: 26px 1fr; column-gap: 12px; }
+  .curly-arrow { width: 24px; height: 18.3px; margin: 3px 0 0; }
 }
