@@ -44,7 +44,7 @@ body { background: var(--bg); color: var(--ink); }
   text-transform: uppercase;
 }
 .sidebar { gap: 16px; }
-.sidebar a.is-active { color: var(--pink-600); }
+.sidebar a.is-active { color: var(--anchor); }
 .divider::before, .divider::after { border-top-color: var(--line); }
 
 /* Text cards: a neutral hairline by default. The gradient outline is kept for the
@@ -190,3 +190,11 @@ body { background: var(--bg); color: var(--ink); }
   .squiggles li { font-size: 16px; display: grid; grid-template-columns: 26px 1fr; column-gap: 12px; }
   .thought-mark { width: 24px; height: 23px; margin: 1px 0 0; }
 }
+
+/* Shared header: identical to the home and about pages */
+.site-logo img { height: 42px; width: auto; }
+@media (max-width: 640px) { .site-logo img { height: 34px; } }
+.site-nav { font-weight: 500; }
+.site-nav a { color: var(--muted); transition: color .2s ease; }
+.site-nav a[aria-current] { color: var(--ink); }   /* "Work" stays active on project pages */
+.site-nav a:hover { color: var(--link); }

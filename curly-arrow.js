@@ -13,7 +13,7 @@
     svg.setAttribute("aria-hidden", "true");
     svg.innerHTML =
       `<defs><linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="-74.7" x2="204.8" y1="0" y2="0">` +
-      `<stop offset="0" stop-color="#e83eae"/><stop offset=".52" stop-color="#864fe3"/><stop offset="1" stop-color="#536cdf"/></linearGradient></defs>` +
+      `<stop offset="0" stop-color="#d9419f"/><stop offset=".52" stop-color="#7448cf"/><stop offset="1" stop-color="#3b4fb8"/></linearGradient></defs>` +
       `<path class="ca-body" d="${BODY}" pathLength="1"/><path class="ca-head" d="${HEAD}" pathLength="1"/>`;
     svg.querySelectorAll("path").forEach(p => {
       p.setAttribute("fill", "none"); p.setAttribute("stroke", `url(#${id})`);

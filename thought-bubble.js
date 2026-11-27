@@ -13,7 +13,7 @@
     svg.setAttribute("viewBox", "4 8 92 88");
     svg.setAttribute("aria-hidden", "true");
     let html = `<defs><linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="8" x2="92" y1="0" y2="0">` +
-      `<stop offset="0" stop-color="#e83eae"/><stop offset=".52" stop-color="#864fe3"/><stop offset="1" stop-color="#536cdf"/></linearGradient></defs>` +
+      `<stop offset="0" stop-color="#d9419f"/><stop offset=".52" stop-color="#7448cf"/><stop offset="1" stop-color="#3b4fb8"/></linearGradient></defs>` +
       `<g class="tb-cloud"><path d="${CLOUD}" pathLength="1" fill="none" stroke="url(#${id})" stroke-width="5.4" stroke-linejoin="round"/></g>`;
     DOTS.forEach(([x, y, r], i) => {
       html += `<circle class="tb-dot tb-dot--${i}" cx="${x}" cy="${y}" r="${r}" fill="url(#${id})" style="transform-origin:${x}px ${y}px"/>`;

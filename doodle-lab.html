@@ -157,7 +157,7 @@
 (() => {
   const NS = 'http://www.w3.org/2000/svg';
   let uid = 0;
-  const STOPS = [['0', '#e83eae'], ['.52', '#864fe3'], ['1', '#536cdf']];
+  const STOPS = [['0', '#d9419f'], ['.52', '#7448cf'], ['1', '#3b4fb8']];
   function gradDef(svg, x1, x2) {
     const id = 'g' + (++uid);
     const defs = document.createElementNS(NS, 'defs');
@@ -315,7 +315,7 @@
   }
   function thought(el) {
     const id = 'tb' + (++uid);
-    el.innerHTML = `<svg viewBox="4 8 92 88" overflow="visible"><defs><linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="8" x2="92"><stop offset="0" stop-color="#e83eae"/><stop offset=".52" stop-color="#864fe3"/><stop offset="1" stop-color="#536cdf"/></linearGradient></defs><path d="M87.7 36.8 A17.1 17.1 0 0 1 75.7 58.1 A22.3 22.3 0 0 1 44.0 61.3 A18.7 18.7 0 0 1 24.3 43.2 A17.1 17.1 0 0 1 36.3 21.9 A22.3 22.3 0 0 1 68.0 18.7 A18.7 18.7 0 0 1 87.7 36.8 Z" fill="none" stroke="url(#${id})" stroke-width="5.4" stroke-linejoin="round"/><circle cx="25" cy="77" r="4.6" fill="url(#${id})"/><circle cx="13" cy="90" r="2.9" fill="url(#${id})"/></svg>`;
+    el.innerHTML = `<svg viewBox="4 8 92 88" overflow="visible"><defs><linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="8" x2="92"><stop offset="0" stop-color="#d9419f"/><stop offset=".52" stop-color="#7448cf"/><stop offset="1" stop-color="#3b4fb8"/></linearGradient></defs><path d="M87.7 36.8 A17.1 17.1 0 0 1 75.7 58.1 A22.3 22.3 0 0 1 44.0 61.3 A18.7 18.7 0 0 1 24.3 43.2 A17.1 17.1 0 0 1 36.3 21.9 A22.3 22.3 0 0 1 68.0 18.7 A18.7 18.7 0 0 1 87.7 36.8 Z" fill="none" stroke="url(#${id})" stroke-width="5.4" stroke-linejoin="round"/><circle cx="25" cy="77" r="4.6" fill="url(#${id})"/><circle cx="13" cy="90" r="2.9" fill="url(#${id})"/></svg>`;
   }
   const TILE_KINDS = { grid: ['mini grid · ripple', tileGrid], one: ['single tile · tilt', tileOne], four: ['four tiles · settle', tileFour], thought: ['thought bubble', thought] };
   const tileGridEl = document.getElementById('tiles');
