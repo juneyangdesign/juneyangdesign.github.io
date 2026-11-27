@@ -17,11 +17,11 @@
   <link rel="stylesheet" href="home.css?v=ds32">
   <style>
     /* About page: same header, type and spacing tokens as the home page (ds.css + home.css) */
-    .about { margin-top: 200px; padding-left: 3px; display: grid; grid-template-columns: 520px minmax(0, 680px); justify-content: center; gap: 96px; align-items: center; }
+    .about { margin-top: 200px; max-width: 1296px; margin-left: auto; margin-right: auto; display: grid; grid-template-columns: 400px minmax(0, 1fr); gap: 112px; align-items: start; }   /* photo smaller, intro leads; same 1296px width as the lists below */
     .about .intro__title .ds-gradient { display: inline; }   /* keep "June" on the same line */
-    .about__photo { width: 100%; height: auto; border-radius: 16px; display: block; order: -1; }
+    .about__photo { width: 100%; height: auto; border-radius: 16px; display: block; order: -1; margin-top: 8px; }
     .about__lede { margin-top: 13px; font-size: 18px; line-height: 28px; color: var(--muted); }
-    .about__body { margin-top: 56px; display: flex; flex-direction: column; gap: 24px; }
+    .about__body { margin-top: 48px; display: flex; flex-direction: column; gap: 24px; max-width: 720px; }
     .about__body p { font-size: 18px; line-height: 27px; color: var(--ink-2); text-wrap: pretty; }
     .exp, .connect { max-width: 1296px; margin-left: auto; margin-right: auto; }  /* same width as the photo + intro block above */
     .exp { margin-top: 160px; }
@@ -55,7 +55,7 @@
       .connect__item a span:nth-child(2) { grid-row: 2; font-size: 15px; }
       .connect__item a span:last-child { grid-row: 1 / 3; grid-column: 2; }
     }
-    @media (max-width: 1023px) { .about { margin-top: 120px; padding-left: 0; grid-template-columns: 1fr; } .about__photo { max-width: 480px; } }
+    @media (max-width: 1023px) { .about { margin-top: 120px; grid-template-columns: 1fr; gap: 40px; } .about__photo { order: 0; max-width: 300px; margin-top: 0; } }   /* small screens: intro first, photo after */
     @media (max-width: 640px) {
       .about { margin-top: 72px; }
       .about__lede { margin-top: 16px; font-size: 15px; line-height: 24px; }
@@ -95,7 +95,7 @@
         <p>Outside of school and design projects, I still love creating things just for fun, whether that’s a carefully curated Spotify playlist or Pinterest board. I also love exploring new cafes and bakeries for a sweet treat and spending time with my amazing friends!</p>
       </div>
       </div>
-      <img class="about__photo" src="about-june.jpg?v=3" width="1080" height="1350" alt="June smiling and holding her internship certificate at the end of her AMOREPACIFIC internship">
+      <img class="about__photo" src="about-june.jpg?v=4" width="1080" height="1350" alt="June smiling and holding her AMOREPACIFIC global internship certificate">
     </section>
     <section class="exp" aria-labelledby="exp-title">
       <h2 class="exp__title" id="exp-title">Experience</h2>
