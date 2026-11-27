@@ -16,14 +16,25 @@
 
 body { background: var(--bg); color: var(--ink); }
 
-/* Headings: Figtree, a touch heavier and tighter so they still lead without the serif */
+/* Type hierarchy (one family, so size + weight + color do the work the serif used to):
+   display 40/500 · heading 32/600 · subheading 20/600 · body 18/400 in a softer ink · labels 13 mono caps */
 .heading, .subheading, .display, .stat__value, .quote__text {
   font-family: var(--font-sans);
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  color: var(--ink);
 }
-.display { letter-spacing: -0.015em; text-wrap: balance; }
-.quote__text { font-weight: 400; }
+.display    { font-size: 40px; line-height: 1.2;  font-weight: 500; letter-spacing: -0.02em; text-wrap: balance; }
+.heading    { font-size: 32px; line-height: 1.2;  font-weight: 600; letter-spacing: -0.02em; text-wrap: balance; }
+.subheading { font-size: 20px; line-height: 1.35; font-weight: 600; letter-spacing: -0.01em; }
+.stat__value{ font-size: 36px; line-height: 1.15; font-weight: 600; letter-spacing: -0.02em; }
+.quote__text{ font-size: 22px; line-height: 1.45; font-weight: 400; letter-spacing: -0.005em; }
+.body, .overview p, .squiggles li { color: var(--ink-2); }
+@media (max-width: 720px) {
+  .display { font-size: 30px; }
+  .heading { font-size: 26px; }
+  .subheading { font-size: 18px; }
+  .stat__value { font-size: 30px; }
+  .quote__text { font-size: 19px; }
+}
 
 /* Small labels → DM Mono caps, like SELECTED WORK on the home page */
 .label, .number, .note__label, .overview__label, .divider, .sidebar {
@@ -125,8 +136,9 @@ body { background: var(--bg); color: var(--ink); }
 .reflection__key {
   margin: 0;
   font-size: 24px;
-  line-height: 1.4;
+  line-height: 1.35;
   font-weight: 500;
+  color: var(--ink);
   letter-spacing: -0.01em;
   max-width: 40ch;
   text-wrap: pretty;
