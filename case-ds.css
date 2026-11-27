@@ -1,13 +1,13 @@
 /* Case studies on the design system.
    Load order: ../ds.css → page styles.css → ../case-ds.css (this file only overrides).
    Text cards: white with a soft gradient outline (same as the home tags).
-   Media panels: a faint pink→blue wash, no outline, so screenshots stay the focus. */
+   Media panels: one neutral grey everywhere, so all the case studies match. */
 
 :root {
   --black: var(--ink);
   --black-60: #6b6b6b;          /* labels and supporting text (5.3:1 on white) */
   --bg: #fff;
-  --surface: #f5f5f7;
+  --surface: #f4f4f4;            /* media panels: same grey as the panels baked into the figure images */
   --font-sans: "Figtree", system-ui, sans-serif;
   --font-serif: "Figtree", system-ui, sans-serif;   /* headings move to Figtree */
   --wash: linear-gradient(135deg, #fdf3fb, #f5f2fe 50%, #f1f4fe);
@@ -69,11 +69,9 @@ body { background: var(--bg); color: var(--ink); }
 }
 .card.quote { border-left: 0; }
 
-/* Media panels: the wash is only for final/visual design. Process work (wireframes,
-   testing before/after) and framed sheets like the style guide keep a neutral grey panel:
-   a thin band of wash around a white sheet reads as a gradient border. */
+/* Media panels: one neutral grey everywhere (final screens, wireframes, testing), so every case study matches */
 .phones, .video-frame, .feeds__before, .feeds__after, .figure-video {
-  background: var(--wash);
+  background: var(--surface);
 }
 
 /* Links in body copy */
