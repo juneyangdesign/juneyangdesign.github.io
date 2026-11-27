@@ -63,13 +63,21 @@
   color: var(--muted);
 }
 
-/* Arrow cursor (cursor-arrow.js): native cursor hides only over clickable things */
-.has-arrow-cursor :is(a[href], button, [role='button'], label[for], summary, select, .project, .phone__frame.is-clickable),
-.has-arrow-cursor :is(a[href], button, [role='button'], .project) * { cursor: none; }
-.arrow-cursor { position: fixed; left: 0; top: 0; z-index: 2147483647; pointer-events: none; opacity: 0; transition: opacity .12s ease; will-change: transform;
-  filter: drop-shadow(0 0 1px #fff) drop-shadow(0 0 1.5px rgba(255,255,255,.9)); }   /* faint white edge so it reads over photos and video */
-.arrow-cursor.is-on { opacity: 1; }
-.arrow-cursor path { stroke-dasharray: 1 1; stroke-dashoffset: 0; }
-.arrow-cursor.is-drawing .ac-body { animation: ac-draw .32s cubic-bezier(.5,0,.3,1) both; }
-.arrow-cursor.is-drawing .ac-head { animation: ac-draw .14s ease-out .26s both; }
-@keyframes ac-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+/* Cursor circle (cursor-circle.js): soft translucent circle that trails the pointer, expands over clickables */
+.cursor-circle { position: fixed; left: 0; top: 0; z-index: 2147483647; pointer-events: none; will-change: transform; }
+.cursor-circle::before {
+  content: ""; position: absolute; left: -14px; top: -14px; width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, rgba(244,114,208,.32), rgba(167,139,250,.28) 52%, rgba(107,140,245,.3));
+  box-shadow: inset 0 0 0 1px rgba(181,32,143,.12);
+  opacity: 0; transform: scale(.6);
+  transition: transform .45s cubic-bezier(.2,1.2,.4,1), opacity .25s ease, background .3s ease;
+}
+.cursor-circle.is-visible::before { opacity: 1; transform: scale(1); }
+.cursor-circle.is-hover::before {
+  transform: scale(2.3);
+  background: linear-gradient(135deg, rgba(244,114,208,.18), rgba(167,139,250,.16) 52%, rgba(107,140,245,.18));
+  box-shadow: inset 0 0 0 1px rgba(126,71,224,.18);
+}
+.cursor-circle.is-hover.is-press::before { transform: scale(1.9); transition-duration: .15s; }
+@media (prefers-reduced-motion: reduce) { .cursor-circle::before { transition: opacity .2s ease; } }
+
