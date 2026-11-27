@@ -152,6 +152,7 @@ body { background: var(--bg); color: var(--ink); }
   grid-auto-columns: minmax(0, 1fr);   /* 2 or 3 points share the row evenly */
   gap: 24px var(--text-gap);
 }
+.squiggles li:only-child { max-width: 72ch; }   /* a single point shouldn't run the full width */
 .squiggles li { font-size: 17px; line-height: 1.5; text-wrap: pretty; }
 /* bullet mark: a thought bubble (thought-bubble.js puts it in) */
 .thought-mark { display: block; width: 26px; height: 25px; margin-bottom: 10px; }
