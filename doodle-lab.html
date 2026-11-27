@@ -56,12 +56,31 @@
     .is-drawing .line-path { animation: draw .7s cubic-bezier(.6,.05,.3,1) both; }
     @keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
     @media (prefers-reduced-motion: reduce) { .is-drawing .line-path { animation: none; } }
+
+    /* C: tile bullets (same tints as the hero grid) */
+    .tg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; width: 100%; height: 100%; }
+    .tg i { display: block; border-radius: 2px; background: #fdeefa; transition: background-color .35s ease, transform .35s ease; }
+    .tg i.on { background: var(--c); }
+    .tg i.wave { background: var(--w); transform: scale(1.08); transition: background-color .12s ease, transform .12s ease; }
+    .tile .mark .tg { gap: 5px; }
+    .tile .mark .tg i { border-radius: 5px; }
+    .t1 { width: 100%; height: 100%; display: grid; place-items: center; }
+    .t1 b { display: block; width: 70%; height: 70%; border-radius: 22%; background: linear-gradient(135deg, #f9a8e6, #c4b5fd 52%, #a5b4fc);
+            transition: transform .5s cubic-bezier(.3,1.5,.5,1), filter .4s ease; box-shadow: 0 0 0 0 rgba(167,139,250,0); }
+    .tile:hover .t1 b, li:hover .t1 b { transform: rotate(-14deg) scale(1.06); filter: saturate(1.35) brightness(.96); }
+    .t4 { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; width: 100%; height: 100%; }
+    .tile .mark .t4 { gap: 7px; }
+    .t4 i { border-radius: 3px; background: var(--c); opacity: .55; transition: opacity .4s ease, transform .5s cubic-bezier(.3,1.5,.5,1); }
+    .tile .mark .t4 i { border-radius: 8px; }
+    .tile:hover .t4 i, li:hover .t4 i { opacity: 1; transform: rotate(var(--r)); }
+    .reflection li .tilemark { width: 22px; height: 22px; }
+    .reflection li .tilemark svg { width: 26px; height: 25px; }
   </style>
 </head>
 <body>
 <main>
   <p class="label">Doodle lab</p>
-  <h1>Bullet marks: two directions</h1>
+  <h1>Bullet marks</h1>
   <p class="muted intro">Hover anything to see how it moves. Line doodles redraw like a pen stroke; organic shapes wobble and morph. The previews at the bottom show each set at real size in a reflection box.</p>
 
   <section>
@@ -80,6 +99,32 @@
       <button type="button" data-style="outline" aria-pressed="false">Fill + offset outline</button>
     </div>
     <div class="grid" id="shapes"></div>
+  </section>
+
+
+  <section>
+    <p class="label">C · From your tile grid</p>
+    <h2>Bullets made of the hero tiles</h2>
+    <p class="muted">Same tints as the home page grid. Hover to see each one react the way the hero tiles react to your cursor.</p>
+    <div class="grid" id="tiles"></div>
+    <div class="reflection" style="margin-top:32px">
+      <p class="label">Preview at real size · mini grid</p>
+      <h3>Even though I came in with some knowledge of the beauty industry, I couldn’t assume I understood everyone’s needs.</h3>
+      <ul>
+        <li><span class="mark tilemark" data-tile="grid"></span>I drew from my experience working in the industry to turn problems I’d noticed into something tangible.</li>
+        <li><span class="mark tilemark" data-tile="grid"></span>Talking with people about their experiences and frustrations showed me needs I hadn’t considered.</li>
+        <li><span class="mark tilemark" data-tile="grid"></span>Seeing where people struggled during testing helped me challenge my initial assumptions and make more thoughtful design decisions.</li>
+      </ul>
+    </div>
+    <div class="reflection">
+      <p class="label">Preview at real size · thought bubble (what’s on Skyn now)</p>
+      <h3>Even though I came in with some knowledge of the beauty industry, I couldn’t assume I understood everyone’s needs.</h3>
+      <ul>
+        <li><span class="mark tilemark" data-tile="thought"></span>I drew from my experience working in the industry to turn problems I’d noticed into something tangible.</li>
+        <li><span class="mark tilemark" data-tile="thought"></span>Talking with people about their experiences and frustrations showed me needs I hadn’t considered.</li>
+        <li><span class="mark tilemark" data-tile="thought"></span>Seeing where people struggled during testing helped me challenge my initial assumptions and make more thoughtful design decisions.</li>
+      </ul>
+    </div>
   </section>
 
   <section>
@@ -236,6 +281,51 @@
     }
     raf = busy ? requestAnimationFrame(tick) : 0;
   }
+
+
+  /* ---------- C: tile bullets ---------- */
+  const TINT = { pink: '#f9a8e6', pinkD: '#f472d0', purple: '#c4b5fd', purpleD: '#a78bfa', blue: '#a5b4fc', blueD: '#6b8cf5' };
+  function tileGrid(el) {
+    const g = document.createElement('span'); g.className = 'tg';
+    const lit = { 2: TINT.pink, 4: TINT.purple, 6: TINT.blue };          // a soft diagonal at rest
+    const waveCols = [TINT.pinkD, TINT.purpleD, TINT.blueD];
+    const cells = [];
+    for (let i = 0; i < 9; i++) {
+      const c = document.createElement('i');
+      if (lit[i]) { c.classList.add('on'); c.style.setProperty('--c', lit[i]); }
+      const r = Math.floor(i / 3), col = i % 3;
+      c.style.setProperty('--w', waveCols[Math.min(2, Math.floor((r + col) / 2))]);
+      g.appendChild(c); cells.push([c, r + col]);
+    }
+    el.replaceChildren(g);
+    const host = el.closest('.tile, li') || el;
+    host.addEventListener('mouseenter', () => {
+      if (reduce) return;
+      cells.forEach(([c, d]) => {
+        setTimeout(() => c.classList.add('wave'), d * 70);
+        setTimeout(() => c.classList.remove('wave'), d * 70 + 260);
+      });
+    });
+  }
+  function tileOne(el) { el.innerHTML = '<span class="t1"><b></b></span>'; }
+  function tileFour(el) {
+    el.innerHTML = '<span class="t4">' +
+      [[TINT.pink,'-8deg'],[TINT.purple,'6deg'],[TINT.purple,'5deg'],[TINT.blue,'-7deg']]
+        .map(([c, r]) => `<i style="--c:${c};--r:${r}"></i>`).join('') + '</span>';
+  }
+  function thought(el) {
+    const id = 'tb' + (++uid);
+    el.innerHTML = `<svg viewBox="4 8 92 88" overflow="visible"><defs><linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="8" x2="92"><stop offset="0" stop-color="#e62fa8"/><stop offset=".52" stop-color="#7e47e0"/><stop offset="1" stop-color="#4a62d9"/></linearGradient></defs><path d="M87.7 36.8 A17.1 17.1 0 0 1 75.7 58.1 A22.3 22.3 0 0 1 44.0 61.3 A18.7 18.7 0 0 1 24.3 43.2 A17.1 17.1 0 0 1 36.3 21.9 A22.3 22.3 0 0 1 68.0 18.7 A18.7 18.7 0 0 1 87.7 36.8 Z" fill="none" stroke="url(#${id})" stroke-width="5.4" stroke-linejoin="round"/><circle cx="25" cy="77" r="4.6" fill="url(#${id})"/><circle cx="13" cy="90" r="2.9" fill="url(#${id})"/></svg>`;
+  }
+  const TILE_KINDS = { grid: ['mini grid · ripple', tileGrid], one: ['single tile · tilt', tileOne], four: ['four tiles · settle', tileFour], thought: ['thought bubble', thought] };
+  const tileGridEl = document.getElementById('tiles');
+  for (const [k, [label, fn]] of Object.entries(TILE_KINDS)) {
+    const tile = document.createElement('div'); tile.className = 'tile';
+    const m = document.createElement('span'); m.className = 'mark'; m.style.width = m.style.height = '56px';
+    const l = document.createElement('span'); l.className = 'label'; l.textContent = label;
+    tile.append(m, l); tileGridEl.appendChild(tile); fn(m);
+  }
+  document.querySelectorAll('[data-tile]').forEach(el => TILE_KINDS[el.dataset.tile][1](el));
 
   /* ---------- build the page ---------- */
   const lineGrid = document.getElementById('lines');
