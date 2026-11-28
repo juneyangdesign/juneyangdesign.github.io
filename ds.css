@@ -21,7 +21,7 @@
   --ink:        #161616;  /* headings, body */
   --ink-2:      #3d3d3d;  /* long-form body */
   --muted:      #6b6b6b;  /* supporting text, labels (5.3:1 on white) */
-  --line:       #dadada;  /* hairlines (a touch darker so card borders and dividers read clearly) */
+  --line:       #cecece;  /* hairlines (a touch darker so card borders and dividers read clearly) */
   --surface:    #f4f4f4;  /* image panels, chips (matches the grey baked into exported figures) */
   --bg:         #ffffff;
 
