@@ -199,3 +199,7 @@ body { background: var(--bg); color: var(--ink); }
 .site-nav a { color: var(--muted); transition: color .2s ease; }
 .site-nav a[aria-current] { color: var(--ink); }   /* "Work" stays active on project pages */
 .site-nav a:hover { color: var(--link); }
+
+/* "How this shaped the design" note at the bottom of a card */
+.card__shaped { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
+.card__shaped .label { color: var(--anchor); }
