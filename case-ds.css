@@ -210,3 +210,6 @@ body { background: var(--bg); color: var(--ink); }
   .user-col { grid-row: auto; grid-template-rows: none; }
 }
 
+/* A reflection point with its own short title */
+.squiggles .point__title { display: block; margin-bottom: 6px; font-size: 17px; line-height: 1.4; font-weight: 600; letter-spacing: -0.005em; color: var(--ink); }
+
