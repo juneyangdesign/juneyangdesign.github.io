@@ -200,6 +200,14 @@ body { background: var(--bg); color: var(--ink); }
 .site-nav a[aria-current] { color: var(--ink); }   /* "Work" stays active on project pages */
 .site-nav a:hover { color: var(--link); }
 
-/* "How this shaped the design" note at the bottom of a card */
-.card__shaped { margin-top: auto; padding-top: 20px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 8px; }
-.card__shaped .label { color: var(--anchor); }
+/* User group -> arrow -> how the design supports them (columns line up via subgrid) */
+.user-map { grid-template-rows: auto auto auto; row-gap: 0; }
+.user-col { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; }
+.user-arrow { display: flex; justify-content: center; padding: 12px 0; color: var(--muted); }
+.user-support { gap: 8px; }
+.user-support .label { color: var(--anchor); }
+@media (max-width: 720px) {
+  .user-map { grid-template-rows: none; row-gap: 40px; }
+  .user-col { grid-row: auto; grid-template-rows: none; }
+}
+
