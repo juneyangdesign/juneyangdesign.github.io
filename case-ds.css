@@ -203,7 +203,7 @@ body { background: var(--bg); color: var(--ink); }
 /* User group -> arrow -> how the design supports them (columns line up via subgrid) */
 .user-map { grid-template-rows: auto auto auto; row-gap: 0; }
 .user-col { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; }
-.user-arrow { display: flex; justify-content: center; padding: 12px 0; color: var(--muted); }
+.user-arrow { display: flex; justify-content: center; align-items: center; height: 40px; font-size: 20px; line-height: 1; color: var(--black-60); }   /* same arrow as problem → solution */
 .user-support { gap: 8px; }
 .user-support .label { color: var(--anchor); }
 @media (max-width: 720px) {
